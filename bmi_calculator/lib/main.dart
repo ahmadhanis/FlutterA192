@@ -19,6 +19,10 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      theme: ThemeData(
+    brightness: Brightness.light,
+    primaryColor: Colors.greenAccent,
+  ),
       title: 'Material App',
       home: Scaffold(
         resizeToAvoidBottomPadding: false,
@@ -52,7 +56,7 @@ class _MyAppState extends State<MyApp> {
                         ),
                         filled: true,
                         hintStyle: new TextStyle(color: Colors.grey[800]),
-                        hintText: "Height (cm)",
+                        hintText: "Height (meter)",
                         fillColor: Colors.white70),
                   ),
                 ),
@@ -113,18 +117,21 @@ class _MyAppState extends State<MyApp> {
     setState(() {
       double h = double.parse(_heightctrl.text);
       double w = double.parse(_weightctrl.text);
-      double result = (w * w) / h;
+      double result = w / (h * h);
       print(result);
       bmi = format(result);
       if (result > 25) {
         img = "assets/images/bmilebih.jpg";
         loadFail();
+        print("OVER");
       } else if ((result <= 24.9) && (result >= 18.5)) {
         img = "assets/images/bmibiasa.jpg";
         loadOk();
+        print("NOrmal");
       } else if (result < 18.5) {
         img = "assets/images/bmikurang.jpg";
         loadFail();
+        print("Kecik");
       }
     });
   }
