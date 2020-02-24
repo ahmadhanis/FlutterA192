@@ -1,19 +1,24 @@
+import 'package:eve/mainpage.dart';
+import 'package:eve/registerpage.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:email_validator/email_validator.dart';
+import 'package:progress_dialog/progress_dialog.dart';
 
 bool _isChecked = false;
 bool _success;
 String _userEmail;
+
 final FirebaseAuth _auth = FirebaseAuth.instance;
 
-void main() => runApp(MyApp());
+void main() => runApp(LoginPage());
 
-class MyApp extends StatefulWidget {
+class LoginPage extends StatefulWidget {
   @override
-  _MyAppState createState() => _MyAppState();
+  _LoginPageState createState() => _LoginPageState();
 }
 
-class _MyAppState extends State<MyApp> {
+class _LoginPageState extends State<LoginPage> {
   TextEditingController _emailController = new TextEditingController();
   TextEditingController _passController = new TextEditingController();
   final navigatorKey = GlobalKey<NavigatorState>();
@@ -22,7 +27,7 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return MaterialApp(
       navigatorKey: navigatorKey,
-      title: 'Material App',
+      title: 'EvE',
       theme: ThemeData.dark(),
       home: Scaffold(
         resizeToAvoidBottomInset: false,
@@ -69,7 +74,7 @@ class _MyAppState extends State<MyApp> {
                     color: Colors.cyanAccent,
                     textColor: Colors.black,
                     elevation: 15,
-                    onPressed: _login,
+                    onPressed: _signInWithEmailAndPassword,
                   ),
                 ),
                 SizedBox(
@@ -112,36 +117,6 @@ class _MyAppState extends State<MyApp> {
     return null;
   }
 
-  void _login() {}
-
-  void _registerUser() {
-    final context = navigatorKey.currentState.overlay.context;
-    _userEmail = _emailController.text;
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text('Register?'),
-          content: Text('This action will register $_userEmail'),
-          actions: <Widget>[
-            FlatButton(
-              child: const Text('CANCEL'),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-            FlatButton(
-              child: const Text('ACCEPT'),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            )
-          ],
-        );
-      },
-    );
-  }
-
   void _onChange(bool value) {
     setState(() {
       _isChecked = value;
@@ -150,34 +125,60 @@ class _MyAppState extends State<MyApp> {
   }
 
   void _signInWithEmailAndPassword() async {
-    final FirebaseUser user = (await _auth.signInWithEmailAndPassword(
-      email: _emailController.text,
-      password: _passController.text,
-    ))
-        .user;
-    if (user != null) {
-      setState(() {
-        _success = true;
-        _userEmail = user.email;
-      });
-    } else {
-      _success = false;
+    ProgressDialog pr = new ProgressDialog(context,
+        type: ProgressDialogType.Normal, isDismissible: false);
+    pr.style(message: "Login...");
+    pr.show();
+    try {
+      final FirebaseUser user = (await _auth.signInWithEmailAndPassword(
+        email: _emailController.text,
+        password: _passController.text,
+      ))
+          .user;
+      if (user != null) {
+        setState(() {
+          _success = true;
+          _userEmail = user.email;
+          pr.dismiss();
+          
+          Navigator.push(
+        this.context, MaterialPageRoute(builder: (context) => MainPage()));
+        messageDialog("Login Success", "");
+        });
+      } else {
+        _success = false;
+        pr.dismiss();
+      }
+    } on Exception catch (e) {
+      pr.dismiss();
+      print(e.toString());
+      messageDialog("Login Failed", "");
+      return;
     }
   }
 
-  void _register() async {
-    final FirebaseUser user = (await _auth.createUserWithEmailAndPassword(
-      email: _emailController.text,
-      password: _passController.text,
-    ))
-        .user;
-    if (user != null) {
-      setState(() {
-        _success = true;
-        _userEmail = user.email;
-      });
-    } else {
-      _success = false;
-    }
+  void messageDialog(String msja, String msjb) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(msja),
+          content: Text(msjb),
+          actions: <Widget>[
+            FlatButton(
+              child: const Text('OK'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _registerUser() {
+    Navigator.push(
+        this.context, MaterialPageRoute(builder: (context) => RegisterPage()));
   }
 }
