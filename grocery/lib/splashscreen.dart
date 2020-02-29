@@ -12,6 +12,9 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      theme: new ThemeData(
+        primarySwatch: Colors.brown,
+      ),
       title: 'Material App',
       home: Scaffold(
         body: Center(
@@ -68,11 +71,10 @@ class _ProgressIndicatorState extends State<ProgressIndicator>
     return new Center(
         child: new Container(
       width: 300,
-      //color: Colors.redAccent,
       child: LinearProgressIndicator(
         value: animation.value,
         backgroundColor: Colors.black,
-        valueColor: new AlwaysStoppedAnimation<Color>(Colors.purple),
+        valueColor: new AlwaysStoppedAnimation<Color>(Colors.brown),
       ),
     ));
   }

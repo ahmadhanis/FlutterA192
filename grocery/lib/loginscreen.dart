@@ -12,11 +12,13 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      theme: new ThemeData(
+        primarySwatch: Colors.brown,
+      ),
       title: 'Material App',
       home: Scaffold(
         resizeToAvoidBottomPadding: false,
         appBar: AppBar(
-          backgroundColor: Colors.purple,
           title: Text('Login'),
         ),
         body: Center(
@@ -29,6 +31,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   "assets/images/grocery.png",
                   scale: 3,
                 ),
+                Card(),
                 TextField(
                     controller: null,
                     keyboardType: TextInputType.emailAddress,
@@ -53,7 +56,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   minWidth: 350,
                   height: 50,
                   child: Text('Login'),
-                  color: Colors.purple,
+                  color: Colors.brown,
                   textColor: Colors.white,
                   elevation: 20,
                   onPressed: _userLogin,
@@ -63,12 +66,15 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
                 GestureDetector(
                   onTap: _registerUser,
-                  child: Text("Register new Account"),
+                  child: Text("Register New Account"),
                 ),
                 SizedBox(
-                  height: 5,
+                  height: 10,
                 ),
-                Text("Forgot Password")
+                GestureDetector(
+                  onTap: _forgotPassword,
+                  child: Text("Forgot Password"),
+                ),
               ],
             ),
           ),
@@ -80,6 +86,54 @@ class _LoginScreenState extends State<LoginScreen> {
   void _userLogin() {}
 
   void _registerUser() {
-     Navigator.push(context,MaterialPageRoute(builder: (BuildContext context) => RegisterScreen()));
+    Navigator.push(context,
+        MaterialPageRoute(builder: (BuildContext context) => RegisterScreen()));
+  }
+
+  void _forgotPassword() {
+    TextEditingController phoneController = TextEditingController();
+    // flutter defined function
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        // return object of type Dialog
+        return AlertDialog(
+          title: new Text("Forgot Password?"),
+          content: new Container(
+            height: 100,
+            child: Column(
+              children: <Widget>[
+                Text(
+                  "Enter your recovery email",
+                ),
+                TextField(
+                    decoration: InputDecoration(
+                  labelText: 'Email',
+                  icon: Icon(Icons.email),
+                ))
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            // usually buttons at the bottom of the dialog
+            new FlatButton(
+              child: new Text("Yes"),
+              onPressed: () {
+                Navigator.of(context).pop();
+                print(
+                  phoneController.text,
+                );
+              },
+            ),
+            new FlatButton(
+              child: new Text("No"),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 }
