@@ -27,7 +27,8 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
-
+  data_connection_checker: ^0.3.4
+  back_button_interceptor: ^4.2.3
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

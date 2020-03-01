@@ -1,35 +1,38 @@
 import 'package:flutter/material.dart';
 import 'package:grocery/loginscreen.dart';
- 
+
 void main() => runApp(MyApp());
- 
+
 class MyApp extends StatefulWidget {
   @override
   _MyAppState createState() => _MyAppState();
 }
 
 class _MyAppState extends State<MyApp> {
+  double screenHeight;
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       theme: new ThemeData(
         primarySwatch: Colors.brown,
       ),
       title: 'Material App',
       home: Scaffold(
-        body: Center(
-          child: Container(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-              Image.asset("assets/images/grocery.png",scale: 2,),
-              SizedBox(height: 10,),
-              ProgressIndicator()
-            ],),
-
-          ),
+          body: Container(
+        child: Stack(
+          children: <Widget>[
+            Container(
+                decoration: BoxDecoration(
+                    image: DecorationImage(
+                        image: AssetImage('assets/images/splash.jpg'),
+                        fit: BoxFit.cover))),
+            Container(
+              height: 300,
+              child: ProgressIndicator())
+          ],
         ),
-      ),
+      )),
     );
   }
 }
@@ -51,8 +54,9 @@ class _ProgressIndicatorState extends State<ProgressIndicator>
         duration: const Duration(milliseconds: 2000), vsync: this);
     animation = Tween(begin: 0.0, end: 1.0).animate(controller)
       ..addListener(() {
-        setState(() { //updating states
-          if (animation.value > 0.99) { 
+        setState(() {
+          //updating states
+          if (animation.value > 0.99) {
             Navigator.push(context,MaterialPageRoute(builder: (BuildContext context) => LoginScreen()));
           }
         });
@@ -70,11 +74,11 @@ class _ProgressIndicatorState extends State<ProgressIndicator>
   Widget build(BuildContext context) {
     return new Center(
         child: new Container(
-      width: 300,
-      child: LinearProgressIndicator(
+      //width: 300,
+      child: CircularProgressIndicator(
         value: animation.value,
-        backgroundColor: Colors.black,
-        valueColor: new AlwaysStoppedAnimation<Color>(Colors.brown),
+        //backgroundColor: Colors.brown,
+        valueColor: new AlwaysStoppedAnimation<Color>(Colors.white),
       ),
     ));
   }
