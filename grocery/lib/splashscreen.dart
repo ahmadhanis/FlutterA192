@@ -27,9 +27,7 @@ class _MyAppState extends State<MyApp> {
                     image: DecorationImage(
                         image: AssetImage('assets/images/splash.jpg'),
                         fit: BoxFit.cover))),
-            Container(
-              height: 300,
-              child: ProgressIndicator())
+            Container(height: 300, child: ProgressIndicator())
           ],
         ),
       )),
@@ -57,7 +55,10 @@ class _ProgressIndicatorState extends State<ProgressIndicator>
         setState(() {
           //updating states
           if (animation.value > 0.99) {
-            Navigator.push(context,MaterialPageRoute(builder: (BuildContext context) => LoginScreen()));
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (BuildContext context) => LoginScreen()));
           }
         });
       });

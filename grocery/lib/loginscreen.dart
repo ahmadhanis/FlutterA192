@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:grocery/registerscreen.dart';
 
 void main() => runApp(LoginScreen());
@@ -14,13 +15,9 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     screenHeight = MediaQuery.of(context).size.height;
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      theme: new ThemeData(
-        primarySwatch: Colors.brown,
-      ),
-      title: 'Material App',
-      home: Scaffold(
+    return WillPopScope(
+      onWillPop: _onBackPressed,
+      child: Scaffold(
           resizeToAvoidBottomPadding: false,
           body: Stack(
             children: <Widget>[
@@ -44,7 +41,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   Widget lowerHalf(BuildContext context) {
     return Container(
-      height: 320,
+      height: 340,
       margin: EdgeInsets.only(top: screenHeight / 3),
       padding: EdgeInsets.only(left: 10, right: 10),
       child: Column(
@@ -82,18 +79,20 @@ class _LoginScreenState extends State<LoginScreen> {
                     obscureText: true,
                   ),
                   SizedBox(
-                    height: 5,
+                    height: 10,
                   ),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: <Widget>[
-                      GestureDetector(
-                        onTap: _forgotPassword,
-                        child: Text(
-                          "Forgot Password?",
-                          style: TextStyle(fontSize: 16.0),
-                        ),
+                      Checkbox(
+                        value: rememberMe,
+                        onChanged: (bool value) {
+                          _onRememberMeChanged(value);
+                        },
                       ),
+                      Text('Remember Me ',
+                          style: TextStyle(
+                              fontSize: 16, fontWeight: FontWeight.bold)),
                       MaterialButton(
                         shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(5.0)),
@@ -107,13 +106,6 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                     ],
                   ),
-                  CheckboxListTile(
-                    title: Text("Remember Me"),
-                    value: rememberMe,
-                    onChanged: _onRememberMeChanged,
-                    controlAffinity: ListTileControlAffinity
-                        .leading, //  <-- leading Checkbox
-                  ),
                 ],
               ),
             ),
@@ -124,12 +116,28 @@ class _LoginScreenState extends State<LoginScreen> {
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              Text("Don't have an account? " , style: TextStyle(fontSize: 16.0)),
+              Text("Don't have an account? ", style: TextStyle(fontSize: 16.0)),
               GestureDetector(
                 onTap: _registerUser,
                 child: Text(
                   "Create Account",
-                  style: TextStyle(fontSize: 16.0,fontWeight: FontWeight.bold),
+                  style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
+                ),
+              ),
+            ],
+          ),
+          SizedBox(
+            height: 5,
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              Text("Forgot your password ", style: TextStyle(fontSize: 16.0)),
+              GestureDetector(
+                onTap: _forgotPassword,
+                child: Text(
+                  "Reset Password",
+                  style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
                 ),
               ),
             ],
@@ -222,4 +230,27 @@ class _LoginScreenState extends State<LoginScreen> {
         if (rememberMe) {
         } else {}
       });
+
+  Future<bool> _onBackPressed() {
+    return showDialog(
+          context: context,
+          builder: (context) => new AlertDialog(
+            title: new Text('Are you sure?'),
+            content: new Text('Do you want to exit an App'),
+            actions: <Widget>[
+              MaterialButton(
+                  onPressed: () {
+                    SystemChannels.platform.invokeMethod('SystemNavigator.pop');
+                  },
+                  child: Text("Exit")),
+              MaterialButton(
+                  onPressed: () {
+                    Navigator.of(context).pop(false);
+                  },
+                  child: Text("Cancel")),
+            ],
+          ),
+        ) ??
+        false;
+  }
 }

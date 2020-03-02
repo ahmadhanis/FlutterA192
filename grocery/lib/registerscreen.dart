@@ -10,9 +10,11 @@ class RegisterScreen extends StatefulWidget {
 
 class _RegisterScreenState extends State<RegisterScreen> {
   double screenHeight;
+  bool _isChecked = false;
+
   @override
   Widget build(BuildContext context) {
-        screenHeight = MediaQuery.of(context).size.height;
+    screenHeight = MediaQuery.of(context).size.height;
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: new ThemeData(
@@ -20,19 +22,18 @@ class _RegisterScreenState extends State<RegisterScreen> {
       ),
       title: 'Material App',
       home: Scaffold(
-        resizeToAvoidBottomPadding: false,
-        body: Stack(
+          resizeToAvoidBottomPadding: false,
+          body: Stack(
             children: <Widget>[
               upperHalf(context),
               lowerHalf(context),
               pageTitle(),
             ],
-          )
-      ),
+          )),
     );
   }
 
- Widget upperHalf(BuildContext context) {
+  Widget upperHalf(BuildContext context) {
     return Container(
       height: screenHeight / 2,
       child: Image.asset(
@@ -42,7 +43,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     );
   }
 
-Widget lowerHalf(BuildContext context) {
+  Widget lowerHalf(BuildContext context) {
     return Container(
       height: 400,
       margin: EdgeInsets.only(top: screenHeight / 3.5),
@@ -52,7 +53,7 @@ Widget lowerHalf(BuildContext context) {
           Card(
             elevation: 10,
             child: Container(
-              padding: EdgeInsets.fromLTRB(30, 10, 30, 10),
+              padding: EdgeInsets.fromLTRB(20, 10, 20, 10),
               child: Column(
                 children: <Widget>[
                   Align(
@@ -73,14 +74,14 @@ Widget lowerHalf(BuildContext context) {
                         labelText: 'Name',
                         icon: Icon(Icons.person),
                       )),
-                       TextField(
+                  TextField(
                       controller: null,
                       keyboardType: TextInputType.emailAddress,
                       decoration: InputDecoration(
                         labelText: 'Email',
                         icon: Icon(Icons.email),
                       )),
-                       TextField(
+                  TextField(
                       controller: null,
                       keyboardType: TextInputType.phone,
                       decoration: InputDecoration(
@@ -96,12 +97,27 @@ Widget lowerHalf(BuildContext context) {
                     obscureText: true,
                   ),
                   SizedBox(
-                    height: 10,
+                    height: 5,
                   ),
-                  MaterialButton(
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: <Widget>[
+                      Checkbox(
+                        value: _isChecked,
+                        onChanged: (bool value) {
+                          _onChange(value);
+                        },
+                      ),
+                      GestureDetector(
+                        onTap: _showEULA,
+                        child: Text('I Agree to Terms  ',
+                            style: TextStyle(
+                                fontSize: 16, fontWeight: FontWeight.bold)),
+                      ),
+                      MaterialButton(
                         shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(5.0)),
-                        minWidth: 300,
+                        minWidth: 115,
                         height: 50,
                         child: Text('Register'),
                         color: Colors.brown,
@@ -109,7 +125,8 @@ Widget lowerHalf(BuildContext context) {
                         elevation: 10,
                         onPressed: _onRegister,
                       ),
-                  
+                    ],
+                  ),
                 ],
               ),
             ),
@@ -120,12 +137,12 @@ Widget lowerHalf(BuildContext context) {
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              Text("Already register? " , style: TextStyle(fontSize: 16.0)),
+              Text("Already register? ", style: TextStyle(fontSize: 16.0)),
               GestureDetector(
                 onTap: _loginScreen,
                 child: Text(
                   "Login",
-                  style: TextStyle(fontSize: 16.0,fontWeight: FontWeight.bold),
+                  style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
                 ),
               ),
             ],
@@ -135,7 +152,7 @@ Widget lowerHalf(BuildContext context) {
     );
   }
 
-Widget pageTitle() {
+  Widget pageTitle() {
     return Container(
       //color: Color.fromRGBO(255, 200, 200, 200),
       margin: EdgeInsets.only(top: 60),
@@ -157,11 +174,60 @@ Widget pageTitle() {
       ),
     );
   }
-  void _onRegister() {}
+
+  void _onRegister() {
+    print("");
+  }
 
   void _loginScreen() {
     Navigator.pop(context,
         MaterialPageRoute(builder: (BuildContext context) => LoginScreen()));
   }
-  
+
+  void _onChange(bool value) {
+    setState(() {
+      _isChecked = value;
+      //savepref(value);
+    });
+  }
+
+  void _showEULA() {
+    // flutter defined function
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        // return object of type Dialog
+        return AlertDialog(
+          title: new Text("EULA"),
+          content: new Container(
+            height: 300,
+            child: Column(
+              children: <Widget>[
+                Expanded(
+                  flex: 1,
+                  child: new SingleChildScrollView(
+                      child: new Text(
+                    "This End-User License Agreement is a legal agreement between you and Slumberjer This EULA agreement governs your acquisition and use of our MY.GROCERY software (Software) directly from Slumberjer or indirectly through a Slumberjer authorized reseller or distributor (a Reseller).Please read this EULA agreement carefully before completing the installation process and using the MY.GROCERY software. It provides a license to use the MY.GROCERY software and contains warranty information and liability disclaimers. If you register for a free trial of the MY.GROCERY software, this EULA agreement will also govern that trial. By clicking accept or installing and/or using the MY.GROCERY software, you are confirming your acceptance of the Software and agreeing to become bound by the terms of this EULA agreement. If you are entering into this EULA agreement on behalf of a company or other legal entity, you represent that you have the authority to bind such entity and its affiliates to these terms and conditions. If you do not have such authority or if you do not agree with the terms and conditions of this EULA agreement, do not install or use the Software, and you must not accept this EULA agreement.This EULA agreement shall apply only to the Software supplied by Slumberjer herewith regardless of whether other software is referred to or described herein. The terms also apply to any Slumberjer updates, supplements, Internet-based services, and support services for the Software, unless other terms accompany those items on delivery. If so, those terms apply. This EULA was created by EULA Template for MY.GROCERY. Slumberjer shall at all times retain ownership of the Software as originally downloaded by you and all subsequent downloads of the Software by you. The Software (and the copyright, and other intellectual property rights of whatever nature in the Software, including any modifications made thereto) are and shall remain the property of Slumberjer. Slumberjer reserves the right to grant licences to use the Software to third parties.",
+                    style: new TextStyle(
+                      fontSize: 16.0,
+                      color: Colors.black,
+                    ),
+                  )),
+                )
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            // usually buttons at the bottom of the dialog
+            new FlatButton(
+              child: new Text("Close"),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            )
+          ],
+        );
+      },
+    );
+  }
 }
