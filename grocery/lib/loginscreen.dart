@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:grocery/mainscreen.dart';
 import 'package:grocery/registerscreen.dart';
+import 'package:http/http.dart' as http;
+import 'package:toast/toast.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() => runApp(LoginScreen());
 bool rememberMe = false;
@@ -12,6 +16,17 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   double screenHeight;
+  TextEditingController _emailEditingController = new TextEditingController();
+  TextEditingController _passEditingController = new TextEditingController();
+  String urlLogin = "https://slumberjer.com/grocery/php/login_user.php";
+
+  @override
+  void initState() {
+    super.initState();
+    print("Hello i'm in INITSTATE");
+    loadPref();
+  }
+
   @override
   Widget build(BuildContext context) {
     screenHeight = MediaQuery.of(context).size.height;
@@ -64,14 +79,14 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                   ),
                   TextField(
-                      controller: null,
+                      controller: _emailEditingController,
                       keyboardType: TextInputType.emailAddress,
                       decoration: InputDecoration(
                         labelText: 'Email',
                         icon: Icon(Icons.email),
                       )),
                   TextField(
-                    controller: null,
+                    controller: _passEditingController,
                     decoration: InputDecoration(
                       labelText: 'Password',
                       icon: Icon(Icons.lock),
@@ -170,7 +185,27 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  void _userLogin() {}
+  void _userLogin() {
+    String email = _emailEditingController.text;
+    String password = _passEditingController.text;
+
+    http.post(urlLogin, body: {
+      "email": email,
+      "password": password,
+    }).then((res) {
+      if (res.body == "success") {
+        Navigator.push(context,
+            MaterialPageRoute(builder: (BuildContext context) => MainScreen()));
+        Toast.show("Login success", context,
+            duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
+      } else {
+        Toast.show("Login failed", context,
+            duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
+      }
+    }).catchError((err) {
+      print(err);
+    });
+  }
 
   void _registerUser() {
     Navigator.push(context,
@@ -228,7 +263,10 @@ class _LoginScreenState extends State<LoginScreen> {
         rememberMe = newValue;
         print(rememberMe);
         if (rememberMe) {
-        } else {}
+          savepref(true);
+        } else {
+          savepref(false);
+        }
       });
 
   Future<bool> _onBackPressed() {
@@ -252,5 +290,42 @@ class _LoginScreenState extends State<LoginScreen> {
           ),
         ) ??
         false;
+  }
+
+  void loadPref() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String email = (prefs.getString('email'))??'';
+    String password = (prefs.getString('pass'))??'';
+    if (email.length > 1) {
+      setState(() {
+        _emailEditingController.text = email;
+        _passEditingController.text = password;
+        rememberMe = true;
+      });
+    }
+  }
+
+  void savepref(bool value) async {
+    String email = _emailEditingController.text;
+    String password = _passEditingController.text;
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    if (value) {
+      //save preference
+      await prefs.setString('email', email);
+      await prefs.setString('pass', password);
+      Toast.show("Preferences have been saved", context,
+          duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
+    } else {
+      //delete preference
+      await prefs.setString('email', '');
+      await prefs.setString('pass', '');
+      setState(() {
+        _emailEditingController.text = '';
+        _passEditingController.text = '';
+        rememberMe = false;
+      });
+      Toast.show("Preferences have removed", context,
+          duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
+    }
   }
 }

@@ -28,7 +28,10 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   data_connection_checker: ^0.3.4
-
+  http: ^0.12.0
+  toast: ^0.1.5
+  shared_preferences: ^0.5.6+2
+  
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 
