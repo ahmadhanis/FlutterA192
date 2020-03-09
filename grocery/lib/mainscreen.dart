@@ -1,4 +1,7 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 
 class MainScreen extends StatefulWidget {
   @override
@@ -6,112 +9,104 @@ class MainScreen extends StatefulWidget {
 }
 
 class _MainScreenState extends State<MainScreen> {
+  String urlloadproduct =
+      "https://slumberjer.com/grocery/php/load_products.php";
+  List productdata;
+
   @override
+  void initState() {
+    super.initState();
+    loadProduct();
+  }
+
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Material(
-        child: CustomScrollView(
-          slivers: [
-            SliverPersistentHeader(
-              delegate: MySliverAppBar(expandedHeight: 200),
-              pinned: true,
-            ),
-            SliverList(
-              delegate: SliverChildBuilderDelegate(
-                (_, index) => ListTile(
-                  title: Text("Index: $index"),
-                ),
-              ),
-            )
-          ],
+    if (productdata == null) {
+      return new Scaffold(
+        appBar: new AppBar(
+          title: new Text("Loading..."),
         ),
+        body: Center(
+          child: CircularProgressIndicator(),
+        ),
+      );
+    } else {
+      return MaterialApp(
+        title: 'Material App',
+        home: Scaffold(
+            appBar: AppBar(
+              title: Text('Material App Bar'),
+            ),
+            drawer: mainDrawer(context),
+            body: ListView.builder(
+                itemCount: productdata == null ? 1 : productdata.length,
+                itemBuilder: (context, index) {
+                  return Card(
+                    elevation: 10,
+                    child: Column(
+                      children: <Widget>[
+                        Container(
+                            height: 100,
+                            width: 100,
+                            decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                border: Border.all(color: Colors.black),
+                                image: DecorationImage(
+                                    fit: BoxFit.fill,
+                                    image: NetworkImage(
+                                        "https://slumberjer.com/grocery/productimage/${productdata[index]['id']}.jpg")))),
+                        Text(productdata[index]['name']),
+                        Text("RM " + productdata[index]['price']),
+                        Text(productdata[index]['quantity']),
+                        Text(productdata[index]['weigth'] + " gram"),
+                      ],
+                    ),
+                  );
+                })),
+      );
+    }
+  }
+
+  void loadProduct() {
+    http.post(urlloadproduct, body: {}).then((res) {
+      setState(() {
+        var extractdata = json.decode(res.body);
+        productdata = extractdata["products"];
+        print(productdata);
+      });
+    }).catchError((err) {
+      print(err);
+    });
+  }
+
+   Widget mainDrawer(BuildContext context) {
+    return Drawer(
+      child: ListView(
+        children: <Widget>[
+          UserAccountsDrawerHeader(
+            accountName: Text("Ahmad Hanis"),
+            accountEmail: Text("slumberjer@gmail.com"),
+            currentAccountPicture: CircleAvatar(
+              backgroundColor: Theme.of(context).platform == TargetPlatform.iOS
+                  ? Colors.blue
+                  : Colors.white,
+              child: Text(
+                "A",
+                style: TextStyle(fontSize: 40.0),
+              ),
+            ),
+          ),
+          ListTile(
+            title: Text("Ttem 1"),
+            trailing: Icon(Icons.arrow_forward),
+          ),
+          ListTile(
+            title: Text("Item 2"),
+            trailing: Icon(Icons.arrow_forward),
+          ),
+        ],
       ),
     );
   }
-}
 
-class MySliverAppBar extends SliverPersistentHeaderDelegate {
-  final double expandedHeight;
-
-  MySliverAppBar({@required this.expandedHeight});
-
-  @override
-  Widget build(
-      BuildContext context, double shrinkOffset, bool overlapsContent) {
-    return Stack(
-      fit: StackFit.expand,
-      overflow: Overflow.visible,
-      alignment: Alignment.center,
-      children: [
-        Image.asset(
-          "assets/images/mainpage.png",
-          fit: BoxFit.cover,
-        ),
-        Center(
-          child: Opacity(
-            opacity: shrinkOffset / expandedHeight,
-            child: Text(
-              "MY.GROCERY",
-              style: TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.w700,
-                fontSize: 23,
-              ),
-            ),
-          ),
-        ),
-        Positioned(
-          top: expandedHeight / 2 - shrinkOffset,
-          width: 320,
-          height: 100,
-          left: MediaQuery.of(context).size.width / 16,
-          child: Opacity(
-            opacity: (1 - shrinkOffset / expandedHeight),
-            child: Card(
-              elevation: 10,
-              child: SizedBox(
-                height: expandedHeight,
-                width: MediaQuery.of(context).size.width / 2,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: <Widget>[
-                    IconButton(
-                      icon: Icon(Icons.home), 
-                      tooltip: 'Home',
-                      onPressed: () {},
-                    ),
-                    IconButton(
-                      icon: Icon(Icons.verified_user),
-                      tooltip: 'Home',
-                      onPressed: () {},
-                    ),
-                    IconButton(
-                      icon: Icon(Icons.shopping_basket),
-                      tooltip: 'Home',
-                      onPressed: () {},
-                    ),
-                    IconButton(
-                      icon: Icon(Icons.people),
-                      tooltip: 'Home',
-                      onPressed: () {},
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-
-  @override
-  double get maxExtent => expandedHeight;
-
-  @override
-  double get minExtent => kToolbarHeight;
-
-  @override
-  bool shouldRebuild(SliverPersistentHeaderDelegate oldDelegate) => true;
 }

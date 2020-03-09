@@ -56,8 +56,8 @@ class _LoginScreenState extends State<LoginScreen> {
 
   Widget lowerHalf(BuildContext context) {
     return Container(
-      height: 340,
-      margin: EdgeInsets.only(top: screenHeight / 3),
+      height: screenHeight/2,
+      margin: EdgeInsets.only(top: screenHeight / 2.5),
       padding: EdgeInsets.only(left: 10, right: 10),
       child: Column(
         children: <Widget>[
