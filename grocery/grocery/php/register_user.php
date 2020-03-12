@@ -6,7 +6,7 @@ $email = $_POST['email'];
 $phone = $_POST['phone'];
 $password = sha1($_POST['password']);
 
-$sqlinsert = "INSERT INTO USER(NAME,EMAIL,PASSWORD,PHONE) VALUES ('$name','$email','$password','$phone')";
+$sqlinsert = "INSERT INTO USER(NAME,EMAIL,PASSWORD,PHONE,CREDIT,VERIFY) VALUES ('$name','$email','$password','$phone','0','1')";
 
 if ($conn->query($sqlinsert) === true)
 {

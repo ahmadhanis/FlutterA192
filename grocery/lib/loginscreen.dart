@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:grocery/mainscreen.dart';
 import 'package:grocery/registerscreen.dart';
+import 'package:grocery/user.dart';
 import 'package:http/http.dart' as http;
 import 'package:toast/toast.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -56,7 +57,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   Widget lowerHalf(BuildContext context) {
     return Container(
-      height: screenHeight/2,
+      height: screenHeight / 2,
       margin: EdgeInsets.only(top: screenHeight / 2.5),
       padding: EdgeInsets.only(left: 10, right: 10),
       child: Column(
@@ -186,16 +187,26 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   void _userLogin() {
-    String email = _emailEditingController.text;
-    String password = _passEditingController.text;
+    String _email = _emailEditingController.text;
+    String _password = _passEditingController.text;
 
     http.post(urlLogin, body: {
-      "email": email,
-      "password": password,
+      "email": _email,
+      "password": _password,
     }).then((res) {
-      if (res.body == "success") {
+      print(res.body);
+      var string = res.body;
+      List userdata = string.split(",");
+      if (userdata[0] == "success") {
+        User _user = new User(
+            name: userdata[1],
+            email: _email,
+            password: _password,
+            phone: userdata[3],
+            credit: userdata[4],
+            datereg: userdata[5]);
         Navigator.push(context,
-            MaterialPageRoute(builder: (BuildContext context) => MainScreen()));
+            MaterialPageRoute(builder: (BuildContext context) => MainScreen(user: _user,)));
         Toast.show("Login success", context,
             duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
       } else {
@@ -294,8 +305,8 @@ class _LoginScreenState extends State<LoginScreen> {
 
   void loadPref() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    String email = (prefs.getString('email'))??'';
-    String password = (prefs.getString('pass'))??'';
+    String email = (prefs.getString('email')) ?? '';
+    String password = (prefs.getString('pass')) ?? '';
     if (email.length > 1) {
       setState(() {
         _emailEditingController.text = email;
