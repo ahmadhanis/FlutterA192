@@ -64,13 +64,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.1.3"
-  data_connection_checker:
-    dependency: "direct dev"
+  equatable:
+    dependency: transitive
     description:
-      name: data_connection_checker
+      name: equatable
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.3.4"
+    version: "1.1.1"
   flutter:
     dependency: "direct main"
     description: flutter
@@ -86,6 +86,27 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  geocoder:
+    dependency: "direct dev"
+    description:
+      name: geocoder
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.2.1"
+  geolocator:
+    dependency: "direct dev"
+    description:
+      name: geolocator
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "5.3.0"
+  google_api_availability:
+    dependency: transitive
+    description:
+      name: google_api_availability
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.0.3"
   http:
     dependency: "direct dev"
     description:
@@ -107,13 +128,20 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.1.4"
-  infinite_listview:
-    dependency: transitive
+  intl:
+    dependency: "direct dev"
     description:
-      name: infinite_listview
+      name: intl
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.0.1+1"
+    version: "0.16.1"
+  location_permissions:
+    dependency: transitive
+    description:
+      name: location_permissions
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.0.5"
   matcher:
     dependency: transitive
     description:
@@ -128,13 +156,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.1.8"
-  numberpicker:
-    dependency: "direct dev"
-    description:
-      name: numberpicker
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "1.2.0"
   path:
     dependency: transitive
     description:
@@ -148,7 +169,7 @@ packages:
       name: pedantic
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.8.0+1"
+    version: "1.9.0"
   petitparser:
     dependency: transitive
     description:
@@ -170,13 +191,20 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.0.5"
+  recase:
+    dependency: "direct dev"
+    description:
+      name: recase
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "3.0.0"
   shared_preferences:
     dependency: "direct dev"
     description:
       name: shared_preferences
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.5.6+2"
+    version: "0.5.6+3"
   shared_preferences_macos:
     dependency: transitive
     description:
@@ -274,5 +302,5 @@ packages:
     source: hosted
     version: "3.5.0"
 sdks:
-  dart: ">=2.4.0 <3.0.0"
+  dart: ">=2.6.0 <3.0.0"
   flutter: ">=1.12.13+hotfix.4 <2.0.0"

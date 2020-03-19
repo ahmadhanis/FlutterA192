@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:grocery/mainscreen.dart';
-import 'package:grocery/registerscreen.dart';
-import 'package:grocery/user.dart';
 import 'package:http/http.dart' as http;
 import 'package:toast/toast.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:wfh_attendance/mainscreen.dart';
+import 'package:wfh_attendance/registerscreen.dart';
+import 'package:wfh_attendance/user.dart';
+
 
 void main() => runApp(LoginScreen());
 bool rememberMe = false;
@@ -17,9 +18,9 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   double screenHeight;
-  TextEditingController _emailEditingController = new TextEditingController();
+  TextEditingController _idEditingController = new TextEditingController();
   TextEditingController _passEditingController = new TextEditingController();
-  String urlLogin = "https://slumberjer.com/grocery/php/login_user.php";
+  String urlLogin = "https://slumberjer.com/wfh/login_user.php";
 
   @override
   void initState() {
@@ -80,11 +81,11 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                   ),
                   TextField(
-                      controller: _emailEditingController,
-                      keyboardType: TextInputType.emailAddress,
+                      controller: _idEditingController,
+                      keyboardType: TextInputType.number,
                       decoration: InputDecoration(
-                        labelText: 'Email',
-                        icon: Icon(Icons.email),
+                        labelText: 'Staff ID',
+                        icon: Icon(Icons.card_membership),
                       )),
                   TextField(
                     controller: _passEditingController,
@@ -115,7 +116,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         minWidth: 100,
                         height: 50,
                         child: Text('Login'),
-                        color: Colors.brown,
+                        color: Colors.blue,
                         textColor: Colors.white,
                         elevation: 10,
                         onPressed: _userLogin,
@@ -145,19 +146,7 @@ class _LoginScreenState extends State<LoginScreen> {
           SizedBox(
             height: 5,
           ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              Text("Forgot your password ", style: TextStyle(fontSize: 16.0)),
-              GestureDetector(
-                onTap: _forgotPassword,
-                child: Text(
-                  "Reset Password",
-                  style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
-                ),
-              ),
-            ],
-          )
+          
         ],
       ),
     );
@@ -172,14 +161,14 @@ class _LoginScreenState extends State<LoginScreen> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
           Icon(
-            Icons.shopping_basket,
+            Icons.location_on,
             size: 40,
             color: Colors.white,
           ),
           Text(
-            " MY.GROCERY",
+            " UUM.ATTENDANCE",
             style: TextStyle(
-                fontSize: 36, color: Colors.white, fontWeight: FontWeight.w900),
+                fontSize: 28, color: Colors.white, fontWeight: FontWeight.w900),
           )
         ],
       ),
@@ -187,11 +176,11 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   void _userLogin() {
-    String _email = _emailEditingController.text;
+    String _id = _idEditingController.text;
     String _password = _passEditingController.text;
-
+    
     http.post(urlLogin, body: {
-      "email": _email,
+      "id": _id,
       "password": _password,
     }).then((res) {
       var string = res.body;
@@ -200,15 +189,14 @@ class _LoginScreenState extends State<LoginScreen> {
       if (userdata[0] == "success") {
         User _user = new User(
             name: userdata[1],
-            email: _email,
+            id: _id,
             password: _password,
-            phone: userdata[3],
-            credit: userdata[4],
-            datereg: userdata[5]);
-        Navigator.push(context,
-            MaterialPageRoute(builder: (BuildContext context) => MainScreen(user: _user,)));
+            );
+       Navigator.push(context,
+        MaterialPageRoute(builder: (BuildContext context) => MainScreen(user: _user,)));
         Toast.show("Login success", context,
             duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
+       
       } else {
         Toast.show("Login failed", context,
             duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
@@ -223,52 +211,7 @@ class _LoginScreenState extends State<LoginScreen> {
         MaterialPageRoute(builder: (BuildContext context) => RegisterScreen()));
   }
 
-  void _forgotPassword() {
-    TextEditingController phoneController = TextEditingController();
-    // flutter defined function
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        // return object of type Dialog
-        return AlertDialog(
-          title: new Text("Forgot Password?"),
-          content: new Container(
-            height: 100,
-            child: Column(
-              children: <Widget>[
-                Text(
-                  "Enter your recovery email",
-                ),
-                TextField(
-                    decoration: InputDecoration(
-                  labelText: 'Email',
-                  icon: Icon(Icons.email),
-                ))
-              ],
-            ),
-          ),
-          actions: <Widget>[
-            // usually buttons at the bottom of the dialog
-            new FlatButton(
-              child: new Text("Yes"),
-              onPressed: () {
-                Navigator.of(context).pop();
-                print(
-                  phoneController.text,
-                );
-              },
-            ),
-            new FlatButton(
-              child: new Text("No"),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
-        );
-      },
-    );
-  }
+ 
 
   void _onRememberMeChanged(bool newValue) => setState(() {
         rememberMe = newValue;
@@ -305,11 +248,11 @@ class _LoginScreenState extends State<LoginScreen> {
 
   void loadPref() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    String email = (prefs.getString('email')) ?? '';
+    String id = (prefs.getString('id')) ?? '';
     String password = (prefs.getString('pass')) ?? '';
-    if (email.length > 1) {
+    if (id.length > 1) {
       setState(() {
-        _emailEditingController.text = email;
+        _idEditingController.text = id;
         _passEditingController.text = password;
         rememberMe = true;
       });
@@ -317,21 +260,21 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   void savepref(bool value) async {
-    String email = _emailEditingController.text;
+    String id = _idEditingController.text;
     String password = _passEditingController.text;
     SharedPreferences prefs = await SharedPreferences.getInstance();
     if (value) {
       //save preference
-      await prefs.setString('email', email);
+      await prefs.setString('id', id);
       await prefs.setString('pass', password);
       Toast.show("Preferences have been saved", context,
           duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
     } else {
       //delete preference
-      await prefs.setString('email', '');
+      await prefs.setString('id', '');
       await prefs.setString('pass', '');
       setState(() {
-        _emailEditingController.text = '';
+        _idEditingController.text = '';
         _passEditingController.text = '';
         rememberMe = false;
       });
