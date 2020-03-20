@@ -73,6 +73,7 @@ class _MainScreenState extends State<MainScreen> {
           ),
           floatingActionButton: FloatingActionButton(
             onPressed: () async {
+              _getCurrentLocation();
               // Add your onPressed code here!
               if (_currentPosition != null) {
                 print(widget.user.id);
@@ -84,7 +85,6 @@ class _MainScreenState extends State<MainScreen> {
                 Toast.show("Waiting for address. Try again.", context,
                     duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
               }
-              _getCurrentLocation();
             },
             child: Icon(Icons.add),
             backgroundColor: Colors.blue,
@@ -175,10 +175,9 @@ class _MainScreenState extends State<MainScreen> {
   _recordAtt() {
     var now = new DateTime.now();
 
-    if (curaddress == "") {
+    if (curaddress == "" || curaddress ==null) {
       Toast.show("No address please wait for address and try again", context,
           duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
-      return;
     }
     showDialog(
         context: context,

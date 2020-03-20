@@ -4,7 +4,11 @@ include_once ("dbconnect.php");
 $type = $_POST['type'];
 
 if (isset($type)){
-    $sql = "SELECT * FROM PRODUCT WHERE TYPE = '$type'";
+    if ($type == "all"){
+        $sql = "SELECT * FROM PRODUCT";    
+    }else{
+        $sql = "SELECT * FROM PRODUCT WHERE TYPE = '$type'";    
+    }
 }else{
     $sql = "SELECT * FROM PRODUCT";    
 }

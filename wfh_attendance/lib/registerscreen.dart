@@ -187,7 +187,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     String id = _idEditingController.text;
     String password = _passEditingController.text;
 
-    if (name.length < 3 && id.length < 3 && password.length < 3) {
+    if (name.length < 3 && id.length < 2 && password.length < 3) {
       Toast.show("Please enter your credential", context,
           duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
       return;

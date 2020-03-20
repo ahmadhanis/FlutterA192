@@ -21,6 +21,7 @@ class _MainScreenState extends State<MainScreen> {
   int curnumber = 1;
   double screenHeight, screenWidth;
   bool _visible = false;
+
   @override
   void initState() {
     super.initState();
@@ -93,6 +94,7 @@ class _MainScreenState extends State<MainScreen> {
                     child: Padding(
                         padding: EdgeInsets.all(5),
                         child: SingleChildScrollView(
+                          scrollDirection: Axis.horizontal,
                           child: Row(
                             children: <Widget>[
                                Column(
@@ -155,8 +157,24 @@ class _MainScreenState extends State<MainScreen> {
                                       )),
                                 ],
                               ),
+                               Column(
+                                children: <Widget>[
+                                  FlatButton(
+                                      onPressed: () => _sortItem("Vegetable"),
+                                      color: Colors.brown[400],
+                                      padding: EdgeInsets.all(10.0),
+                                      child: Column(
+                                        // Replace with a Row for horizontal icon + text
+                                        children: <Widget>[
+                                          Icon(Icons.nature),
+                                          Text("Vegetable")
+                                        ],
+                                      )),
+                                ],
+                              ),
                             ],
                           ),
+                          
                         ))),
               ),
               Flexible(
@@ -228,6 +246,7 @@ class _MainScreenState extends State<MainScreen> {
       setState(() {
         var extractdata = json.decode(res.body);
         productdata = extractdata["products"];
+       
       });
     }).catchError((err) {
       print(err);
