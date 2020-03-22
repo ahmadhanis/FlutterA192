@@ -14,7 +14,7 @@ description: A new Flutter project.
 version: 1.0.0+1
 
 environment:
-  sdk: ">=2.1.0 <3.0.0"
+  sdk: ">=2.2.0 <3.0.0"
 
 dependencies:
   flutter:
@@ -33,7 +33,9 @@ dev_dependencies:
   shared_preferences: ^0.5.6+2
   progress_dialog: ^1.2.0
   numberpicker: ^1.2.0
-  
+  material_design_icons_flutter: ^3.2.3895
+  cached_network_image: ^2.0.0
+    
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 

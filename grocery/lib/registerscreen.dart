@@ -22,13 +22,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   @override
   Widget build(BuildContext context) {
     screenHeight = MediaQuery.of(context).size.height;
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      theme: new ThemeData(
-        primarySwatch: Colors.brown,
-      ),
-      title: 'Material App',
-      home: Scaffold(
+    return Scaffold(
           resizeToAvoidBottomPadding: false,
           body: Stack(
             children: <Widget>[
@@ -36,7 +30,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
               lowerHalf(context),
               pageTitle(),
             ],
-          )),
+          ),
     );
   }
 
@@ -127,7 +121,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         minWidth: 115,
                         height: 50,
                         child: Text('Register'),
-                        color: Colors.brown,
+                        color: Colors.blue[500],
                         textColor: Colors.white,
                         elevation: 10,
                         onPressed: _onRegister,
