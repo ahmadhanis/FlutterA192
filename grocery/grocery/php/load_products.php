@@ -2,15 +2,19 @@
 error_reporting(0);
 include_once ("dbconnect.php");
 $type = $_POST['type'];
+$name = $_POST['name'];
 
 if (isset($type)){
-    if ($type == "all"){
-        $sql = "SELECT * FROM PRODUCT";    
+    if ($type == "Recent"){
+        $sql = "SELECT * FROM PRODUCT ORDER BY DATE DESC lIMIT 20";    
     }else{
         $sql = "SELECT * FROM PRODUCT WHERE TYPE = '$type'";    
     }
 }else{
-    $sql = "SELECT * FROM PRODUCT";    
+    $sql = "SELECT * FROM PRODUCT ORDER BY DATE DESC lIMIT 20";    
+}
+if (isset($name)){
+   $sql = "SELECT * FROM PRODUCT WHERE NAME LIKE  '%$name%'";
 }
 
 
