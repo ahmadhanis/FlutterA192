@@ -581,6 +581,7 @@ class _MainScreenState extends State<MainScreen> {
         var extractdata = json.decode(res.body);
         productdata = extractdata["products"];
         FocusScope.of(context).requestFocus(new FocusNode());
+        curtype = prname;
         pr.dismiss();
       });
     }).catchError((err) {

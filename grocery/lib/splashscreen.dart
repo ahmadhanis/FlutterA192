@@ -17,7 +17,7 @@ class _MyAppState extends State<MyApp> {
       theme: new ThemeData(
         primarySwatch: Colors.brown,
       ),
-      title: 'Material App',
+      title: 'My.Grocery',
       home: Scaffold(
           body: Container(
         child: Stack(
