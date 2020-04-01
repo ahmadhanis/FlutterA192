@@ -33,33 +33,18 @@ class _MainScreenState extends State<MainScreen> {
   @override
   Widget build(BuildContext context) {
     if (userattlist == null) {
+
       return Scaffold(
           appBar: AppBar(
             title: Text('Record Your Attendance'),
           ),
+          body: Center(
+              child: Text("Record your attendance",
+                  style:
+                      TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold))),
           floatingActionButton: FloatingActionButton(
             onPressed: () async {
               // Add your onPressed code here!
-              if (_currentPosition != null) {
-                String addr;
-                print(widget.user.id);
-                print(widget.user.name);
-                print(_currentPosition.latitude);
-                print(_currentPosition.longitude);
-                final coordinates = new Coordinates(
-                    _currentPosition.latitude, _currentPosition.longitude);
-                var addresses = await Geocoder.local
-                    .findAddressesFromCoordinates(coordinates);
-                var first = addresses.first;
-                if (addresses != null) {
-                  addr = first.featureName + first.addressLine;
-                  print(addr);
-                }
-                _recordAtt();
-              } else {
-                Toast.show("Please turn your GPS on to retrieve", context,
-                    duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
-              }
               _getCurrentLocation();
             },
             child: Icon(Icons.add),
@@ -75,16 +60,6 @@ class _MainScreenState extends State<MainScreen> {
             onPressed: () async {
               _getCurrentLocation();
               // Add your onPressed code here!
-              if (_currentPosition != null) {
-                print(widget.user.id);
-                print(widget.user.name);
-                print(_currentPosition.latitude);
-                print(_currentPosition.longitude);
-                _recordAtt();
-              } else {
-                Toast.show("Waiting for address. Try again.", context,
-                    duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
-              }
             },
             child: Icon(Icons.add),
             backgroundColor: Colors.blue,
@@ -150,32 +125,52 @@ class _MainScreenState extends State<MainScreen> {
   }
 
   _getCurrentLocation() {
-    final Geolocator geolocator = Geolocator()..forceAndroidLocationManager;
+    ProgressDialog pr = new ProgressDialog(context,
+        type: ProgressDialogType.Normal, isDismissible: false);
+    pr.style(message: "Locating...");
+    pr.show();
+    try {
+      final Geolocator geolocator = Geolocator()..forceAndroidLocationManager;
 
-    geolocator
-        .getCurrentPosition(desiredAccuracy: LocationAccuracy.best)
-        .then((Position position) {
-      setState(() async {
-        _currentPosition = position;
-        if (_currentPosition != null) {
-          final coordinates = new Coordinates(
-              _currentPosition.latitude, _currentPosition.longitude);
-          var addresses =
-              await Geocoder.local.findAddressesFromCoordinates(coordinates);
-          var first = addresses.first;
-          curaddress = first.addressLine;
-          print(curaddress);
-        }
+      geolocator
+          .getCurrentPosition(desiredAccuracy: LocationAccuracy.medium)
+          .timeout(Duration(seconds: 5), onTimeout: () {
+        pr.dismiss();
+        Toast.show(
+            "Getting address timeout please check/enable your location permission",
+            context,
+            duration: Toast.LENGTH_LONG,
+            gravity: Toast.BOTTOM);
+      }).then((Position position) {
+        setState(() async {
+          _currentPosition = position;
+          if (_currentPosition != null) {
+            final coordinates = new Coordinates(
+                _currentPosition.latitude, _currentPosition.longitude);
+            var addresses =
+                await Geocoder.local.findAddressesFromCoordinates(coordinates);
+            var first = addresses.first;
+            curaddress = first.addressLine;
+            print(curaddress);
+            pr.dismiss();
+            print("Record data");
+            _recordAtt();
+          }
+        });
+      }).catchError((e) {
+        pr.dismiss();
+        print(e);
       });
-    }).catchError((e) {
-      print(e);
-    });
+    } catch (exception) {
+      pr.dismiss();
+      print(exception.toString());
+    }
   }
 
   _recordAtt() {
     var now = new DateTime.now();
 
-    if (curaddress == "" || curaddress ==null) {
+    if (curaddress == "" || curaddress == null) {
       Toast.show("No address please wait for address and try again", context,
           duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
     }
@@ -224,7 +219,7 @@ class _MainScreenState extends State<MainScreen> {
         });
   }
 
-  void _loadRecord() async {
+  void _loadRecord() {
     ProgressDialog pr = new ProgressDialog(context,
         type: ProgressDialogType.Normal, isDismissible: false);
     pr.style(message: "Loading...");

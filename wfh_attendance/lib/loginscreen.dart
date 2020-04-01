@@ -6,7 +6,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wfh_attendance/mainscreen.dart';
 import 'package:wfh_attendance/registerscreen.dart';
 import 'package:wfh_attendance/user.dart';
-
+import 'package:progress_dialog/progress_dialog.dart';
 
 void main() => runApp(LoginScreen());
 bool rememberMe = false;
@@ -146,7 +146,6 @@ class _LoginScreenState extends State<LoginScreen> {
           SizedBox(
             height: 5,
           ),
-          
         ],
       ),
     );
@@ -176,9 +175,13 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   void _userLogin() {
+    ProgressDialog pr = new ProgressDialog(context,
+        type: ProgressDialogType.Normal, isDismissible: false);
+    pr.style(message: "Login...");
+    pr.show();
     String _id = _idEditingController.text;
     String _password = _passEditingController.text;
-    
+
     http.post(urlLogin, body: {
       "id": _id,
       "password": _password,
@@ -188,21 +191,29 @@ class _LoginScreenState extends State<LoginScreen> {
       List userdata = string.split(",");
       if (userdata[0] == "success") {
         User _user = new User(
-            name: userdata[1],
-            id: _id,
-            password: _password,
-            );
-       Navigator.push(context,
-        MaterialPageRoute(builder: (BuildContext context) => MainScreen(user: _user,)));
+          name: userdata[1],
+          id: _id,
+          password: _password,
+        );
+        pr.dismiss();
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (BuildContext context) => MainScreen(
+                      user: _user,
+                    )));
         Toast.show("Login success", context,
             duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
-       
+        
       } else {
+        pr.dismiss();
         Toast.show("Login failed", context,
             duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
+        
       }
-    }).catchError((err) {
+    }).timeout(Duration(seconds: 5)).catchError((err) {
       print(err);
+      pr.dismiss();
     });
   }
 
@@ -210,8 +221,6 @@ class _LoginScreenState extends State<LoginScreen> {
     Navigator.push(context,
         MaterialPageRoute(builder: (BuildContext context) => RegisterScreen()));
   }
-
- 
 
   void _onRememberMeChanged(bool newValue) => setState(() {
         rememberMe = newValue;
@@ -227,8 +236,8 @@ class _LoginScreenState extends State<LoginScreen> {
     return showDialog(
           context: context,
           builder: (context) => new AlertDialog(
-            title: new Text('Are you sure?'),
-            content: new Text('Do you want to exit an App'),
+            title: new Text('Exit this application'),
+            content: new Text('Are you sure?'),
             actions: <Widget>[
               MaterialButton(
                   onPressed: () {

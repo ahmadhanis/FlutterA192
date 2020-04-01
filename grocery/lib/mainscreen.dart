@@ -1,9 +1,10 @@
+import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:grocery/user.dart';
 import 'package:http/http.dart' as http;
 import 'package:progress_dialog/progress_dialog.dart';
-import 'package:numberpicker/numberpicker.dart';
 import 'package:toast/toast.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
@@ -11,7 +12,7 @@ import 'cartscreen.dart';
 
 class MainScreen extends StatefulWidget {
   final User user;
-  
+
   const MainScreen({Key key, this.user}) : super(key: key);
 
   @override
@@ -24,8 +25,8 @@ class _MainScreenState extends State<MainScreen> {
   double screenHeight, screenWidth;
   bool _visible = false;
   String curtype = "Recent";
-  String cartquantity="0";
-  
+  String cartquantity = "0";
+
   @override
   void initState() {
     super.initState();
@@ -252,7 +253,6 @@ class _MainScreenState extends State<MainScreen> {
               Visibility(
                   visible: _visible,
                   child: Card(
-                    
                     elevation: 5,
                     child: Container(
                       height: screenHeight / 12,
@@ -348,11 +348,11 @@ class _MainScreenState extends State<MainScreen> {
         floatingActionButton: FloatingActionButton.extended(
           onPressed: () {
             Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (BuildContext context) => CartScreen(
-                      user: widget.user,
-                    )));
+                context,
+                MaterialPageRoute(
+                    builder: (BuildContext context) => CartScreen(
+                          user: widget.user,
+                        )));
           },
           icon: Icon(Icons.add_shopping_cart),
           label: Text(cartquantity),
@@ -394,8 +394,7 @@ class _MainScreenState extends State<MainScreen> {
       setState(() {
         var extractdata = json.decode(res.body);
         productdata = extractdata["products"];
-        cartquantity= widget.user.quantity;
-
+        cartquantity = widget.user.quantity;
       });
     }).catchError((err) {
       print(err);
@@ -429,9 +428,17 @@ class _MainScreenState extends State<MainScreen> {
             trailing: Icon(Icons.arrow_forward),
           ),
           ListTile(
-            title: Text("Shopping Cart"),
-            trailing: Icon(Icons.arrow_forward),
-          ),
+              title: Text("Shopping Cart"),
+              trailing: Icon(Icons.arrow_forward),
+              onTap: () => {
+                    Navigator.pop(context),
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (BuildContext context) => CartScreen(
+                                  user: widget.user,
+                                )))
+                  }),
           ListTile(
             title: Text("Purchased History"),
             trailing: Icon(Icons.arrow_forward),
@@ -442,36 +449,6 @@ class _MainScreenState extends State<MainScreen> {
           ),
         ],
       ),
-    );
-  }
-
-  void _showQuantity(int index) {
-    curnumber = 1;
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-            title: new Text("Select Quantity"),
-            content: new Container(
-              height: screenHeight / 2.5,
-              child: Column(
-                children: <Widget>[
-                  NumberPicker.integer(
-                      initialValue: 1,
-                      minValue: 1,
-                      maxValue: int.parse(productdata[index]['quantity']) - 10,
-                      highlightSelectedValue: true,
-                      onChanged: (newValue) =>
-                          setState(() => curnumber = newValue)),
-                  new IconButton(
-                    iconSize: 50,
-                    icon: new Icon(Icons.add_shopping_cart),
-                    onPressed: null,
-                  )
-                ],
-              ),
-            ));
-      },
     );
   }
 
@@ -498,95 +475,122 @@ class _MainScreenState extends State<MainScreen> {
   }
 
   void _addtoCart(int index) {
-    int quantity = int.parse(productdata[index]["quantity"]);
-    print(quantity);
-    print(productdata[index]["id"]);
-    print(widget.user.email);
-    if (quantity > 0) {
-      ProgressDialog pr = new ProgressDialog(context,
-          type: ProgressDialogType.Normal, isDismissible: false);
-      pr.style(message: "Add to cart...");
-      pr.show();
-      String urlLoadJobs = "https://slumberjer.com/grocery/php/insert_cart.php";
-      http.post(urlLoadJobs, body: {
-        "email": widget.user.email,
-        "proid": productdata[index]["id"],
-      }).then((res) {
-        print(res.body);
-        if (res.body == "failed") {
-          Toast.show("Failed add to cart", context,
-              duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
-        } else {
-          List respond = res.body.split(",");
-          setState(() {
-            cartquantity = respond[1];  
-          });
-          
-          Toast.show("Success add to cart", context,
-              duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
-        }
+    try {
+      int quantity = int.parse(productdata[index]["quantity"]);
+      print(quantity);
+      print(productdata[index]["id"]);
+      print(widget.user.email);
+      if (quantity > 0) {
+        ProgressDialog pr = new ProgressDialog(context,
+            type: ProgressDialogType.Normal, isDismissible: false);
+        pr.style(message: "Add to cart...");
+        pr.show();
+        String urlLoadJobs =
+            "https://slumberjer.com/grocery/php/insert_cart.php";
+        http.post(urlLoadJobs, body: {
+          "email": widget.user.email,
+          "proid": productdata[index]["id"],
+        }).then((res) {
+          print(res.body);
+          if (res.body == "failed") {
+            Toast.show("Failed add to cart", context,
+                duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
+          } else {
+            List respond = res.body.split(",");
+            setState(() {
+              cartquantity = respond[1];
+            });
+            Toast.show("Success add to cart", context,
+                duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
+          }
+          pr.dismiss();
+        }).catchError((err) {
+          print(err);
+          pr.dismiss();
+        });
         pr.dismiss();
-      }).catchError((err) {
-        print(err);
-        pr.dismiss();
-      });
-      pr.dismiss();
-    } else {
-      Toast.show("Out of stock", context,
+      } else {
+        Toast.show("Out of stock", context,
+            duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
+      }
+    } catch (e) {
+      Toast.show("Failed add to cart", context,
           duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
     }
   }
 
   void _sortItem(String type) {
-    ProgressDialog pr = new ProgressDialog(context,
-        type: ProgressDialogType.Normal, isDismissible: false);
-    pr.style(message: "Searching...");
-    pr.show();
-    String urlLoadJobs = "https://slumberjer.com/grocery/php/load_products.php";
-    http.post(urlLoadJobs, body: {
-      "type": type,
-    }).then((res) {
-      setState(() {
-        curtype = type;
-        var extractdata = json.decode(res.body);
-        productdata = extractdata["products"];
-        FocusScope.of(context).requestFocus(new FocusNode());
+    try {
+      ProgressDialog pr = new ProgressDialog(context,
+          type: ProgressDialogType.Normal, isDismissible: false);
+      pr.style(message: "Searching...");
+      pr.show();
+      String urlLoadJobs =
+          "https://slumberjer.com/grocery/php/load_products.php";
+      http.post(urlLoadJobs, body: {
+        "type": type,
+      }).then((res) {
+        setState(() {
+          curtype = type;
+          var extractdata = json.decode(res.body);
+          productdata = extractdata["products"];
+          FocusScope.of(context).requestFocus(new FocusNode());
+          pr.dismiss();
+        });
+      }).catchError((err) {
+        print(err);
         pr.dismiss();
       });
-    }).catchError((err) {
-      print(err);
       pr.dismiss();
-    });
-    pr.dismiss();
+    } catch (e) {
+      Toast.show("Error", context,
+          duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
+    }
   }
 
   void _sortItembyName(String prname) {
-    print(prname);
-    ProgressDialog pr = new ProgressDialog(context,
-        type: ProgressDialogType.Normal, isDismissible: false);
-    pr.style(message: "Searching...");
-    pr.show();
-    String urlLoadJobs = "https://slumberjer.com/grocery/php/load_products.php";
-    http.post(urlLoadJobs, body: {
-      "name": prname.toString(),
-    }).then((res) {
-      if (res.body == "nodata") {
-        Toast.show("Product not found", context,
-            duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
-        pr.dismiss();
-        FocusScope.of(context).requestFocus(new FocusNode());
-        return;
-      }
-      setState(() {
-        var extractdata = json.decode(res.body);
-        productdata = extractdata["products"];
-        FocusScope.of(context).requestFocus(new FocusNode());
-        curtype = prname;
-        pr.dismiss();
-      });
-    }).catchError((err) {
+    try {
+      print(prname);
+      ProgressDialog pr = new ProgressDialog(context,
+          type: ProgressDialogType.Normal, isDismissible: false);
+      pr.style(message: "Searching...");
+      pr.show();
+      String urlLoadJobs =
+          "https://slumberjer.com/grocery/php/load_products.php";
+      http
+          .post(urlLoadJobs, body: {
+            "name": prname.toString(),
+          })
+          .timeout(const Duration(seconds: 4))
+          .then((res) {
+            if (res.body == "nodata") {
+              Toast.show("Product not found", context,
+                  duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
+              pr.dismiss();
+              FocusScope.of(context).requestFocus(new FocusNode());
+              return;
+            }
+            setState(() {
+              var extractdata = json.decode(res.body);
+              productdata = extractdata["products"];
+              FocusScope.of(context).requestFocus(new FocusNode());
+              curtype = prname;
+              pr.dismiss();
+            });
+          })
+          .catchError((err) {
+            pr.dismiss();
+          });
       pr.dismiss();
-    });
-    pr.dismiss();
+    } on TimeoutException catch (_) {
+      Toast.show("Time out", context,
+          duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
+    } on SocketException catch (_) {
+      Toast.show("Time out", context,
+          duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
+    } catch (e) {
+      Toast.show("Error", context,
+          duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
+    }
   }
 }

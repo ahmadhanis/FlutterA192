@@ -35,6 +35,9 @@ dev_dependencies:
   numberpicker: ^1.2.0
   material_design_icons_flutter: ^3.2.3895
   cached_network_image: ^2.0.0
+  geolocator: ^5.1.3
+  geocoder: ^0.2.1
+  google_maps_flutter: ^0.5.25
     
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
