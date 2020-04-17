@@ -42,7 +42,7 @@ class _CustBuyScreenState extends State<CustBuyScreen> {
     if (productdata == null) {
       return Scaffold(
           appBar: AppBar(
-            title: Center(
+            title: Container(
                 child: Text('Pembelian Saya',
                     style: GoogleFonts.anaheim(
                         fontWeight: FontWeight.bold, fontSize: 24))),
@@ -90,7 +90,7 @@ class _CustBuyScreenState extends State<CustBuyScreen> {
     }
     return Scaffold(
         appBar: AppBar(
-          title: Center(
+          title: Container(
               child: Text('Pembelian Saya',
                   style: GoogleFonts.anaheim(
                       fontWeight: FontWeight.bold, fontSize: 24))),

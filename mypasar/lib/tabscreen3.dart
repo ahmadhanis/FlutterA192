@@ -79,7 +79,8 @@ class _TabScreen3State extends State<TabScreen3> {
                                     placeholder: (context, url) =>
                                         new CircularProgressIndicator(),
                                     errorWidget: (context, url, error) =>
-                                        new Icon(MdiIcons.cameraAccount, size: 32.0),
+                                        new Icon(MdiIcons.cameraAccount,
+                                            size: 32.0),
                                   ),
                                 ),
                               ),
@@ -202,6 +203,52 @@ class _TabScreen3State extends State<TabScreen3> {
                                               height: 20,
                                               child: Text(
                                                 user.radius + " KM",
+                                                style: TextStyle(
+                                                  color: Colors.white,
+                                                ),
+                                              )),
+                                        ),
+                                      ]),
+                                      TableRow(children: [
+                                        TableCell(
+                                          child: Container(
+                                              alignment: Alignment.centerLeft,
+                                              height: 20,
+                                              child: Text("Terjual",
+                                                  style: TextStyle(
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                      color: Colors.white))),
+                                        ),
+                                        TableCell(
+                                          child: Container(
+                                              alignment: Alignment.centerLeft,
+                                              height: 20,
+                                              child: Text(
+                                                user.total + " unit",
+                                                style: TextStyle(
+                                                  color: Colors.white,
+                                                ),
+                                              )),
+                                        ),
+                                      ]),
+                                      TableRow(children: [
+                                        TableCell(
+                                          child: Container(
+                                              alignment: Alignment.centerLeft,
+                                              height: 20,
+                                              child: Text("Jum Produk",
+                                                  style: TextStyle(
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                      color: Colors.white))),
+                                        ),
+                                        TableCell(
+                                          child: Container(
+                                              alignment: Alignment.centerLeft,
+                                              height: 20,
+                                              child: Text(
+                                                user.tproduk + " jenis",
                                                 style: TextStyle(
                                                   color: Colors.white,
                                                 ),
@@ -600,12 +647,27 @@ class _TabScreen3State extends State<TabScreen3> {
         return AlertDialog(
           shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.all(Radius.circular(20.0))),
-          title: new Text("Ambil gambar profile?"),
-          content: new Text("Anda pasti?"),
+          title: new Text(
+            "Ambil gambar profile?",
+            style: TextStyle(
+              color: Colors.white,
+            ),
+          ),
+          content: new Text(
+            "Anda pasti?",
+            style: TextStyle(
+              color: Colors.white,
+            ),
+          ),
           actions: <Widget>[
             // usually buttons at the bottom of the dialog
             new FlatButton(
-              child: new Text("Ya"),
+              child: new Text(
+                "Ya",
+                style: TextStyle(
+                  color: Color.fromRGBO(101, 255, 218, 50),
+                ),
+              ),
               onPressed: () async {
                 Navigator.of(context).pop();
                 File _image = await ImagePicker.pickImage(
@@ -635,7 +697,12 @@ class _TabScreen3State extends State<TabScreen3> {
               },
             ),
             new FlatButton(
-              child: new Text("Tidak"),
+              child: new Text(
+                "Tidak",
+                style: TextStyle(
+                  color: Color.fromRGBO(101, 255, 218, 50),
+                ),
+              ),
               onPressed: () {
                 Navigator.of(context).pop();
               },
@@ -668,7 +735,10 @@ class _TabScreen3State extends State<TabScreen3> {
           phone: dres[1],
           datereg: f.format(DateTime.parse(dres[2])),
           credit: dres[3],
-          radius: dres[4]);
+          radius: dres[4],
+          tproduk: dres[5],
+          total: dres[6]);
+
       pr.dismiss();
       setState(() {
         pr.dismiss();
@@ -681,7 +751,6 @@ class _TabScreen3State extends State<TabScreen3> {
   }
 
   _callHelp() {
-
     if (widget.user.name == "Tidak Berdaftar") {
       Toast.show("Sila daftar/login", context,
           duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);

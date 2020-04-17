@@ -48,7 +48,7 @@ class _SellerSellScreenState extends State<SellerSellScreen> {
     if (productdata == null) {
       return Scaffold(
           appBar: AppBar(
-            title: Center(
+            title: Container(
                 child: Text('Penjualan Saya',
                     style: GoogleFonts.anaheim(
                         fontWeight: FontWeight.bold, fontSize: 24))),
@@ -107,7 +107,7 @@ class _SellerSellScreenState extends State<SellerSellScreen> {
     }
     return Scaffold(
         appBar: AppBar(
-          title: Center(
+          title: Container(
               child: Text('Penjualan Saya',
                   style: GoogleFonts.anaheim(
                       fontWeight: FontWeight.bold, fontSize: 24))),
@@ -879,28 +879,36 @@ class _SellerSellScreenState extends State<SellerSellScreen> {
                                           (BuildContext ctxt, int index) {
                                         return new GestureDetector(
                                             child: Container(
+                                                //color: Colors.red,
+                                                //width: screenWidth/1.5,
                                                 height: 30,
                                                 child: Row(
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.center,
                                                   children: <Widget>[
                                                     Expanded(
                                                         child: Text(
                                                       delivList[index]['name'],
+                                                      overflow:
+                                                          TextOverflow.ellipsis,
                                                       style: TextStyle(
                                                         color: Colors.white,
                                                       ),
                                                     )),
-                                                    Expanded(
+                                                    Container(
+                                                        width: 100,
                                                         child: Text(
-                                                      delivList[index]
-                                                          ['dphone'],
-                                                      style: TextStyle(
-                                                        color: Colors.white,
-                                                      ),
-                                                    )),
+                                                          delivList[index]
+                                                              ['dphone'],
+                                                          style: TextStyle(
+                                                            color: Colors.white,
+                                                          ),
+                                                        )),
                                                     Flexible(
                                                       child: FlatButton(
                                                         onPressed: () => {
-                                                          _sendDelivery(index,indexproduct)
+                                                          _sendDelivery(index,
+                                                              indexproduct)
                                                         },
                                                         child: Icon(
                                                           MdiIcons
@@ -932,6 +940,19 @@ class _SellerSellScreenState extends State<SellerSellScreen> {
     }).then((res) {
       var extractdata = json.decode(res.body);
       setState(() {
+        delivList = extractdata["delivery"];
+        print(delivList);
+      });
+    });
+  }
+
+  loadDeliveryupd(newSetState) async {
+    String urlLoadDeli = "https://slumberjer.com/mypasar/php/load_delivery.php";
+    http.post(urlLoadDeli, body: {
+      "phone": widget.user.phone,
+    }).then((res) {
+      var extractdata = json.decode(res.body);
+      newSetState(() {
         delivList = extractdata["delivery"];
         print(delivList);
       });
@@ -1027,7 +1048,8 @@ class _SellerSellScreenState extends State<SellerSellScreen> {
                                     elevation: 5,
                                     onPressed: () => insertDelivery(
                                         nameEditingController.text,
-                                        phoneEditingController.text),
+                                        phoneEditingController.text,
+                                        newSetState),
                                   ),
                                 ],
                               ),
@@ -1131,7 +1153,8 @@ class _SellerSellScreenState extends State<SellerSellScreen> {
                                     elevation: 5,
                                     onPressed: () => insertDelivery(
                                         nameEditingController.text,
-                                        phoneEditingController.text),
+                                        phoneEditingController.text,
+                                        newSetState),
                                   ),
                                 ],
                               ),
@@ -1146,30 +1169,36 @@ class _SellerSellScreenState extends State<SellerSellScreen> {
                                         return new GestureDetector(
                                             onLongPress: () => {
                                                   _deleteDialog(
-                                                    index,
+                                                    index,newSetState
                                                   )
                                                 },
-                                            child: Row(
-                                              
+                                            child:Container(
+                                              height: 30,
+                                              child: 
+                                            Row(
                                               children: <Widget>[
                                                 Expanded(
                                                     child: Text(
                                                   delivList[index]['name'],
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
                                                   style: TextStyle(
                                                     color: Colors.white,
                                                   ),
                                                 )),
-                                                Expanded(
+                                                Container(
+                                                    width: 100,
                                                     child: Text(
-                                                  delivList[index]['dphone'],
-                                                  style: TextStyle(
-                                                    color: Colors.white,
-                                                  ),
-                                                )),
+                                                      delivList[index]
+                                                          ['dphone'],
+                                                      style: TextStyle(
+                                                        color: Colors.white,
+                                                      ),
+                                                    )),
                                                 Flexible(
                                                   child: FlatButton(
                                                     onPressed: () =>
-                                                        {_deleteDialog(index)},
+                                                        {_deleteDialog(index,newSetState)},
                                                     child: Icon(
                                                       MdiIcons.deleteCircle,
                                                       color: Color.fromRGBO(
@@ -1178,7 +1207,7 @@ class _SellerSellScreenState extends State<SellerSellScreen> {
                                                   ),
                                                 ),
                                               ],
-                                            ));
+                                            )));
                                       })),
                             ],
                           )),
@@ -1189,10 +1218,10 @@ class _SellerSellScreenState extends State<SellerSellScreen> {
     }
   }
 
-  void insertDelivery(String name, String phone) {
-    if (name=="" && phone==""){
+  void insertDelivery(String name, String phone, newSetState) {
+    if (name == "" && phone == "") {
       Toast.show("Masukkan maklumat yang diperlukan", context,
-            duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
+          duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
       return;
     }
     String urlLoadJobs =
@@ -1206,8 +1235,11 @@ class _SellerSellScreenState extends State<SellerSellScreen> {
       if (res.body == "success") {
         Toast.show("Berjaya", context,
             duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
-        Navigator.of(context).pop(false);
-        loadDelivery();
+        //Navigator.of(context).pop(false);
+        newSetState(() {
+          loadDeliveryupd(newSetState);
+        });
+        
       } else {
         Toast.show("Gagal", context,
             duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
@@ -1215,7 +1247,7 @@ class _SellerSellScreenState extends State<SellerSellScreen> {
     });
   }
 
-  _deleteDialog(int index) {
+  _deleteDialog(int index,newSetState) {
     showDialog(
       context: context,
       builder: (context) => new AlertDialog(
@@ -1235,7 +1267,7 @@ class _SellerSellScreenState extends State<SellerSellScreen> {
           MaterialButton(
               onPressed: () async {
                 Navigator.of(context).pop(false);
-                deleteDelivery(delivList[index]['dphone']);
+                deleteDelivery(delivList[index]['dphone'],newSetState);
               },
               child: Text(
                 "Ya",
@@ -1258,7 +1290,7 @@ class _SellerSellScreenState extends State<SellerSellScreen> {
     );
   }
 
-  void deleteDelivery(String phone) {
+  void deleteDelivery(String phone,newSetState) {
     String urlLoadJobs =
         "https://slumberjer.com/mypasar/php/delete_delivery.php";
     http.post(urlLoadJobs, body: {
@@ -1269,8 +1301,11 @@ class _SellerSellScreenState extends State<SellerSellScreen> {
       if (res.body == "success") {
         Toast.show("Berjaya", context,
             duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
-        Navigator.of(context).pop(false);
-        loadDelivery();
+        //Navigator.of(context).pop(false);
+        newSetState(() {
+          loadDeliveryupd(newSetState);
+        });
+        
       } else {
         Toast.show("Gagal", context,
             duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
@@ -1278,11 +1313,11 @@ class _SellerSellScreenState extends State<SellerSellScreen> {
     });
   }
 
-  _sendDelivery(int index,int indexproduct) {
+  _sendDelivery(int index, int indexproduct) {
     print("#");
-    print( productdata[indexproduct]['orderid']);
+    print(productdata[indexproduct]['orderid']);
     print(productdata[indexproduct]['prname']);
-    
+
     showDialog(
       context: context,
       builder: (context) => new AlertDialog(
@@ -1300,14 +1335,24 @@ class _SellerSellScreenState extends State<SellerSellScreen> {
                 Navigator.of(context).pop(false);
                 FlutterOpenWhatsapp.sendSingleMessage(
                     "+60" + delivList[index]['dphone'],
-                    "Penghantaran baru #" +
+                    "Penghantaran baru order no " +
                         productdata[indexproduct]['orderid'] +
                         " untuk produk " +
                         productdata[indexproduct]['prname'] +
+                        ". Harga RM " +
+                        productdata[indexproduct]['price'] +
                         " Alamat:" +
                         productdata[indexproduct]['address'] +
                         " dari kedai " +
-                        widget.user.name);
+                        widget.user.name +
+                        ". Kos hantar RM " +
+                        productdata[indexproduct]['delcost'] +
+                        ". Lokasi hantar: " +
+                        "https://www.google.com/maps/@" +
+                        productdata[indexproduct]['clat'] +
+                        "," +
+                        productdata[indexproduct]['clong'] +
+                        ",15z");
               },
               child: Text(
                 "Ya",

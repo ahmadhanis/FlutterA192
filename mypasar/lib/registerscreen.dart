@@ -18,7 +18,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
   TextEditingController _nameEditingController = new TextEditingController();
   TextEditingController _phoneditingController = new TextEditingController();
   TextEditingController _passEditingController = new TextEditingController();
-
+ final focus = FocusNode();
+  final focus1 = FocusNode();
+  final focus2 = FocusNode();
   @override
   Widget build(BuildContext context) {
     screenHeight = MediaQuery.of(context).size.height;

@@ -29,7 +29,7 @@ class TabScreen1 extends StatefulWidget {
 }
 
 class _TabScreen1State extends State<TabScreen1> {
-    GlobalKey<RefreshIndicatorState> refreshKey;
+  GlobalKey<RefreshIndicatorState> refreshKey;
 
   double screenHeight, screenWidth;
   List productdata;
@@ -86,26 +86,26 @@ class _TabScreen1State extends State<TabScreen1> {
               onRefresh: () async {
                 await refreshList();
               },
-          child:Container(
-              child: Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: <Widget>[
-                //CircularProgressIndicator(),
-                SizedBox(
-                  height: 10,
+              child: Container(
+                  child: Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: <Widget>[
+                    //CircularProgressIndicator(),
+                    SizedBox(
+                      height: 10,
+                    ),
+                    Text(
+                      "My.Pasar",
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 22,
+                          color: Colors.white),
+                    )
+                  ],
                 ),
-                Text(
-                  "My.Pasar",
-                  style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 22,
-                      color: Colors.white),
-                )
-              ],
-            ),
-          ))),
+              ))),
           floatingActionButton: SpeedDial(
             animatedIcon: AnimatedIcons.menu_close,
             children: [
@@ -132,182 +132,195 @@ class _TabScreen1State extends State<TabScreen1> {
             ],
           ));
     } else {
+      if (pr != null) {
+        pr.dismiss();
+      }
       return Scaffold(
           resizeToAvoidBottomPadding: true,
-           body: RefreshIndicator(
+          body: RefreshIndicator(
               key: refreshKey,
               color: Color.fromRGBO(101, 255, 218, 50),
               onRefresh: () async {
                 await refreshList();
               },
-          child: Container(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: <Widget>[
-                SizedBox(height: 2),
-                Text("Produk sekitar " + curaddress,
-                    style: TextStyle(
-                        fontSize: 18.0,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white)),
-                Container(
-                  height: 14,
-                  child: Text("Klik pada produk melihat perincian",
-                      style: TextStyle(fontSize: 12.0, color: Colors.white)),
-                ),
-               
-                Divider(height:2,color: Color.fromRGBO(101, 255, 218, 50)),
-                SizedBox(height: 5),
-                Visibility(
-                    visible: _visiblesearch,
-                    child: Card(
-                      elevation: 5,
-                      child: Container(
-                        height: screenHeight / 12,
-                        margin: EdgeInsets.fromLTRB(20, 2, 20, 2),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceAround,
-                          children: <Widget>[
-                            Flexible(
-                                child: Container(
-                              height: 30,
-                              child: TextField(
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                  ),
-                                  autofocus: false,
-                                  controller: _prdController,
-                                  decoration: InputDecoration(
-                                      icon: Icon(Icons.search),
-                                      border: OutlineInputBorder())),
-                            )),
-                            Flexible(
-                                child: MaterialButton(
-                                    color: Color.fromRGBO(101, 255, 218, 50),
-                                    onPressed: () => {
-                                          _searchItembyName(_prdController.text)
-                                        },
-                                    elevation: 5,
-                                    child: Text(
-                                      "Carian Produk",
-                                      style: TextStyle(color: Colors.black),
-                                    )))
-                          ],
-                        ),
-                      ),
-                    )),
-                Visibility(
-                    visible: _visiblelist,
-                    child: Card(
-                      elevation: 5,
-                      child: Container(
-                        height: screenHeight / 12,
-                        margin: EdgeInsets.fromLTRB(20, 2, 20, 2),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          children: <Widget>[
-                            Flexible(
-                                child: Container(
-                              height: 30,
-                              child: DropdownButton(
-                                //sorting dropdownoption
-                                hint: Text(
-                                    'Pilihan',style: TextStyle(
-                          color: Color.fromRGBO(101, 255, 218, 50),
-                        ),), // Not necessary for Option 1
-                                value: selectedSort,
-                                onChanged: (newValue) {
-                                  setState(() {
-                                    selectedSort = newValue;
-                                    print(selectedSort);
-                                    if (selectedSort == "Paling Mahal") {
-                                      _loadDataSort("priceup");
-                                    }
-                                    if (selectedSort == "Paling Murah") {
-                                      _loadDataSort("pricedown");
-                                    }
-                                    if (selectedSort == "Paling Baru") {
-                                      _loadDataSort("dateup");
-                                    }
-                                    if (selectedSort == "Paling Lama") {
-                                      _loadDataSort("datedown");
-                                    }
-                                  });
-                                },
-                                items: listSenarai.map((selectedSort) {
-                                  return DropdownMenuItem(
-                                    child: new Text(selectedSort,
-                                        style: TextStyle(
-                                            color: Color.fromRGBO(
-                                                101, 255, 218, 50))),
+              child: Container(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: <Widget>[
+                    SizedBox(height: 2),
+                    Text("Produk sekitar " + curaddress,
+                        style: TextStyle(
+                            fontSize: 18.0,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white)),
+                    Container(
+                      height: 14,
+                      child: Text("Klik pada produk melihat perincian",
+                          style:
+                              TextStyle(fontSize: 12.0, color: Colors.white)),
+                    ),
+                    Divider(
+                        height: 2, color: Color.fromRGBO(101, 255, 218, 50)),
+                    SizedBox(height: 5),
+                    Visibility(
+                        visible: _visiblesearch,
+                        child: Card(
+                          elevation: 5,
+                          child: Container(
+                            height: screenHeight / 12,
+                            margin: EdgeInsets.fromLTRB(20, 2, 20, 2),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceAround,
+                              children: <Widget>[
+                                Flexible(
+                                    child: Container(
+                                  height: 30,
+                                  child: TextField(
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                      ),
+                                      autofocus: false,
+                                      controller: _prdController,
+                                      decoration: InputDecoration(
+                                          icon: Icon(Icons.search),
+                                          border: OutlineInputBorder())),
+                                )),
+                                Flexible(
+                                    child: MaterialButton(
+                                        color:
+                                            Color.fromRGBO(101, 255, 218, 50),
+                                        onPressed: () => {
+                                              _searchItembyName(
+                                                  _prdController.text)
+                                            },
+                                        elevation: 5,
+                                        child: Text(
+                                          "Carian Produk",
+                                          style: TextStyle(color: Colors.black),
+                                        )))
+                              ],
+                            ),
+                          ),
+                        )),
+                    Visibility(
+                        visible: _visiblelist,
+                        child: Card(
+                          elevation: 5,
+                          child: Container(
+                            height: screenHeight / 12,
+                            margin: EdgeInsets.fromLTRB(20, 2, 20, 2),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: <Widget>[
+                                Flexible(
+                                    child: Container(
+                                  height: 30,
+                                  child: DropdownButton(
+                                    //sorting dropdownoption
+                                    hint: Text(
+                                      'Pilihan',
+                                      style: TextStyle(
+                                        color:
+                                            Color.fromRGBO(101, 255, 218, 50),
+                                      ),
+                                    ), // Not necessary for Option 1
                                     value: selectedSort,
-                                  );
-                                }).toList(),
-                              ),
-                            )),
-                          ],
-                        ),
-                      ),
-                    )),
-                Flexible(
-                    child: GridView.count(
-                        crossAxisCount: 2,
-                        childAspectRatio: (screenWidth / screenHeight) / 0.65,
-                        children: List.generate(productdata.length, (index) {
-                          return Card(
-                              elevation: 10,
-                              child: Padding(
-                                padding: EdgeInsets.all(5),
-                                child: GestureDetector(
-                                    onTap: () => loadProduct(index),
-                                    child: Column(
-                                      children: <Widget>[
-                                        Container(
-                                          height: screenHeight / 5.5,
-                                          width: screenWidth / 2.8,
-                                          child: CachedNetworkImage(
-                                            fit: BoxFit.cover,
-                                            imageUrl:
-                                                "http://slumberjer.com/mypasar/productimages/${productdata[index]['imagename']}.jpg",
-                                            placeholder: (context, url) =>
-                                                new CircularProgressIndicator(),
-                                            errorWidget:
-                                                (context, url, error) =>
-                                                    new Icon(Icons.error),
-                                          ),
-                                        ),
-                                        SizedBox(height: 6),
-                                        //Text(productdata[index]['phone']),
-                                        //SizedBox(height: 3),
-                                        Flexible(
-                                            child: Text(
-                                          productdata[index]['prname'],
-                                          style: TextStyle(
-                                              fontWeight: FontWeight.bold,
-                                              color: Colors.white),
-                                          maxLines: 1,
-                                        )),
-                                        SizedBox(height: 3),
+                                    onChanged: (newValue) {
+                                      setState(() {
+                                        selectedSort = newValue;
+                                        print(selectedSort);
+                                        if (selectedSort == "Paling Mahal") {
+                                          _loadDataSort("priceup");
+                                        }
+                                        if (selectedSort == "Paling Murah") {
+                                          _loadDataSort("pricedown");
+                                        }
+                                        if (selectedSort == "Paling Baru") {
+                                          _loadDataSort("dateup");
+                                        }
+                                        if (selectedSort == "Paling Lama") {
+                                          _loadDataSort("datedown");
+                                        }
+                                      });
+                                    },
+                                    items: listSenarai.map((selectedSort) {
+                                      return DropdownMenuItem(
+                                        child: new Text(selectedSort,
+                                            style: TextStyle(
+                                                color: Color.fromRGBO(
+                                                    101, 255, 218, 50))),
+                                        value: selectedSort,
+                                      );
+                                    }).toList(),
+                                  ),
+                                )),
+                              ],
+                            ),
+                          ),
+                        )),
+                    Flexible(
+                        child: GridView.count(
+                            crossAxisCount: 2,
+                            childAspectRatio:
+                                (screenWidth / screenHeight) / 0.65,
+                            children:
+                                List.generate(productdata.length, (index) {
+                              return Card(
+                                  elevation: 10,
+                                  child: Padding(
+                                    padding: EdgeInsets.all(5),
+                                    child: GestureDetector(
+                                        onTap: () => loadProduct(index),
+                                        child: Column(
+                                          children: <Widget>[
+                                            Container(
+                                              height: screenHeight / 5.5,
+                                              width: screenWidth / 2.8,
+                                              child: CachedNetworkImage(
+                                                fit: BoxFit.cover,
+                                                imageUrl:
+                                                    "http://slumberjer.com/mypasar/productimages/${productdata[index]['imagename']}.jpg",
+                                                placeholder: (context, url) =>
+                                                    new CircularProgressIndicator(),
+                                                errorWidget:
+                                                    (context, url, error) =>
+                                                        new Icon(Icons.error),
+                                              ),
+                                            ),
+                                            SizedBox(height: 6),
+                                            //Text(productdata[index]['phone']),
+                                            //SizedBox(height: 3),
+                                            Flexible(
+                                                child: Text(
+                                              productdata[index]['prname'],
+                                              style: TextStyle(
+                                                  fontWeight: FontWeight.bold,
+                                                  color: Colors.white),
+                                              maxLines: 1,
+                                            )),
+                                            SizedBox(height: 3),
 
-                                        Text(
-                                          "RM" +
-                                              double.parse(productdata[index]
-                                                      ['price'])
-                                                  .toStringAsFixed(2),
-                                          style: TextStyle(color: Colors.white),
-                                        ),
-                                        Text(
-                                            productdata[index]['quantity'] +
-                                                " unit",
-                                            style:
-                                                TextStyle(color: Colors.white)),
-                                      ],
-                                    )),
-                              ));
-                        })))
-              ],
-            ),
-           )),
+                                            Text(
+                                              "RM" +
+                                                  double.parse(
+                                                          productdata[index]
+                                                              ['price'])
+                                                      .toStringAsFixed(2),
+                                              style: TextStyle(
+                                                  color: Colors.white),
+                                            ),
+                                            Text(
+                                                productdata[index]['quantity'] +
+                                                    " unit",
+                                                style: TextStyle(
+                                                    color: Colors.white)),
+                                          ],
+                                        )),
+                                  ));
+                            })))
+                  ],
+                ),
+              )),
           floatingActionButton: SpeedDial(
             animatedIcon: AnimatedIcons.menu_close,
             children: [
@@ -335,9 +348,10 @@ class _TabScreen1State extends State<TabScreen1> {
           ));
     }
   }
-Future<Null> refreshList() async {
+
+  Future<Null> refreshList() async {
     await Future.delayed(Duration(seconds: 2));
-   _getLocation();
+    _getLocation();
     return null;
   }
 
@@ -357,7 +371,7 @@ Future<Null> refreshList() async {
           _currentPosition.latitude, _currentPosition.longitude);
       var addresses = await Geocoder.local
           .findAddressesFromCoordinates(coordinates)
-          .timeout(Duration(seconds: 5), onTimeout: () {
+          .timeout(Duration(seconds: 10), onTimeout: () {
         Toast.show("Lokaliti anda tidak dapat dikesan", context,
             duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
         openLocationSetting();
@@ -405,38 +419,36 @@ Future<Null> refreshList() async {
     }
     String urlLoadProd =
         "https://slumberjer.com/mypasar/php/load_product_cust.php";
-    http
-        .post(urlLoadProd, body: {
-          "phone": widget.user.phone.toString(),
-          "latitude": latitude.toString(),
-          "longitude": longitude.toString(),
-          "locality": curaddress,
-          "ignore": ignore,
-          "radius": widget.user.radius,
-        })
-        .then((res) {
-          print(res.body);
-          setState(() {
-            if (res.body == "nodata") {
-              productdata = null;
-              Toast.show("Produk tiada di lokaliti dipilih", context,
-                  duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
-              pr.dismiss();
-            } else {
-              var extractdata = json.decode(res.body);
-              productdata = extractdata["products"];
-              pr.dismiss();
-            }
-            pr.dismiss();
-          });
+    http.post(urlLoadProd, body: {
+      "phone": widget.user.phone.toString(),
+      "latitude": latitude.toString(),
+      "longitude": longitude.toString(),
+      "locality": curaddress,
+      "ignore": ignore,
+      "radius": widget.user.radius,
+    }).then((res) {
+      print(res.body);
+      setState(() {
+        if (res.body == "nodata") {
+          productdata = null;
+          Toast.show("Produk tiada di lokaliti dipilih", context,
+              duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
           pr.dismiss();
-        })
-        .catchError((err) {
-          print(err);
+        } else {
+          var extractdata = json.decode(res.body);
+          productdata = extractdata["products"];
           pr.dismiss();
-        })
-        .timeout(const Duration(seconds: 10))
-        .then((value) => {pr.dismiss()});
+        }
+        pr.dismiss();
+      });
+      pr.dismiss();
+    }).catchError((err) {
+      print(err);
+      pr.dismiss();
+    }).timeout(const Duration(seconds: 5), onTimeout: () {
+      print("timeout");
+      pr.dismiss();
+    }).then((value) => {pr.dismiss()});
     pr.dismiss();
   }
 
@@ -967,7 +979,8 @@ Future<Null> refreshList() async {
   }
 
   void _insertOrder(int index, double total, double delicost) {
-    if (double.parse(productdata[index]['km']) > double.parse(widget.user.radius)) {
+    if (double.parse(productdata[index]['km']) >
+        double.parse(widget.user.radius)) {
       Toast.show("Lokaliti produk melebihi 5km. Sila hubungi pembeli", context,
           duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
       return;
@@ -1023,11 +1036,27 @@ Future<Null> refreshList() async {
 
     if (states == "Kedah") {
       listloc = [
+        "Alor Setar",
+        "Ayer Hitam",
+        "Baling",
         "Bukit Kayu Hitam",
         "Changlun",
+        "Husba",
+        "Jeram",
         "Jitra",
+        "Kepelu",
+        "Kodiang",
+        "Kuala Nerang",
+        "Kubang Pasu",
+        "Langgar",
+        "Langgar",
+        "Lepai",
+        "Padang Lalang",
+        "Pendang",
+        "Pokok Sena",
+        "Sik",
         "Sintok",
-        "Kubang Pasu"
+        "Yan",
       ];
     }
 
@@ -1180,7 +1209,7 @@ Future<Null> refreshList() async {
     }
   }
 
-void _searchItembySeller(String sellerphone) {
+  void _searchItembySeller(String sellerphone) {
     try {
       print(widget.user.radius);
       ProgressDialog pr = new ProgressDialog(context,

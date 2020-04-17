@@ -45,6 +45,7 @@ class _NewProductScreenState extends State<NewProductScreen> {
   Widget build(BuildContext context) {
     if (_currentPosition == null) {
       return Scaffold(
+        
         appBar: AppBar(
           title: Text('Produk Baru'),
         ),
@@ -70,14 +71,15 @@ class _NewProductScreenState extends State<NewProductScreen> {
       screenHeight = MediaQuery.of(context).size.height;
       screenWidth = MediaQuery.of(context).size.width;
       return Scaffold(
-          resizeToAvoidBottomInset: false,
+          resizeToAvoidBottomInset: true,
           appBar: AppBar(
             title: Text('Produk Baru'),
           ),
           body: Container(
               alignment: Alignment.topCenter,
-              child: SingleChildScrollView(
-                  child: Center(
+              child: ListView(
+                children: <Widget>[
+                  Center(
                       child: Padding(
                           padding: EdgeInsets.all(10),
                           child: Padding(
@@ -413,7 +415,10 @@ class _NewProductScreenState extends State<NewProductScreen> {
                                             ],
                                           ))),
                                 ],
-                              )))))));
+                              ))))
+                ]
+              )
+                  ));
     }
   }
 
@@ -427,7 +432,7 @@ class _NewProductScreenState extends State<NewProductScreen> {
     final Geolocator geolocator = Geolocator()..forceAndroidLocationManager;
     _currentPosition = await geolocator
         .getCurrentPosition(desiredAccuracy: LocationAccuracy.medium)
-        .timeout(Duration(seconds: 5), onTimeout: () {
+        .timeout(Duration(seconds: 15), onTimeout: () {
       Toast.show("Lokaliti anda tidak dapat dikesan", context,
           duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
       return;
@@ -436,7 +441,7 @@ class _NewProductScreenState extends State<NewProductScreen> {
         new Coordinates(_currentPosition.latitude, _currentPosition.longitude);
     var addresses = await Geocoder.local
         .findAddressesFromCoordinates(coordinates)
-        .timeout(Duration(seconds: 5), onTimeout: () {
+        .timeout(Duration(seconds: 15), onTimeout: () {
       Toast.show("Alamat anda tidak dapat dikesan", context,
           duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
       return;

@@ -33,6 +33,8 @@ class _TabScreen2State extends State<TabScreen2> {
   TextEditingController deliEditingController = new TextEditingController();
   List productdata;
   var _tapPosition;
+  ProgressDialog pr;
+  
   @override
   void initState() {
     super.initState();
@@ -83,6 +85,9 @@ class _TabScreen2State extends State<TabScreen2> {
             ],
           ));
     } else {
+      if (pr != null) {
+        pr.dismiss();
+      }
       return Scaffold(
           resizeToAvoidBottomPadding: true,
           body: Container(
@@ -218,7 +223,7 @@ class _TabScreen2State extends State<TabScreen2> {
           duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
       return;
     }
-    ProgressDialog pr = new ProgressDialog(context,
+   pr = new ProgressDialog(context,
         type: ProgressDialogType.Normal, isDismissible: true);
     pr.style(message: "Memuat turun...");
     pr.show();

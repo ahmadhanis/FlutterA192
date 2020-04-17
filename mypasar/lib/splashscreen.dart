@@ -36,9 +36,8 @@ class _MyAppState extends State<MyApp> {
       theme: ThemeData(
         brightness: Brightness.dark,
         textTheme: GoogleFonts.anaheimTextTheme(
-            Theme.of(context).textTheme,
-          ),
-                
+          Theme.of(context).textTheme,
+        ),
       ),
       title: 'My.Pasar',
       home: Scaffold(
@@ -111,27 +110,31 @@ class _ProgressIndicatorState extends State<ProgressIndicator>
   }
 
   void checkVersion(phone, pass, ctx) {
+    print('Inside checkversion()');
     String urlLoadProd = "https://slumberjer.com/mypasar/php/check_version.php";
-    http
-        .post(urlLoadProd, body: {})
-        .then((res) {
-          print(res.body);
-          if (res.body != thisversion) {
-            Toast.show("Terdapat versi baru sila kemaskini aplikasi", context,
-                duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
-            //Navigator.of(context).pop(false);
-            Timer(Duration(seconds: 3), () {
-              exit(0);
-            });
-          } else {
-            _onLogin(phone, pass, ctx);
-          }
-        })
-        .catchError((err) {
-          print(err);
-        })
-        .timeout(const Duration(seconds: 10))
-        .then((value) => {print("timeout")});
+    http.post(urlLoadProd, body: {}).then((res) {
+      print(res.body);
+      if (res.body != thisversion) {
+        Toast.show("Terdapat versi baru sila kemaskini aplikasi", context,
+            duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
+        //Navigator.of(context).pop(false);
+        Timer(Duration(seconds: 3), () {
+          SystemChannels.platform.invokeMethod('SystemNavigator.pop');
+        });
+      } else {
+        _onLogin(phone, pass, ctx);
+      }
+    }).catchError((err) {
+      print(err);
+    }).timeout(const Duration(seconds: 10), onTimeout: () {
+      print("Timeout check version");
+      Toast.show(
+          "Internet tidak dapat dicapai. Pastikan Internet telah ditetapkan.",
+          ctx,
+          duration: Toast.LENGTH_LONG,
+          gravity: Toast.BOTTOM);
+      SystemChannels.platform.invokeMethod('SystemNavigator.pop');
+    });
   }
 
   void loadpref(BuildContext ctx) async {
@@ -140,12 +143,13 @@ class _ProgressIndicatorState extends State<ProgressIndicator>
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String phone = (prefs.getString('phone') ?? '');
     String pass = (prefs.getString('pass') ?? '');
-    print("Splash:Preference");
+    print("Splash:Preference" + phone + "/" + pass);
 
     if (phone.length > 5) {
       //try to login if got email pref;
       checkVersion(phone, pass, ctx);
     } else {
+      print("login with unregister acc");
       //login as unregistered user
       user = new User(
           name: "Tidak Berdaftar",
@@ -160,48 +164,47 @@ class _ProgressIndicatorState extends State<ProgressIndicator>
   }
 
   void _onLogin(String phone, String pass, BuildContext ctx) {
-    http
-        .post("https://slumberjer.com/mypasar/php/login_user.php", body: {
-          "phone": phone,
-          "password": pass,
-        })
-        .then((res) {
-          print(res.statusCode);
-          var string = res.body;
-          List userdata = string.split(",");
-          print("SPLASH:loading");
-          print(userdata);
-          if (userdata[0] == "success") {
-            User _user = new User(
-                name: userdata[1],
-                phone: phone,
-                password: pass,
-                datereg: userdata[2],
-                credit: userdata[3],
-                radius: userdata[4]);
-            Navigator.push(
-                ctx,
-                MaterialPageRoute(
-                    builder: (context) => MainScreen(user: _user)));
-          } else {
-            //allow login as unregistered user
-            User _user = new User(
-                name: userdata[1],
-                phone: phone,
-                password: pass,
-                datereg: userdata[2],
-                credit: userdata[3],
-                radius: userdata[4]);
-            Navigator.push(
-                ctx,
-                MaterialPageRoute(
-                    builder: (context) => MainScreen(user: _user)));
-          }
-        })
-        .catchError((err) {
-          print(err);
-        })
-        .timeout(const Duration(seconds: 10))
-        .then((value) => {print("timeout")});
+    print("inside onLogin");
+    http.post("https://slumberjer.com/mypasar/php/login_user.php", body: {
+      "phone": phone,
+      "password": pass,
+    }).then((res) {
+      print(res.statusCode);
+      var string = res.body;
+      List userdata = string.split(",");
+      print("SPLASH:loading");
+      print(userdata);
+      if (userdata[0] == "success") {
+        User _user = new User(
+            name: userdata[1],
+            phone: phone,
+            password: pass,
+            datereg: userdata[2],
+            credit: userdata[3],
+            radius: userdata[4]);
+        Navigator.push(ctx,
+            MaterialPageRoute(builder: (context) => MainScreen(user: _user)));
+      } else {
+        //allow login as unregistered user
+        User _user = new User(
+            name: userdata[1],
+            phone: phone,
+            password: pass,
+            datereg: userdata[2],
+            credit: userdata[3],
+            radius: userdata[4]);
+        Navigator.push(ctx,
+            MaterialPageRoute(builder: (context) => MainScreen(user: _user)));
+      }
+    }).catchError((err) {
+      print(err);
+    }).timeout(const Duration(seconds: 10), onTimeout: () {
+      Toast.show(
+          "Internet tidak dapat dicapai. Pastikan Internet telah ditetapkan.",
+          context,
+          duration: Toast.LENGTH_LONG,
+          gravity: Toast.BOTTOM);
+      SystemChannels.platform.invokeMethod('SystemNavigator.pop');
+    });
   }
 }

@@ -41,7 +41,7 @@ class _EditProductState extends State<EditProduct> {
     screenWidth = MediaQuery.of(context).size.width;
 
     return Scaffold(
-      resizeToAvoidBottomInset: false,
+      resizeToAvoidBottomInset: true,
       appBar: AppBar(
         title: Text('Kemasikini Produk Anda'),
       ),
@@ -231,8 +231,8 @@ class _EditProductState extends State<EditProduct> {
                                           height: 30,
                                           child: Text("Penghantaran(RM)",
                                               style: TextStyle(
-                                                  fontWeight:
-                                                      FontWeight.bold,color: Colors.white))),
+                                                  fontWeight: FontWeight.bold,
+                                                  color: Colors.white))),
                                     ),
                                     TableCell(
                                       child: Container(
@@ -288,7 +288,14 @@ class _EditProductState extends State<EditProduct> {
       builder: (BuildContext context) {
         // return object of type Dialog
         return AlertDialog(
-          title: new Text("Kemaskini produk id " + widget.product.id),
+          shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.all(Radius.circular(20.0))),
+          title: new Text(
+            "Kemaskini produk id " + widget.product.id,
+            style: TextStyle(
+              color: Colors.white,
+            ),
+          ),
           content: new Text("Anda Pasti?"),
           actions: <Widget>[
             // usually buttons at the bottom of the dialog
