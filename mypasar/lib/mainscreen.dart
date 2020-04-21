@@ -1,3 +1,4 @@
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:mypasar/tabscreen1.dart';
@@ -102,6 +103,7 @@ class _MainScreenState extends State<MainScreen> {
               MaterialButton(
                   onPressed: () {
                     SystemChannels.platform.invokeMethod('SystemNavigator.pop');
+                    //exit(0);
                   },
                   child: Text(
                     "Ya",

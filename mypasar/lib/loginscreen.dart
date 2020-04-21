@@ -233,7 +233,11 @@ class _LoginScreenState extends State<LoginScreen> {
                   password: _password,
                   datereg: userdata[2],
                   credit: userdata[3],
-                  radius: userdata[4]);
+                  radius: userdata[4],
+                  state : userdata[5],
+                  locality: userdata[6],
+                  latitude: userdata[7],
+                  longitude: userdata[8]);
               pr.dismiss();
               Navigator.push(
                   context,

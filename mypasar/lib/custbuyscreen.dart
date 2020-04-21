@@ -634,8 +634,12 @@ class _CustBuyScreenState extends State<CustBuyScreen> {
   }
 
   updateStatus(int index) {
+    if (option == "Selesai"){
+      print("SELESAI");
+      return;
+    }
     String selectedStatus = "Selesai";
-
+    
     String orderid = productdata[index]['orderid'];
     showDialog(
         context: context,

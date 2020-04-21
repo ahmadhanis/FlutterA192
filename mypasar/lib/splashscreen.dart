@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:io';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -71,7 +70,7 @@ class _ProgressIndicatorState extends State<ProgressIndicator>
   @override
   void initState() {
     super.initState();
-
+    loadpref(this.context);
     controller = AnimationController(
         duration: const Duration(milliseconds: 2000), vsync: this);
     animation = Tween(begin: 0.0, end: 1.0).animate(controller)
@@ -79,7 +78,7 @@ class _ProgressIndicatorState extends State<ProgressIndicator>
         setState(() {
           //updating states
           if (animation.value > 0.99) {
-            loadpref(this.context);
+            //loadpref(this.context);
             // Navigator.push(
             //     context,
             //     MaterialPageRoute(
@@ -112,6 +111,7 @@ class _ProgressIndicatorState extends State<ProgressIndicator>
   void checkVersion(phone, pass, ctx) {
     print('Inside checkversion()');
     String urlLoadProd = "https://slumberjer.com/mypasar/php/check_version.php";
+    try{
     http.post(urlLoadProd, body: {}).then((res) {
       print(res.body);
       if (res.body != thisversion) {
@@ -135,6 +135,9 @@ class _ProgressIndicatorState extends State<ProgressIndicator>
           gravity: Toast.BOTTOM);
       SystemChannels.platform.invokeMethod('SystemNavigator.pop');
     });
+    }catch(e){
+      print("ERROR:"+e.toString());
+    }
   }
 
   void loadpref(BuildContext ctx) async {
@@ -148,18 +151,8 @@ class _ProgressIndicatorState extends State<ProgressIndicator>
     if (phone.length > 5) {
       //try to login if got email pref;
       checkVersion(phone, pass, ctx);
-    } else {
-      print("login with unregister acc");
-      //login as unregistered user
-      user = new User(
-          name: "Tidak Berdaftar",
-          phone: "123456789",
-          password: "123456",
-          datereg: "2020-04-14 22:00:39.205144",
-          credit: "0",
-          radius: "5");
-      Navigator.push(
-          ctx, MaterialPageRoute(builder: (context) => MainScreen(user: user)));
+    }else{
+      checkVersion("123456789", "123456", ctx);
     }
   }
 
@@ -181,24 +174,36 @@ class _ProgressIndicatorState extends State<ProgressIndicator>
             password: pass,
             datereg: userdata[2],
             credit: userdata[3],
-            radius: userdata[4]);
+            radius: userdata[4],
+            state: userdata[5],
+            locality: userdata[6],
+            latitude: userdata[7],
+            longitude: userdata[8]);
         Navigator.push(ctx,
             MaterialPageRoute(builder: (context) => MainScreen(user: _user)));
       } else {
         //allow login as unregistered user
-        User _user = new User(
-            name: userdata[1],
-            phone: phone,
-            password: pass,
-            datereg: userdata[2],
-            credit: userdata[3],
-            radius: userdata[4]);
-        Navigator.push(ctx,
-            MaterialPageRoute(builder: (context) => MainScreen(user: _user)));
+        user = new User(
+            name: "Tidak Berdaftar",
+            phone: "123456789",
+            password: "123456",
+            datereg: "2020-04-14 22:00:39.205144",
+            credit: "0",
+            radius: "5",
+            state: "Kedah",
+            locality: "Changlun",
+            latitude: "6.437766",
+            longitude: "100.434019");
+        Toast.show("Anda masuk sebagai pengguna tidak berdaftar.", context,
+            duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
+        Timer(Duration(seconds: 3), () {
+          Navigator.push(ctx,
+              MaterialPageRoute(builder: (context) => MainScreen(user: user)));
+        });
       }
     }).catchError((err) {
       print(err);
-    }).timeout(const Duration(seconds: 10), onTimeout: () {
+    }).timeout(const Duration(seconds: 15), onTimeout: () {
       Toast.show(
           "Internet tidak dapat dicapai. Pastikan Internet telah ditetapkan.",
           context,

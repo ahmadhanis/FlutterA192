@@ -25,6 +25,7 @@ class _NewProductScreenState extends State<NewProductScreen> {
   String pathAsset = 'assets/images/phonecam.png';
   Position _currentPosition;
   String curaddress;
+  String curstate;
   double latitude, longitude;
   TextEditingController productEditingController = new TextEditingController();
   TextEditingController qtyEditingController = new TextEditingController();
@@ -370,6 +371,38 @@ class _NewProductScreenState extends State<NewProductScreen> {
                                                                 .centerLeft,
                                                             height: 30,
                                                             child: Text(
+                                                                "Negeri",
+                                                                style: TextStyle(
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .bold,
+                                                                    color: Colors
+                                                                        .white))),
+                                                      ),
+                                                      TableCell(
+                                                          child: Container(
+                                                        height: 30,
+                                                        child: Container(
+                                                            alignment: Alignment
+                                                                .centerLeft,
+                                                            height: 30,
+                                                            child: Text(
+                                                              " " + curstate,
+                                                              style: TextStyle(
+                                                                color: Colors
+                                                                    .white,
+                                                              ),
+                                                            )),
+                                                      )),
+                                                      
+                                                    ]),
+                                                    TableRow(children: [
+                                                      TableCell(
+                                                        child: Container(
+                                                            alignment: Alignment
+                                                                .centerLeft,
+                                                            height: 30,
+                                                            child: Text(
                                                                 "Lokaliti Penjual",
                                                                 style: TextStyle(
                                                                     fontWeight:
@@ -393,6 +426,7 @@ class _NewProductScreenState extends State<NewProductScreen> {
                                                               ),
                                                             )),
                                                       )),
+                                                      
                                                     ]),
                                                   ]),
                                               SizedBox(
@@ -449,7 +483,8 @@ class _NewProductScreenState extends State<NewProductScreen> {
     var first = addresses.first;
     setState(() {
       curaddress = first.locality;
-      print(curaddress);
+      curstate = first.adminArea;
+      print(curstate);
       if (curaddress != null) {
         latitude = _currentPosition.latitude;
         longitude = _currentPosition.longitude;
@@ -552,6 +587,7 @@ class _NewProductScreenState extends State<NewProductScreen> {
       "encoded_string": base64Image,
       "latitude": _currentPosition.latitude.toString(),
       "longitude": _currentPosition.longitude.toString(),
+      "state": curstate,
       "locality": curaddress,
     }).then((res) {
       print("RESBODY " + res.body);

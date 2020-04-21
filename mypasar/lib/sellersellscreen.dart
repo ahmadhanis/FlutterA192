@@ -938,11 +938,17 @@ class _SellerSellScreenState extends State<SellerSellScreen> {
     http.post(urlLoadDeli, body: {
       "phone": widget.user.phone,
     }).then((res) {
-      var extractdata = json.decode(res.body);
-      setState(() {
-        delivList = extractdata["delivery"];
-        print(delivList);
-      });
+      if (res.body == "nodata") {
+        setState(() {
+          delivList = null;
+        });
+      } else {
+        var extractdata = json.decode(res.body);
+        setState(() {
+          delivList = extractdata["delivery"];
+          print(delivList);
+        });
+      }
     });
   }
 
@@ -951,11 +957,17 @@ class _SellerSellScreenState extends State<SellerSellScreen> {
     http.post(urlLoadDeli, body: {
       "phone": widget.user.phone,
     }).then((res) {
-      var extractdata = json.decode(res.body);
-      newSetState(() {
-        delivList = extractdata["delivery"];
-        print(delivList);
-      });
+      if (res.body == "nodata") {
+        newSetState(() {
+          delivList = null;
+        });
+      } else {
+        var extractdata = json.decode(res.body);
+        newSetState(() {
+          delivList = extractdata["delivery"];
+          print(delivList);
+        });
+      }
     });
   }
 
@@ -963,7 +975,7 @@ class _SellerSellScreenState extends State<SellerSellScreen> {
     print(delivList);
     TextEditingController nameEditingController = new TextEditingController();
     TextEditingController phoneEditingController = new TextEditingController();
-    if (delivList == null) {
+
       showDialog(
           context: context,
           builder: (context) {
@@ -1056,166 +1068,75 @@ class _SellerSellScreenState extends State<SellerSellScreen> {
                               Divider(
                                   height: 2,
                                   color: Color.fromRGBO(101, 255, 218, 50)),
-                              Text(
-                                "Tiada data penghantar",
-                                style: TextStyle(
-                                  color: Colors.white,
-                                ),
-                              )
+                              delivList == null
+                                  ? Center(
+                                      child: Text(
+                                      "Tiada data penghantar",
+                                      style: TextStyle(color: Colors.white),
+                                    ))
+                                  : Expanded(
+                                      child: ListView.builder(
+                                          itemCount: delivList.length,
+                                          itemBuilder:
+                                              (BuildContext ctxt, int index) {
+                                            return new GestureDetector(
+                                                onLongPress: () => {
+                                                      _deleteDialog(
+                                                          index, newSetState)
+                                                    },
+                                                child: Container(
+                                                    height: 30,
+                                                    child: Row(
+                                                      children: <Widget>[
+                                                        Expanded(
+                                                            child: Text(
+                                                          delivList[index]
+                                                              ['name'],
+                                                          overflow: TextOverflow
+                                                              .ellipsis,
+                                                          style: TextStyle(
+                                                            color: Colors.white,
+                                                          ),
+                                                        )),
+                                                        Container(
+                                                            width: 100,
+                                                            child: Text(
+                                                              delivList[index]
+                                                                  ['dphone'],
+                                                              style: TextStyle(
+                                                                color: Colors
+                                                                    .white,
+                                                              ),
+                                                            )),
+                                                        Flexible(
+                                                          child: FlatButton(
+                                                            onPressed: () => {
+                                                              _deleteDialog(
+                                                                  index,
+                                                                  newSetState)
+                                                            },
+                                                            child: Icon(
+                                                              MdiIcons
+                                                                  .deleteCircle,
+                                                              color: Color
+                                                                  .fromRGBO(
+                                                                      101,
+                                                                      255,
+                                                                      218,
+                                                                      50),
+                                                            ),
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    )));
+                                          })),
                             ],
                           )),
                     ],
                   )));
             });
           });
-    } else {
-      showDialog(
-          context: context,
-          builder: (context) {
-            return StatefulBuilder(builder: (context, newSetState) {
-              return AlertDialog(
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(20.0))),
-                  title: new Text(
-                    'Daftar Penghantar',
-                    style: TextStyle(
-                      color: Colors.white,
-                    ),
-                  ),
-                  content: SingleChildScrollView(
-                      child: Column(
-                    children: <Widget>[
-                      Container(
-                          height: screenHeight / 2,
-                          child: Column(
-                            children: <Widget>[
-                              Column(
-                                children: <Widget>[
-                                  Container(
-                                    margin: EdgeInsets.fromLTRB(5, 1, 5, 1),
-                                    height: 30,
-                                    child: TextFormField(
-                                        style: TextStyle(
-                                          color: Colors.white,
-                                        ),
-                                        controller: nameEditingController,
-                                        keyboardType: TextInputType.text,
-                                        textInputAction: TextInputAction.next,
-                                        decoration: new InputDecoration(
-                                          hintText: "Nama Penghantar",
-                                          contentPadding:
-                                              const EdgeInsets.all(5),
-
-                                          fillColor: Colors.white,
-                                          border: new OutlineInputBorder(
-                                            borderRadius:
-                                                new BorderRadius.circular(5.0),
-                                            borderSide: new BorderSide(),
-                                          ),
-
-                                          //fillColor: Colors.green
-                                        )),
-                                  ),
-                                  Container(
-                                    margin: EdgeInsets.fromLTRB(5, 1, 5, 1),
-                                    height: 30,
-                                    child: TextFormField(
-                                        style: TextStyle(
-                                          color: Colors.white,
-                                        ),
-                                        controller: phoneEditingController,
-                                        keyboardType: TextInputType.phone,
-                                        textInputAction: TextInputAction.next,
-                                        decoration: new InputDecoration(
-                                          hintText: "No Telefon",
-                                          contentPadding:
-                                              const EdgeInsets.all(5),
-
-                                          fillColor: Colors.white,
-                                          border: new OutlineInputBorder(
-                                            borderRadius:
-                                                new BorderRadius.circular(5.0),
-                                            borderSide: new BorderSide(),
-                                          ),
-
-                                          //fillColor: Colors.green
-                                        )),
-                                  ),
-                                  MaterialButton(
-                                    shape: RoundedRectangleBorder(
-                                        borderRadius:
-                                            BorderRadius.circular(20.0)),
-                                    minWidth: 200,
-                                    height: 40,
-                                    child: Text('Simpan'),
-                                    color: Color.fromRGBO(101, 255, 218, 50),
-                                    textColor: Colors.black,
-                                    elevation: 5,
-                                    onPressed: () => insertDelivery(
-                                        nameEditingController.text,
-                                        phoneEditingController.text,
-                                        newSetState),
-                                  ),
-                                ],
-                              ),
-                              Divider(
-                                  height: 2,
-                                  color: Color.fromRGBO(101, 255, 218, 50)),
-                              Expanded(
-                                  child: ListView.builder(
-                                      itemCount: delivList.length,
-                                      itemBuilder:
-                                          (BuildContext ctxt, int index) {
-                                        return new GestureDetector(
-                                            onLongPress: () => {
-                                                  _deleteDialog(
-                                                    index,newSetState
-                                                  )
-                                                },
-                                            child:Container(
-                                              height: 30,
-                                              child: 
-                                            Row(
-                                              children: <Widget>[
-                                                Expanded(
-                                                    child: Text(
-                                                  delivList[index]['name'],
-                                                  overflow:
-                                                      TextOverflow.ellipsis,
-                                                  style: TextStyle(
-                                                    color: Colors.white,
-                                                  ),
-                                                )),
-                                                Container(
-                                                    width: 100,
-                                                    child: Text(
-                                                      delivList[index]
-                                                          ['dphone'],
-                                                      style: TextStyle(
-                                                        color: Colors.white,
-                                                      ),
-                                                    )),
-                                                Flexible(
-                                                  child: FlatButton(
-                                                    onPressed: () =>
-                                                        {_deleteDialog(index,newSetState)},
-                                                    child: Icon(
-                                                      MdiIcons.deleteCircle,
-                                                      color: Color.fromRGBO(
-                                                          101, 255, 218, 50),
-                                                    ),
-                                                  ),
-                                                ),
-                                              ],
-                                            )));
-                                      })),
-                            ],
-                          )),
-                    ],
-                  )));
-            });
-          });
-    }
+    
   }
 
   void insertDelivery(String name, String phone, newSetState) {
@@ -1224,6 +1145,10 @@ class _SellerSellScreenState extends State<SellerSellScreen> {
           duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
       return;
     }
+    ProgressDialog pr = new ProgressDialog(context,
+        type: ProgressDialogType.Normal, isDismissible: true);
+    pr.style(message: "Menyimpan...");
+    pr.show();
     String urlLoadJobs =
         "https://slumberjer.com/mypasar/php/insert_delivery.php";
     http.post(urlLoadJobs, body: {
@@ -1236,18 +1161,20 @@ class _SellerSellScreenState extends State<SellerSellScreen> {
         Toast.show("Berjaya", context,
             duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
         //Navigator.of(context).pop(false);
+        pr.dismiss();
         newSetState(() {
           loadDeliveryupd(newSetState);
         });
-        
       } else {
+        pr.dismiss();
+        FocusScope.of(context).requestFocus(FocusNode());
         Toast.show("Gagal", context,
             duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
       }
     });
   }
 
-  _deleteDialog(int index,newSetState) {
+  _deleteDialog(int index, newSetState) {
     showDialog(
       context: context,
       builder: (context) => new AlertDialog(
@@ -1267,7 +1194,7 @@ class _SellerSellScreenState extends State<SellerSellScreen> {
           MaterialButton(
               onPressed: () async {
                 Navigator.of(context).pop(false);
-                deleteDelivery(delivList[index]['dphone'],newSetState);
+                deleteDelivery(delivList[index]['dphone'], newSetState);
               },
               child: Text(
                 "Ya",
@@ -1290,7 +1217,7 @@ class _SellerSellScreenState extends State<SellerSellScreen> {
     );
   }
 
-  void deleteDelivery(String phone,newSetState) {
+  void deleteDelivery(String phone, newSetState) {
     String urlLoadJobs =
         "https://slumberjer.com/mypasar/php/delete_delivery.php";
     http.post(urlLoadJobs, body: {
@@ -1305,7 +1232,6 @@ class _SellerSellScreenState extends State<SellerSellScreen> {
         newSetState(() {
           loadDeliveryupd(newSetState);
         });
-        
       } else {
         Toast.show("Gagal", context,
             duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);

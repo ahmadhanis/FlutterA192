@@ -296,18 +296,29 @@ class _EditProductState extends State<EditProduct> {
               color: Colors.white,
             ),
           ),
-          content: new Text("Anda Pasti?"),
+          content:
+              new Text("Anda Pasti?", style: TextStyle(color: Colors.white)),
           actions: <Widget>[
             // usually buttons at the bottom of the dialog
             new FlatButton(
-              child: new Text("Ya"),
+              child: new Text(
+                "Ya",
+                style: TextStyle(
+                  color: Color.fromRGBO(101, 255, 218, 50),
+                ),
+              ),
               onPressed: () {
                 Navigator.of(context).pop();
                 updateProduct(index);
               },
             ),
             new FlatButton(
-              child: new Text("Tidak"),
+              child: new Text(
+                "Tidak",
+                style: TextStyle(
+                  color: Color.fromRGBO(101, 255, 218, 50),
+                ),
+              ),
               onPressed: () {
                 Navigator.of(context).pop();
               },

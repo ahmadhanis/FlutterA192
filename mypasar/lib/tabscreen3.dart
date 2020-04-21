@@ -74,13 +74,12 @@ class _TabScreen3State extends State<TabScreen3> {
                                   child: CachedNetworkImage(
                                     fit: BoxFit.cover,
                                     imageUrl:
-                                        "http://slumberjer.com/mypasar/profile/${user.phone}.jpg?" ??
-                                            "0194702493",
+                                        "http://slumberjer.com/mypasar/profile/${user.phone}.jpg?",
                                     placeholder: (context, url) =>
                                         new CircularProgressIndicator(),
                                     errorWidget: (context, url, error) =>
                                         new Icon(MdiIcons.cameraAccount,
-                                            size: 32.0),
+                                            size: 64.0),
                                   ),
                                 ),
                               ),
@@ -716,6 +715,7 @@ class _TabScreen3State extends State<TabScreen3> {
   _loadData() {
     final f = new DateFormat('dd-MM-yyyy hh:mm a');
     var parsedDate = DateTime.parse(widget.user.datereg);
+    String datereg;
     DefaultCacheManager manager = new DefaultCacheManager();
     manager.emptyCache();
     print(f.format(parsedDate));
@@ -730,10 +730,15 @@ class _TabScreen3State extends State<TabScreen3> {
       print(res.body);
       var string = res.body;
       List dres = string.split(",");
+      if (dres[0] == "Tidak Berdaftar"){
+        datereg = f.format(DateTime.now());
+      }else{
+        datereg = f.format(DateTime.parse(dres[2]));
+      }
       user = new User(
           name: dres[0],
           phone: dres[1],
-          datereg: f.format(DateTime.parse(dres[2])),
+          datereg: datereg,
           credit: dres[3],
           radius: dres[4],
           tproduk: dres[5],
