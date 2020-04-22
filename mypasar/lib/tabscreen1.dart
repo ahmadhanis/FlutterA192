@@ -1551,11 +1551,7 @@ class _TabScreen1State extends State<TabScreen1> with WidgetsBindingObserver {
   }
 
   _gotoShop(int index) {
-    // if (widget.user.name == "Tidak Berdaftar") {
-    //   Toast.show("Sila login/daftar akaun", context,
-    //       duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
-    //   return;
-    // }
+
     showDialog(
       context: context,
       builder: (context) => new AlertDialog(

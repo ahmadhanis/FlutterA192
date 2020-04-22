@@ -22,106 +22,265 @@ class MainScreen extends StatefulWidget {
 class _MainScreenState extends State<MainScreen> {
   Position _currentPosition;
   List userattlist;
-  String curaddress;
-  final f = new DateFormat('dd-MM-yyyy hh:mm');
+  String curaddress, selectedMonth, selectedYear;
+  double screenHeight, screenWidth;
+  String curmonth, curyear, titlecenter = "Location Based Attendance";
+
+  final fa = new DateFormat('dd');
+  final f = new DateFormat('dd-MM-yyyy hh:mm a');
+  List<String> monthlist = [
+    "January",
+    "Febuary",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December"
+  ];
+  List<String> yearlist = [
+    "2020",
+    "2021",
+    "2022",
+    "2023",
+    "2024",
+    "2025",
+    "2026",
+    "2027",
+  ];
+  List days = [
+    '1',
+    '2',
+    '3',
+    '4',
+    '5',
+    '6',
+    '7',
+    '8',
+    '9',
+    '10',
+    '11',
+    '12',
+    '13',
+    '14',
+    '15',
+    '16',
+    '17',
+    '18',
+    '19',
+    '20',
+    '21',
+    '22',
+    '24',
+    '24',
+    '25',
+    '26',
+    '27',
+    '28',
+    '29',
+    '30',
+    '31'
+  ];
+
   @override
   void initState() {
     super.initState();
-    _loadRecord();
+    DateTime now = DateTime.now();
+    curmonth = now.month.toString();
+    curyear = now.year.toString();
+    print(curmonth);
+    print(curyear);
+    WidgetsBinding.instance
+        .addPostFrameCallback((_) => _loadRecord(curmonth, curyear));
   }
 
   @override
   Widget build(BuildContext context) {
-    if (userattlist == null) {
-
-      return Scaffold(
-          appBar: AppBar(
-            title: Text('Record Your Attendance'),
+    screenHeight = MediaQuery.of(context).size.height;
+    screenWidth = MediaQuery.of(context).size.width;
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Record Your Attendance'),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () async {
+          _getCurrentLocation();
+          // Add your onPressed code here!
+        },
+        child: Icon(Icons.add),
+        backgroundColor: Colors.blue,
+        tooltip: "Record your attendance",
+      ),
+      body: Column(
+        children: <Widget>[
+          Container(
+            child: Text("Your Attendance: " + widget.user.name,
+                style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold)),
           ),
-          body: Center(
-              child: Text("Record your attendance",
-                  style:
-                      TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold))),
-          floatingActionButton: FloatingActionButton(
-            onPressed: () async {
-              // Add your onPressed code here!
-              _getCurrentLocation();
-            },
-            child: Icon(Icons.add),
-            backgroundColor: Colors.blue,
-            tooltip: "Record your attendance",
-          ));
-    } else {
-      return Scaffold(
-          appBar: AppBar(
-            title: Text('Record Your Attendance'),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: <Widget>[
+              Container(
+                child: Text("Month: " + curmonth,
+                    style:
+                        TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold)),
+              ),
+              Container(
+                child: Text("Year: " + curyear,
+                    style:
+                        TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold)),
+              ),
+            ],
           ),
-          floatingActionButton: FloatingActionButton(
-            onPressed: () async {
-              _getCurrentLocation();
-              // Add your onPressed code here!
-            },
-            child: Icon(Icons.add),
-            backgroundColor: Colors.blue,
-            tooltip: "Record your attendance",
-          ),
-          body: ListView.builder(
-              itemCount: userattlist == null ? 1 : userattlist.length,
-              itemBuilder: (context, index) {
-                return Padding(
-                    padding: EdgeInsets.all(2),
-                    child: Card(
+          Card(
+            elevation: 5,
+            child: Container(
+              height: screenHeight / 14,
+              margin: EdgeInsets.fromLTRB(20, 2, 20, 2),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: <Widget>[
+                  Container(
+                    height: 40,
+                    child: DropdownButton(
+                      //sorting dropdownoption
+                      hint: Text(
+                        'Month',
+                        style: TextStyle(
+                            //color: Color.fromRGBO(101, 255, 218, 50),
+                            ),
+                      ), // Not necessary for Option 1
+                      value: selectedMonth,
+                      onChanged: (newValue) {
+                        setState(() {
+                          selectedMonth = newValue;
+                          print(selectedMonth);
+                        });
+                      },
+                      items: monthlist.map((selectedMonth) {
+                        return DropdownMenuItem(
+                          child: new Text(selectedMonth, style: TextStyle()),
+                          value: selectedMonth,
+                        );
+                      }).toList(),
+                    ),
+                  ),
+                  Container(
+                    height: 40,
+                    child: DropdownButton(
+                      //sorting dropdownoption
+                      hint: Text(
+                        'Year',
+                        style: TextStyle(
+                            //color: Color.fromRGBO(101, 255, 218, 50),
+                            ),
+                      ), // Not necessary for Option 1
+                      value: selectedYear,
+                      onChanged: (newValue) {
+                        setState(() {
+                          selectedYear = newValue;
+                          print(selectedYear);
+                        });
+                      },
+                      items: yearlist.map((selectedYear) {
+                        return DropdownMenuItem(
+                          child: new Text(selectedYear, style: TextStyle()),
+                          value: selectedYear,
+                        );
+                      }).toList(),
+                    ),
+                  ),
+                  MaterialButton(
+                      color: Colors.blue,
+                      onPressed: () => {
+                            changeAtt(selectedMonth, selectedYear),
+                          },
                       elevation: 5,
-                      child: InkWell(
-                        onLongPress: () => _deleteDetail(index),
-                        child: Padding(
-                            padding: EdgeInsets.all(3),
-                            child: Row(
-                              children: <Widget>[
-                                CircleAvatar(
-                                  backgroundColor: Theme.of(context).platform ==
-                                          TargetPlatform.android
-                                      ? Colors.blue
-                                      : Colors.blue,
-                                  child: Text(
-                                    userattlist[index]['id'].toString(),
-                                    style: TextStyle(fontSize: 16.0),
-                                  ),
-                                ),
-                                SizedBox(
-                                  width: 10,
-                                ),
-                                Expanded(
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: <Widget>[
-                                      Text(
-                                          "Record ID:" +
-                                              userattlist[index]['rid'],
-                                          style: TextStyle(
-                                              fontWeight: FontWeight.bold)),
-                                      Text(userattlist[index]['name'],
-                                          style: TextStyle(
-                                              fontWeight: FontWeight.bold)),
-                                      Text("Lat:" +
-                                          userattlist[index]['latitude'] +
-                                          "/" +
-                                          "Lon:" +
-                                          userattlist[index]['longitude']),
-                                      Text("Date:" +
-                                          f.format(DateTime.parse(
-                                              userattlist[index]['date']))),
-                                      Text(userattlist[index]['address']),
-                                    ],
-                                  ),
-                                ),
-                              ],
-                            )),
-                      ),
-                    ));
-              }));
-    }
+                      child: Text(
+                        "Search",
+                        style: TextStyle(color: Colors.white),
+                      ))
+                ],
+              ),
+            ),
+          ),
+          userattlist == null
+              ? Flexible(
+                  child: Container(
+                      child: Center(
+                          child: Text(
+                  titlecenter,
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                ))))
+              : Flexible(
+                  child: ListView.builder(
+                      itemCount: userattlist == null ? 1 : userattlist.length,
+                      itemBuilder: (context, index) {
+                        return Padding(
+                            padding: EdgeInsets.all(2),
+                            child: Card(
+                              elevation: 5,
+                              child: InkWell(
+                                onLongPress: () => _deleteDetail(index),
+                                child: Padding(
+                                    padding: EdgeInsets.all(3),
+                                    child: Row(
+                                      children: <Widget>[
+                                        CircleAvatar(
+                                          backgroundColor:
+                                              Theme.of(context).platform ==
+                                                      TargetPlatform.android
+                                                  ? Colors.blue
+                                                  : Colors.blue,
+                                          child: Text(
+                                            fa.format(DateTime.parse(
+                                                userattlist[index]['date'])),
+                                            style: TextStyle(fontSize: 16.0),
+                                          ),
+                                        ),
+                                        SizedBox(
+                                          width: 10,
+                                        ),
+                                        Expanded(
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: <Widget>[
+                                              Text(
+                                                  "Record ID:" +
+                                                      userattlist[index]['rid'],
+                                                  style: TextStyle(
+                                                      fontWeight:
+                                                          FontWeight.bold)),
+                                              Text("Lat:" +
+                                                  userattlist[index]
+                                                      ['latitude'] +
+                                                  "/" +
+                                                  "Lon:" +
+                                                  userattlist[index]
+                                                      ['longitude']),
+                                              Text("Date:" +
+                                                  f.format(DateTime.parse(
+                                                      userattlist[index]
+                                                          ['date']))),
+                                              Text(userattlist[index]
+                                                  ['address']),
+                                            ],
+                                          ),
+                                        ),
+                                      ],
+                                    )),
+                              ),
+                            ));
+                      }),
+                )
+        ],
+      ),
+    );
   }
 
   _getCurrentLocation() {
@@ -196,7 +355,7 @@ class _MainScreenState extends State<MainScreen> {
                     print(res.body);
                     if (res.body == "success") {
                       curaddress = "";
-                      _loadRecord();
+                      _loadRecord(curmonth, curyear);
                     } else {
                       Toast.show("Failed", context,
                           duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
@@ -219,20 +378,29 @@ class _MainScreenState extends State<MainScreen> {
         });
   }
 
-  void _loadRecord() {
+  void _loadRecord(String month, String year) {
     ProgressDialog pr = new ProgressDialog(context,
-        type: ProgressDialogType.Normal, isDismissible: false);
+        type: ProgressDialogType.Normal, isDismissible: true);
     pr.style(message: "Loading...");
     pr.show();
     String urlLoadJobs = "https://slumberjer.com/wfh/load_att.php";
     http.post(urlLoadJobs, body: {
       "id": widget.user.id,
+      "month": month,
+      "year": year,
     }).then((res) {
       print(res.body);
       pr.dismiss();
       setState(() {
-        var extractdata = json.decode(res.body);
-        userattlist = extractdata["records"];
+        if (res.body == "nodata") {
+          userattlist = null;
+          Toast.show("No records", context,
+              duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
+              titlecenter = "No records found";
+        } else {
+          var extractdata = json.decode(res.body);
+          userattlist = extractdata["records"];
+        }
       });
     }).catchError((err) {
       print(err);
@@ -264,7 +432,7 @@ class _MainScreenState extends State<MainScreen> {
                       Toast.show("Failed", context,
                           duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
                     }
-                    _loadRecord();
+                    _loadRecord(curmonth, curyear);
                   }).catchError((err) {
                     print(err);
                   });
@@ -280,5 +448,62 @@ class _MainScreenState extends State<MainScreen> {
             ],
           );
         });
+  }
+
+  changeAtt(String selectedMonth, String selectedYear) {
+    if (selectedMonth == null) {
+      Toast.show("Please select month", context,
+          duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
+      return;
+    }
+
+    if (selectedMonth == "January") {
+      selectedMonth = "1";
+    }
+    if (selectedMonth == "Febuary") {
+      selectedMonth = "2";
+    }
+    if (selectedMonth == "March") {
+      selectedMonth = "3";
+    }
+    if (selectedMonth == "April") {
+      selectedMonth = "4";
+    }
+    if (selectedMonth == "May") {
+      selectedMonth = "5";
+    }
+    if (selectedMonth == "June") {
+      selectedMonth = "6";
+    }
+    if (selectedMonth == "July") {
+      selectedMonth = "7";
+    }
+    if (selectedMonth == "August") {
+      selectedMonth = "8";
+    }
+    if (selectedMonth == "September") {
+      selectedMonth = "9";
+    }
+    if (selectedMonth == "October") {
+      selectedMonth = "10";
+    }
+    if (selectedMonth == "November") {
+      selectedMonth = "11";
+    }
+    if (selectedMonth == "December") {
+      selectedMonth = "12";
+    }
+
+    if (selectedYear == null) {
+      Toast.show("Please select year", context,
+          duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
+      return;
+    }
+    setState(() {
+      curyear = selectedYear;
+      curmonth = selectedMonth;
+    });
+
+    _loadRecord(selectedMonth, selectedYear);
   }
 }
