@@ -27,6 +27,7 @@ class _CustBuyScreenState extends State<CustBuyScreen> {
   double screenHeight, screenWidth;
   String option = "Baru";
   String info = "Maklumat pembelian anda";
+  String titlecenter ="";
   @override
   void initState() {
     super.initState();
@@ -39,55 +40,7 @@ class _CustBuyScreenState extends State<CustBuyScreen> {
   Widget build(BuildContext context) {
     screenHeight = MediaQuery.of(context).size.height;
     screenWidth = MediaQuery.of(context).size.width;
-    if (productdata == null) {
-      return Scaffold(
-          appBar: AppBar(
-            title: Container(
-                child: Text('Pembelian Saya',
-                    style: GoogleFonts.anaheim(
-                        fontWeight: FontWeight.bold, fontSize: 24))),
-          ),
-          body: Container(
-              child: Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: <Widget>[
-                SizedBox(
-                  height: 10,
-                ),
-                Flexible(
-                    child: Text(
-                  info,
-                  style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 18,
-                      color: Colors.white),
-                ))
-              ],
-            ),
-          )),
-          floatingActionButton: SpeedDial(
-            animatedIcon: AnimatedIcons.menu_close,
-            children: [
-              SpeedDialChild(
-                  child: Icon(Icons.fiber_new),
-                  label: "Pesanan baru",
-                  labelBackgroundColor: Colors.white,
-                  onTap: () => _loadData("Baru")),
-              SpeedDialChild(
-                  child: Icon(Icons.play_circle_outline),
-                  label: "Pesanan sedang dihantar",
-                  labelBackgroundColor: Colors.white,
-                  onTap: () => _loadData("Penghantaran")),
-              SpeedDialChild(
-                  child: Icon(Icons.done_all),
-                  label: "Pesanan selesai",
-                  labelBackgroundColor: Colors.white,
-                  onTap: () => _loadData("Selesai")),
-            ],
-          ));
-    }
+   
     return Scaffold(
         appBar: AppBar(
           title: Container(
@@ -97,11 +50,18 @@ class _CustBuyScreenState extends State<CustBuyScreen> {
         ),
         body: Column(
           children: <Widget>[
-            Text("Status Pesanan: " + option,
-                style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white)),
+             productdata == null
+                      ? Flexible(
+                          child: Container(
+                              child: Center(
+                                  child: Text(
+                          titlecenter,
+                          style: TextStyle(
+                              color: Color.fromRGBO(101, 255, 218, 50),
+                              fontSize: 22,
+                              fontWeight: FontWeight.bold),
+                        ))))
+                      :
             Expanded(
               child: ListView.builder(
                   itemCount: productdata == null ? 1 : productdata.length,
@@ -612,12 +572,15 @@ class _CustBuyScreenState extends State<CustBuyScreen> {
           productdata = null;
           if (op == "Baru") {
             info = "Tiada Pembelian Baru";
+            titlecenter = info;
           }
           if (op == "Penghantaran") {
             info = "Tiada Pembelian Dalam Penghantaran";
+            titlecenter = info;
           }
           if (op == "Selesai") {
             info = "Tiada Pembelian Telah Selesai";
+            titlecenter = info;
           }
         } else {
           var extractdata = json.decode(res.body);

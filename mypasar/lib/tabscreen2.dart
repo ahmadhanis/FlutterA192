@@ -34,7 +34,8 @@ class _TabScreen2State extends State<TabScreen2> {
   List productdata;
   var _tapPosition;
   ProgressDialog pr;
-  
+  String titlecenter = "";
+  String titletop = "";
   @override
   void initState() {
     super.initState();
@@ -46,161 +47,136 @@ class _TabScreen2State extends State<TabScreen2> {
   Widget build(BuildContext context) {
     screenHeight = MediaQuery.of(context).size.height;
     screenWidth = MediaQuery.of(context).size.width;
-    if (productdata == null) {
-      return Scaffold(
-          body: Container(
-              child: Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: <Widget>[
-                //CircularProgressIndicator(),
-                SizedBox(
-                  height: 10,
-                ),
-                Text(
-                  msg,
+
+    return Scaffold(
+        resizeToAvoidBottomPadding: true,
+        body: Container(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: <Widget>[
+              SizedBox(height: 5),
+              Text("Senarai Produk Anda",
                   style: TextStyle(
+                    fontSize: 18.0,
                     fontWeight: FontWeight.bold,
-                    fontSize: 22,
                     color: Colors.white,
-                  ),
-                )
-              ],
-            ),
-          )),
-          floatingActionButton: SpeedDial(
-            animatedIcon: AnimatedIcons.menu_close,
-            children: [
-              SpeedDialChild(
-                  child: Icon(Icons.add),
-                  label: "Tambah produk",
-                  labelBackgroundColor: Colors.white,
-                  onTap: _addProductDialog),
-              SpeedDialChild(
-                  child: Icon(Icons.shopping_cart),
-                  label: "Penjualan Saya",
-                  labelBackgroundColor: Colors.white,
-                  onTap: _sellScreen),
-            ],
-          ));
-    } else {
-      if (pr != null) {
-        pr.dismiss();
-      }
-      return Scaffold(
-          resizeToAvoidBottomPadding: true,
-          body: Container(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: <Widget>[
-                SizedBox(height: 5),
-                Text("Senarai Produk Anda",
+                  )),
+              Container(
+                height: 14,
+                child: Text("Klik pada produk utk menu pilihan",
                     style: TextStyle(
-                      fontSize: 18.0,
-                      fontWeight: FontWeight.bold,
+                      fontSize: 12.0,
                       color: Colors.white,
                     )),
-                Container(
-                  height: 14,
-                  child: Text("Klik pada produk utk menu pilihan",
-                      style: TextStyle(
-                        fontSize: 12.0,
-                        color: Colors.white,
-                      )),
-                ),
-                Divider(height:2,color: Color.fromRGBO(101, 255, 218, 50)),
-                SizedBox(height: 5),
-                
-                Flexible(
-                    child: GridView.count(
-                        crossAxisCount: 2,
-                        childAspectRatio: (screenWidth / screenHeight) / 0.7,
-                        children: List.generate(productdata.length, (index) {
-                          return Card(
-                              elevation: 10,
-                              child: Padding(
-                                  padding: EdgeInsets.all(5),
-                                  child: GestureDetector(
-                                    //onLongPress: () => _showPopupMenu(), //onLongTapCard(index),
-                                    onTap: () => _showPopupMenu(index),
-                                    onTapDown:
-                                        _storePosition, //onTapCard(index),
-                                    child: Column(
-                                      children: <Widget>[
-                                        Container(
-                                          height: screenHeight / 5.5,
-                                          width: screenWidth / 2.8,
-                                          child: CachedNetworkImage(
-                                            fit: BoxFit.cover,
-                                            imageUrl:
-                                                "http://slumberjer.com/mypasar/productimages/${productdata[index]['imagename']}.jpg",
-                                            placeholder: (context, url) =>
-                                                new CircularProgressIndicator(),
-                                            errorWidget:
-                                                (context, url, error) =>
-                                                    new Icon(Icons.error),
+              ),
+              Container(
+                    height: 15,
+                    child: Text(titletop,
+                        style: TextStyle(
+                            fontSize: 12.0,
+                            color: Color.fromRGBO(101, 255, 218, 50))),
+                  ),
+              Divider(height: 2, color: Color.fromRGBO(101, 255, 218, 50)),
+              SizedBox(height: 5),
+              productdata == null
+                  ? Flexible(
+                          child: Container(
+                              child: Center(
+                                  child: Text(
+                          titlecenter,
+                          style: TextStyle(
+                              color: Color.fromRGBO(101, 255, 218, 50),
+                              fontSize: 22,
+                              fontWeight: FontWeight.bold),
+                        ))))
+                  : Flexible(
+                      child: GridView.count(
+                          crossAxisCount: 2,
+                          childAspectRatio: (screenWidth / screenHeight) / 0.7,
+                          children: List.generate(productdata.length, (index) {
+                            return Card(
+                                elevation: 10,
+                                child: Padding(
+                                    padding: EdgeInsets.all(5),
+                                    child: GestureDetector(
+                                      //onLongPress: () => _showPopupMenu(), //onLongTapCard(index),
+                                      onTap: () => _showPopupMenu(index),
+                                      onTapDown:
+                                          _storePosition, //onTapCard(index),
+                                      child: Column(
+                                        children: <Widget>[
+                                          Container(
+                                            height: screenHeight / 5.5,
+                                            width: screenWidth / 2.8,
+                                            child: CachedNetworkImage(
+                                              fit: BoxFit.cover,
+                                              imageUrl:
+                                                  "http://slumberjer.com/mypasar/productimages/${productdata[index]['imagename']}.jpg",
+                                              placeholder: (context, url) =>
+                                                  new CircularProgressIndicator(),
+                                              errorWidget:
+                                                  (context, url, error) =>
+                                                      new Icon(Icons.error),
+                                            ),
                                           ),
-                                        ),
-                                        SizedBox(height: 3),
-                                        Flexible(
-                                            child: Text(
-                                          productdata[index]['prname'],
-                                          style: TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                            color: Colors.white,
+                                          SizedBox(height: 3),
+                                          Flexible(
+                                              child: Text(
+                                            productdata[index]['prname'],
+                                            style: TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              color: Colors.white,
+                                            ),
+                                            maxLines: 1,
+                                          )),
+                                          SizedBox(height: 3),
+                                          Text(
+                                            "RM" +
+                                                double.parse(productdata[index]
+                                                        ['price'])
+                                                    .toStringAsFixed(2),
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                            ),
                                           ),
-                                          maxLines: 1,
-                                        )),
-                                        SizedBox(height: 3),
-                                        Text(
-                                          "RM" +
-                                              double.parse(productdata[index]
-                                                      ['price'])
-                                                  .toStringAsFixed(2),
-                                          style: TextStyle(
-                                            color: Colors.white,
+                                          Text(
+                                            "Terdapat " +
+                                                productdata[index]['quantity'] +
+                                                " unit",
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                            ),
                                           ),
-                                        ),
-                                        Text(
-                                          "Terdapat " +
-                                              productdata[index]['quantity'] +
-                                              " unit",
-                                          style: TextStyle(
-                                            color: Colors.white,
+                                          Text(
+                                            "Terjual " +
+                                                productdata[index]['sell'] +
+                                                " unit",
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                            ),
                                           ),
-                                        ),
-                                        Text(
-                                          "Terjual " +
-                                              productdata[index]['sell'] +
-                                              " unit",
-                                          style: TextStyle(
-                                            color: Colors.white,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  )));
-                        })))
-              ],
-            ),
-          ),
-          floatingActionButton: SpeedDial(
-            animatedIcon: AnimatedIcons.menu_close,
-            children: [
-              SpeedDialChild(
-                  child: Icon(Icons.add),
-                  label: "Tambah produk",
-                  labelBackgroundColor: Colors.white,
-                  onTap: _addProductDialog),
-              SpeedDialChild(
-                  child: Icon(Icons.shopping_cart),
-                  label: "Penjualan saya",
-                  labelBackgroundColor: Colors.white,
-                  onTap: _sellScreen),
+                                        ],
+                                      ),
+                                    )));
+                          })))
             ],
-          ));
-    }
+          ),
+        ),
+        floatingActionButton: SpeedDial(
+          animatedIcon: AnimatedIcons.menu_close,
+          children: [
+            SpeedDialChild(
+                child: Icon(Icons.add),
+                label: "Tambah produk",
+                labelBackgroundColor: Colors.white,
+                onTap: _addProductDialog),
+            SpeedDialChild(
+                child: Icon(Icons.shopping_cart),
+                label: "Penjualan saya",
+                labelBackgroundColor: Colors.white,
+                onTap: _sellScreen),
+          ],
+        ));
   }
 
   _addProductDialog() async {
@@ -218,12 +194,12 @@ class _TabScreen2State extends State<TabScreen2> {
   }
 
   void _loadData() {
-    if(widget.user.name == "Tidak Berdaftar"){
+    if (widget.user.name == "Tidak Berdaftar") {
       Toast.show("Sila daftar/login", context,
           duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
       return;
     }
-   pr = new ProgressDialog(context,
+    pr = new ProgressDialog(context,
         type: ProgressDialogType.Normal, isDismissible: true);
     pr.style(message: "Memuat turun...");
     pr.show();
@@ -235,12 +211,16 @@ class _TabScreen2State extends State<TabScreen2> {
       print(res.body);
       pr.dismiss();
       setState(() {
-        if (res.body == "nodata"){
-           productdata = null; 
-           pr.dismiss();
-        }else{
+        if (res.body == "nodata") {
+          productdata = null;
+           titletop = "Carian tidak menjumpai sebarang produk";
+          titlecenter = "Tiada Produk Tersenarai.";
+          pr.dismiss();
+        } else {
           var extractdata = json.decode(res.body);
           productdata = extractdata["products"];
+          titletop = "Carian menjumpai "+ extractdata["products"].length.toString()+" produk";
+
           pr.dismiss();
         }
         //pr.dismiss();

@@ -97,7 +97,7 @@ class _NewProductScreenState extends State<NewProductScreen> {
                                             image: _image == null
                                                 ? AssetImage(pathAsset)
                                                 : FileImage(_image),
-                                            fit: BoxFit.fill,
+                                            fit: BoxFit.cover,
                                           ),
                                           border: Border.all(
                                             width: 3.0,
@@ -465,7 +465,7 @@ class _NewProductScreenState extends State<NewProductScreen> {
   _getLocation() async {
     final Geolocator geolocator = Geolocator()..forceAndroidLocationManager;
     _currentPosition = await geolocator
-        .getCurrentPosition(desiredAccuracy: LocationAccuracy.medium)
+        .getCurrentPosition(desiredAccuracy: LocationAccuracy.high)
         .timeout(Duration(seconds: 15), onTimeout: () {
       Toast.show("Lokaliti anda tidak dapat dikesan", context,
           duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);

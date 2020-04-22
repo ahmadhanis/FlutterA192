@@ -114,7 +114,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           _onRememberMeChanged(value);
                         },
                       ),
-                      Text('Ingat Info Saya ',
+                      Text('Tetapan Saya ',
                           style: TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.bold,
@@ -144,7 +144,7 @@ class _LoginScreenState extends State<LoginScreen> {
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              Text("Tiada Akaun?",
+              Text("Tiada Akaun? ",
                   style: TextStyle(fontSize: 16.0, color: Colors.white)),
               GestureDetector(
                 onTap: _registerUser,
@@ -164,7 +164,7 @@ class _LoginScreenState extends State<LoginScreen> {
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              Text("Terlupa Kata Laluan?",
+              Text("Terlupa Kata Laluan? ",
                   style: TextStyle(fontSize: 16.0, color: Colors.white)),
               GestureDetector(
                 onTap: _forgotPassword,
@@ -415,7 +415,7 @@ class _LoginScreenState extends State<LoginScreen> {
       //save preference
       await prefs.setString('phone', phone);
       await prefs.setString('pass', password);
-      Toast.show("Maklumat ditetapkan", context,
+      Toast.show("Tetapan ditetapkan", context,
           duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
     } else {
       //delete preference
@@ -426,7 +426,7 @@ class _LoginScreenState extends State<LoginScreen> {
         _passEditingController.text = '';
         rememberMe = false;
       });
-      Toast.show("Preferences have removed", context,
+      Toast.show("Tetapan dibuang", context,
           duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
     }
   }

@@ -56,208 +56,221 @@ class _TabScreen3State extends State<TabScreen3> {
                 child: Column(
                   children: <Widget>[
                     Card(
-                      elevation: 10,
+                      elevation: 5,
                       child: Padding(
-                          padding: EdgeInsets.all(10),
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: <Widget>[
-                              GestureDetector(
-                                onTap: _takePicture,
-                                child: Container(
-                                  height: screenHeight / 4.5,
-                                  width: screenWidth / 3,
-                                  decoration: new BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    //border: Border.all(color: Colors.black),
-                                  ),
-                                  child: CachedNetworkImage(
-                                    fit: BoxFit.cover,
-                                    imageUrl:
-                                        "http://slumberjer.com/mypasar/profile/${user.phone}.jpg?",
-                                    placeholder: (context, url) =>
-                                        new CircularProgressIndicator(),
-                                    errorWidget: (context, url, error) =>
-                                        new Icon(MdiIcons.cameraAccount,
-                                            size: 64.0),
+                        padding: EdgeInsets.all(5),
+                        child: Column(
+                          children: <Widget>[
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: <Widget>[
+                                GestureDetector(
+                                  onTap: _takePicture,
+                                  child: Container(
+                                    height: screenHeight / 4.8,
+                                    width: screenWidth / 3.2,
+                                    decoration: new BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      //border: Border.all(color: Colors.black),
+                                    ),
+                                    child: CachedNetworkImage(
+                                      fit: BoxFit.cover,
+                                      imageUrl:
+                                          "http://slumberjer.com/mypasar/profile/${user.phone}.jpg?",
+                                      placeholder: (context, url) =>
+                                          new SizedBox(
+                                              height: 10.0,
+                                              width: 10.0,
+                                              child:
+                                                  CircularProgressIndicator()),
+                                      errorWidget: (context, url, error) =>
+                                          new Icon(MdiIcons.cameraIris,
+                                              size: 64.0),
+                                    ),
                                   ),
                                 ),
-                              ),
-                              SizedBox(width: 4),
-                              Flexible(
-                                  child: Container(
-                                child: Table(
-                                    defaultColumnWidth: FlexColumnWidth(1.0),
-                                    columnWidths: {
-                                      0: FlexColumnWidth(3.5),
-                                      1: FlexColumnWidth(6.5),
-                                    },
-                                    children: [
-                                      TableRow(children: [
-                                        TableCell(
-                                          child: Container(
-                                              alignment: Alignment.centerLeft,
-                                              height: 20,
-                                              child: Text("Nama",
-                                                  style: TextStyle(
-                                                      fontWeight:
-                                                          FontWeight.bold,
-                                                      color: Colors.white))),
-                                        ),
-                                        TableCell(
-                                          child: Container(
-                                            alignment: Alignment.centerLeft,
-                                            height: 20,
-                                            child: Text(user.name,
-                                                style: TextStyle(
-                                                    fontWeight: FontWeight.bold,
-                                                    fontSize: 14,
-                                                    color: Colors.white)),
+                                SizedBox(width: 4),
+                                Flexible(
+                                    child: Container(
+                                  child: Table(
+                                      defaultColumnWidth: FlexColumnWidth(1.0),
+                                      columnWidths: {
+                                        0: FlexColumnWidth(3.5),
+                                        1: FlexColumnWidth(6.5),
+                                      },
+                                      children: [
+                                        TableRow(children: [
+                                          TableCell(
+                                            child: Container(
+                                                alignment: Alignment.centerLeft,
+                                                height: 20,
+                                                child: Text("Nama",
+                                                    style: TextStyle(
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                        color: Colors.white))),
                                           ),
-                                        ),
-                                      ]),
-                                      TableRow(children: [
-                                        TableCell(
-                                          child: Container(
+                                          TableCell(
+                                            child: Container(
                                               alignment: Alignment.centerLeft,
                                               height: 20,
-                                              child: Text("Telefon",
+                                              child: Text(user.name,
                                                   style: TextStyle(
                                                       fontWeight:
                                                           FontWeight.bold,
-                                                      color: Colors.white))),
-                                        ),
-                                        TableCell(
-                                          child: Container(
-                                              alignment: Alignment.centerLeft,
-                                              height: 20,
-                                              child: Text(
-                                                user.phone,
-                                                style: TextStyle(
-                                                  color: Colors.white,
-                                                ),
-                                              )),
-                                        ),
-                                      ]),
-                                      TableRow(children: [
-                                        TableCell(
-                                          child: Container(
-                                              alignment: Alignment.centerLeft,
-                                              height: 20,
-                                              child: Text("Daftar",
+                                                      fontSize: 14,
+                                                      color: Colors.white)),
+                                            ),
+                                          ),
+                                        ]),
+                                        TableRow(children: [
+                                          TableCell(
+                                            child: Container(
+                                                alignment: Alignment.centerLeft,
+                                                height: 20,
+                                                child: Text("Telefon",
+                                                    style: TextStyle(
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                        color: Colors.white))),
+                                          ),
+                                          TableCell(
+                                            child: Container(
+                                                alignment: Alignment.centerLeft,
+                                                height: 20,
+                                                child: Text(
+                                                  user.phone,
                                                   style: TextStyle(
-                                                      fontWeight:
-                                                          FontWeight.bold,
-                                                      color: Colors.white))),
-                                        ),
-                                        TableCell(
-                                          child: Container(
-                                              alignment: Alignment.centerLeft,
-                                              height: 20,
-                                              child: Text(
-                                                user.datereg,
-                                                style: TextStyle(
-                                                  color: Colors.white,
-                                                ),
-                                              )),
-                                        ),
-                                      ]),
-                                      TableRow(children: [
-                                        TableCell(
-                                          child: Container(
-                                              alignment: Alignment.centerLeft,
-                                              height: 20,
-                                              child: Text("Kredit",
+                                                    color: Colors.white,
+                                                  ),
+                                                )),
+                                          ),
+                                        ]),
+                                        TableRow(children: [
+                                          TableCell(
+                                            child: Container(
+                                                alignment: Alignment.centerLeft,
+                                                height: 20,
+                                                child: Text("Daftar",
+                                                    style: TextStyle(
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                        color: Colors.white))),
+                                          ),
+                                          TableCell(
+                                            child: Container(
+                                                alignment: Alignment.centerLeft,
+                                                height: 20,
+                                                child: Text(
+                                                  user.datereg,
                                                   style: TextStyle(
-                                                      fontWeight:
-                                                          FontWeight.bold,
-                                                      color: Colors.white))),
-                                        ),
-                                        TableCell(
-                                          child: Container(
-                                              alignment: Alignment.centerLeft,
-                                              height: 20,
-                                              child: Text(
-                                                user.credit,
-                                                style: TextStyle(
-                                                  color: Colors.white,
-                                                ),
-                                              )),
-                                        ),
-                                      ]),
-                                      TableRow(children: [
-                                        TableCell(
-                                          child: Container(
-                                              alignment: Alignment.centerLeft,
-                                              height: 20,
-                                              child: Text("Jarak",
+                                                    color: Colors.white,
+                                                  ),
+                                                )),
+                                          ),
+                                        ]),
+                                        TableRow(children: [
+                                          TableCell(
+                                            child: Container(
+                                                alignment: Alignment.centerLeft,
+                                                height: 20,
+                                                child: Text("Jarak",
+                                                    style: TextStyle(
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                        color: Colors.white))),
+                                          ),
+                                          TableCell(
+                                            child: Container(
+                                                alignment: Alignment.centerLeft,
+                                                height: 20,
+                                                child: Text(
+                                                  user.radius + " KM",
                                                   style: TextStyle(
-                                                      fontWeight:
-                                                          FontWeight.bold,
-                                                      color: Colors.white))),
-                                        ),
-                                        TableCell(
-                                          child: Container(
-                                              alignment: Alignment.centerLeft,
-                                              height: 20,
-                                              child: Text(
-                                                user.radius + " KM",
-                                                style: TextStyle(
-                                                  color: Colors.white,
-                                                ),
-                                              )),
-                                        ),
-                                      ]),
-                                      TableRow(children: [
-                                        TableCell(
-                                          child: Container(
-                                              alignment: Alignment.centerLeft,
-                                              height: 20,
-                                              child: Text("Terjual",
+                                                    color: Colors.white,
+                                                  ),
+                                                )),
+                                          ),
+                                        ]),
+                                        TableRow(children: [
+                                          TableCell(
+                                            child: Container(
+                                                alignment: Alignment.centerLeft,
+                                                height: 20,
+                                                child: Text("Lokaliti",
+                                                    style: TextStyle(
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                        color: Colors.white))),
+                                          ),
+                                          TableCell(
+                                            child: Container(
+                                                alignment: Alignment.centerLeft,
+                                                height: 20,
+                                                child: Text(
+                                                  user.locality ?? 'tiada',
                                                   style: TextStyle(
-                                                      fontWeight:
-                                                          FontWeight.bold,
-                                                      color: Colors.white))),
-                                        ),
-                                        TableCell(
-                                          child: Container(
-                                              alignment: Alignment.centerLeft,
-                                              height: 20,
-                                              child: Text(
-                                                user.total + " unit",
-                                                style: TextStyle(
-                                                  color: Colors.white,
-                                                ),
-                                              )),
-                                        ),
+                                                    color: Colors.white,
+                                                  ),
+                                                )),
+                                          ),
+                                        ]),
                                       ]),
-                                      TableRow(children: [
-                                        TableCell(
-                                          child: Container(
-                                              alignment: Alignment.centerLeft,
-                                              height: 20,
-                                              child: Text("Jum Produk",
-                                                  style: TextStyle(
-                                                      fontWeight:
-                                                          FontWeight.bold,
-                                                      color: Colors.white))),
-                                        ),
-                                        TableCell(
-                                          child: Container(
-                                              alignment: Alignment.centerLeft,
-                                              height: 20,
-                                              child: Text(
-                                                user.tproduk + " jenis",
-                                                style: TextStyle(
-                                                  color: Colors.white,
-                                                ),
-                                              )),
-                                        ),
-                                      ]),
-                                    ]),
-                              ))
-                            ],
-                          )),
+                                ))
+                              ],
+                            ),
+                            SizedBox(height: 2,),
+                            Divider(
+                              height: 2,
+                              color: Color.fromRGBO(101, 255, 218, 50),
+                            ),
+                            Container(
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceEvenly,
+                                children: <Widget>[
+                                  Column(
+                                    children: <Widget>[
+                                      Text("Produk",
+                                          style:
+                                              TextStyle(color: Colors.white)),
+                                      Text(user.tproduk + " unit",
+                                          style: TextStyle(
+                                            color: Color.fromRGBO(
+                                                101, 255, 218, 50),
+                                          ))
+                                    ],
+                                  ),
+                                  Column(
+                                    children: <Widget>[
+                                      Text("Terjual",
+                                          style:
+                                              TextStyle(color: Colors.white)),
+                                      Text(user.total + " unit",
+                                          style: TextStyle(
+                                            color: Color.fromRGBO(
+                                                101, 255, 218, 50),
+                                          ))
+                                    ],
+                                  ),
+                                  Column(
+                                    children: <Widget>[
+                                      Text("Kredit",
+                                          style:
+                                              TextStyle(color: Colors.white)),
+                                      Text(user.credit + " ",
+                                          style: TextStyle(
+                                            color: Color.fromRGBO(
+                                                101, 255, 218, 50),
+                                          ))
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            )
+                          ],
+                        ),
+                      ),
                     ),
                     Container(
                       color: Color.fromRGBO(101, 255, 218, 50),
@@ -730,19 +743,24 @@ class _TabScreen3State extends State<TabScreen3> {
       print(res.body);
       var string = res.body;
       List dres = string.split(",");
-      if (dres[0] == "Tidak Berdaftar"){
+      if (dres[0] == "Tidak Berdaftar") {
         datereg = f.format(DateTime.now());
-      }else{
+      } else {
         datereg = f.format(DateTime.parse(dres[2]));
       }
       user = new User(
-          name: dres[0],
-          phone: dres[1],
-          datereg: datereg,
-          credit: dres[3],
-          radius: dres[4],
-          tproduk: dres[5],
-          total: dres[6]);
+        name: dres[0],
+        phone: dres[1],
+        datereg: datereg,
+        credit: dres[3],
+        radius: dres[4],
+        state: dres[5],
+        locality: dres[6],
+        latitude: dres[7],
+        longitude: dres[8],
+        tproduk: dres[9],
+        total: dres[10],
+      );
 
       pr.dismiss();
       setState(() {

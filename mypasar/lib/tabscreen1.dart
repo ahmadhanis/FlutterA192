@@ -57,6 +57,9 @@ class _TabScreen1State extends State<TabScreen1> with WidgetsBindingObserver {
     "Paling Baru",
     "Paling Lama",
   ];
+  String titletop = "";
+  String titlecenter = "";
+
   @override
   void initState() {
     WidgetsBinding.instance.addObserver(this);
@@ -83,7 +86,7 @@ class _TabScreen1State extends State<TabScreen1> with WidgetsBindingObserver {
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.resumed) {
       //do your stuff
-      //_getLocation();
+      print("lifecycle change");
     }
   }
 
@@ -92,16 +95,20 @@ class _TabScreen1State extends State<TabScreen1> with WidgetsBindingObserver {
     screenHeight = MediaQuery.of(context).size.height;
     screenWidth = MediaQuery.of(context).size.width;
     TextEditingController _prdController = new TextEditingController();
+    pr = new ProgressDialog(context,
+        type: ProgressDialogType.Normal, isDismissible: true);
 
-    if (productdata == null) {
-      return Scaffold(
-          body: RefreshIndicator(
-              key: refreshKey,
-              color: Color.fromRGBO(101, 255, 218, 50),
-              onRefresh: () async {
-                await refreshList();
-              },
+    return Scaffold(
+        resizeToAvoidBottomPadding: true,
+        body: RefreshIndicator(
+            key: refreshKey,
+            color: Color.fromRGBO(101, 255, 218, 50),
+            onRefresh: () async {
+              await refreshList();
+            },
+            child: Container(
               child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: <Widget>[
                   SizedBox(height: 2),
                   Text("Produk sekitar " + curaddress,
@@ -114,12 +121,22 @@ class _TabScreen1State extends State<TabScreen1> with WidgetsBindingObserver {
                     child: Text("Klik pada produk melihat perincian",
                         style: TextStyle(fontSize: 12.0, color: Colors.white)),
                   ),
+                  Container(
+                    height: 15,
+                    child: Text(titletop,
+                        style: TextStyle(
+                            fontSize: 12.0,
+                            color: Color.fromRGBO(101, 255, 218, 50))),
+                  ),
+                  Divider(height: 2, color: Color.fromRGBO(101, 255, 218, 50)),
+                  //SizedBox(height: 2),
+
                   Visibility(
                       visible: _visiblesearch,
                       child: Card(
                         elevation: 5,
                         child: Container(
-                          height: screenHeight / 13,
+                          height: screenHeight / 14,
                           margin: EdgeInsets.fromLTRB(20, 2, 20, 2),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -158,7 +175,7 @@ class _TabScreen1State extends State<TabScreen1> with WidgetsBindingObserver {
                       child: Card(
                         elevation: 5,
                         child: Container(
-                          height: screenHeight / 13,
+                          height: screenHeight / 14,
                           margin: EdgeInsets.fromLTRB(20, 2, 20, 2),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.end,
@@ -213,7 +230,7 @@ class _TabScreen1State extends State<TabScreen1> with WidgetsBindingObserver {
                       child: Card(
                         elevation: 5,
                         child: Container(
-                          height: screenHeight / 13,
+                          height: screenHeight / 14,
                           margin: EdgeInsets.all(2),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -230,26 +247,28 @@ class _TabScreen1State extends State<TabScreen1> with WidgetsBindingObserver {
                                   ), // Not necessary for Option 1
                                   value: selectedState,
                                   onChanged: (newValue) {
-                                    listlocal = null;
-                                    selectedLocal = null;
+                                    if (selectedState == newValue) {
+                                      return;
+                                    }
                                     setState(() {
                                       selectedState = newValue;
+                                      selectedLocal = null;
                                       if (selectedState == "Perlis") {
                                         print("Perlis");
-                                        listlocal = null;
+
                                         listlocal = mystate.listperlis;
+                                        print(listlocal);
                                       }
                                       if (selectedState == "Kedah") {
                                         print("Kedah");
-                                        listlocal = null;
                                         listlocal = mystate.listkedah;
+                                        print(listlocal);
                                       }
                                       if (selectedState == "Perak") {
                                         print("Perak");
-                                        listlocal = null;
                                         listlocal = mystate.listperak;
+                                        print(listlocal);
                                       }
-                                      print(listlocal);
                                     });
                                   },
                                   items:
@@ -259,7 +278,7 @@ class _TabScreen1State extends State<TabScreen1> with WidgetsBindingObserver {
                                           style: TextStyle(
                                               color: Color.fromRGBO(
                                                   101, 255, 218, 50))),
-                                      value: selectedState ?? null,
+                                      value: selectedState,
                                     );
                                   }).toList(),
                                 ),
@@ -274,30 +293,17 @@ class _TabScreen1State extends State<TabScreen1> with WidgetsBindingObserver {
                                       color: Color.fromRGBO(101, 255, 218, 50),
                                     ),
                                   ), // Not necessary for Option 1
-                                  value: selectedLocal ?? null,
+                                  value: selectedLocal,
                                   onChanged: (newValue) {
-                                    print(selectedLocal);
-                                    listlocal = null;
-                                    selectedLocal = null;
+                                    if (selectedLocal == newValue) {
+                                      return;
+                                    }
                                     setState(() {
-                                      if (selectedState == "Perlis") {
-                                        print("Perlis");
-                                        listlocal = mystate.listperlis;
-                                      }
-                                      if (selectedState == "Kedah") {
-                                        print("Kedah");
-                                        listlocal = mystate.listkedah;
-                                      }
-                                      if (selectedState == "Perak") {
-                                        print("Perak");
-                                        listlocal = mystate.listperak;
-                                      }
                                       selectedLocal = newValue;
-                                      //print(listlocal);
                                     });
+                                    print(selectedLocal);
                                   },
                                   items: listlocal.map((selectedLocal) {
-                                    //ERROR DI SINI
                                     return DropdownMenuItem(
                                       child: new Text(selectedLocal,
                                           style: TextStyle(
@@ -325,380 +331,107 @@ class _TabScreen1State extends State<TabScreen1> with WidgetsBindingObserver {
                           ),
                         ),
                       )),
-                  Expanded(
-                      child: Container(
-                          child: Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: <Widget>[
-                        //CircularProgressIndicator(),
-                        SizedBox(
-                          height: 10,
-                        ),
-
-                        Text(
-                          "My.Pasar",
+                  
+                  productdata == null
+                      ? Flexible(
+                          child: Container(
+                              child: Center(
+                                  child: Text(
+                          titlecenter,
                           style: TextStyle(
-                              fontWeight: FontWeight.bold,
+                              color: Color.fromRGBO(101, 255, 218, 50),
                               fontSize: 22,
-                              color: Colors.white),
-                        )
-                      ],
-                    ),
-                  )))
-                ],
-              )),
-          floatingActionButton: SpeedDial(
-            animatedIcon: AnimatedIcons.menu_close,
-            children: [
-              SpeedDialChild(
-                  child: Icon(Icons.shopping_cart),
-                  label: "Pembelian saya",
-                  labelBackgroundColor: Colors.white,
-                  onTap: () => _buyScreen()),
-              SpeedDialChild(
-                  child: Icon(Icons.location_city),
-                  labelBackgroundColor: Colors.white,
-                  label: "Carian lokaliti", //_searchState() //_changeLocality()
-                  onTap: () => _searchState()),
-              SpeedDialChild(
-                  child: Icon(Icons.search),
-                  label: "Carian produk",
-                  labelBackgroundColor: Colors.white,
-                  onTap: () => _searchProduct()),
-              SpeedDialChild(
-                  child: Icon(Icons.list),
-                  label: "Carian ikut",
-                  labelBackgroundColor: Colors.white,
-                  onTap: () => _searchList()),
-            ],
-          ));
-    } else {
-      if (pr != null) {
-        pr.dismiss();
-      }
-      return Scaffold(
-          resizeToAvoidBottomPadding: true,
-          body: RefreshIndicator(
-              key: refreshKey,
-              color: Color.fromRGBO(101, 255, 218, 50),
-              onRefresh: () async {
-                await refreshList();
-              },
-              child: Container(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: <Widget>[
-                    SizedBox(height: 2),
-                    Text("Produk sekitar " + curaddress,
-                        style: TextStyle(
-                            fontSize: 18.0,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white)),
-                    Container(
-                      height: 14,
-                      child: Text("Klik pada produk melihat perincian",
-                          style:
-                              TextStyle(fontSize: 12.0, color: Colors.white)),
-                    ),
-                    Divider(
-                        height: 2, color: Color.fromRGBO(101, 255, 218, 50)),
-                    SizedBox(height: 5),
-                    Visibility(
-                        visible: _visiblesearch,
-                        child: Card(
-                          elevation: 5,
-                          child: Container(
-                            height: screenHeight / 13,
-                            margin: EdgeInsets.fromLTRB(20, 2, 20, 2),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceAround,
-                              children: <Widget>[
-                                Flexible(
-                                    child: Container(
-                                  height: 30,
-                                  child: TextField(
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                      ),
-                                      autofocus: false,
-                                      controller: _prdController,
-                                      decoration: InputDecoration(
-                                          icon: Icon(Icons.search),
-                                          border: OutlineInputBorder())),
-                                )),
-                                Flexible(
-                                    child: MaterialButton(
-                                        color:
-                                            Color.fromRGBO(101, 255, 218, 50),
-                                        onPressed: () => {
-                                              _searchItembyName(
-                                                  _prdController.text)
-                                            },
-                                        elevation: 5,
-                                        child: Text(
-                                          "Carian Produk",
-                                          style: TextStyle(color: Colors.black),
-                                        )))
-                              ],
-                            ),
-                          ),
-                        )),
-                    Visibility(
-                        visible: _visiblelist,
-                        child: Card(
-                          elevation: 5,
-                          child: Container(
-                            height: screenHeight / 13,
-                            margin: EdgeInsets.fromLTRB(20, 2, 20, 2),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.end,
-                              children: <Widget>[
-                                Flexible(
-                                    child: Container(
-                                  height: 30,
-                                  child: DropdownButton(
-                                    //sorting dropdownoption
-                                    hint: Text(
-                                      'Pilihan',
-                                      style: TextStyle(
-                                        color:
-                                            Color.fromRGBO(101, 255, 218, 50),
-                                      ),
-                                    ), // Not necessary for Option 1
-                                    value: selectedSort,
-                                    onChanged: (newValue) {
-                                      setState(() {
-                                        selectedSort = newValue;
-                                        print(selectedSort);
-                                        if (selectedSort == "Paling Mahal") {
-                                          _loadDataSort("priceup");
-                                        }
-                                        if (selectedSort == "Paling Murah") {
-                                          _loadDataSort("pricedown");
-                                        }
-                                        if (selectedSort == "Paling Baru") {
-                                          _loadDataSort("dateup");
-                                        }
-                                        if (selectedSort == "Paling Lama") {
-                                          _loadDataSort("datedown");
-                                        }
-                                      });
-                                    },
-                                    items: listSenarai.map((selectedSort) {
-                                      return DropdownMenuItem(
-                                        child: new Text(selectedSort,
-                                            style: TextStyle(
-                                                color: Color.fromRGBO(
-                                                    101, 255, 218, 50))),
-                                        value: selectedSort,
-                                      );
-                                    }).toList(),
-                                  ),
-                                )),
-                              ],
-                            ),
-                          ),
-                        )),
-                    Visibility(
-                        visible: _visiblestates,
-                        child: Card(
-                          elevation: 5,
-                          child: Container(
-                            height: screenHeight / 13,
-                            margin: EdgeInsets.all(2),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceAround,
-                              children: <Widget>[
-                                Flexible(
-                                  flex: 4,
-                                  child: DropdownButton(
-                                    //sorting dropdownoption
-                                    hint: Text(
-                                      'Negeri',
-                                      style: TextStyle(
-                                        color:
-                                            Color.fromRGBO(101, 255, 218, 50),
-                                      ),
-                                    ), // Not necessary for Option 1
-                                    value: selectedState,
-                                    onChanged: (newValue) {
-                                      if (selectedState == newValue) {
-                                        return;
-                                      }
-                                      setState(() {
-                                        selectedState = newValue;
-                                        selectedLocal = null;
-                                        if (selectedState == "Perlis") {
-                                          print("Perlis");
-
-                                          listlocal = mystate.listperlis;
-                                          print(listlocal);
-                                        }
-                                        if (selectedState == "Kedah") {
-                                          print("Kedah");
-                                          listlocal = mystate.listkedah;
-                                          print(listlocal);
-                                        }
-                                        if (selectedState == "Perak") {
-                                          print("Perak");
-                                          listlocal = mystate.listperak;
-                                          print(listlocal);
-                                        }
-                                      });
-                                    },
-                                    items:
-                                        mystate.liststates.map((selectedState) {
-                                      return DropdownMenuItem(
-                                        child: new Text(selectedState,
-                                            style: TextStyle(
-                                                color: Color.fromRGBO(
-                                                    101, 255, 218, 50))),
-                                        value: selectedState,
-                                      );
-                                    }).toList(),
-                                  ),
-                                ),
-                                Flexible(
-                                  flex: 5,
-                                  child: DropdownButton(
-                                    //sorting dropdownoption
-                                    hint: Text(
-                                      'Lokaliti',
-                                      style: TextStyle(
-                                        color:
-                                            Color.fromRGBO(101, 255, 218, 50),
-                                      ),
-                                    ), // Not necessary for Option 1
-                                    value: selectedLocal,
-                                    onChanged: (newValue) {
-                                      if (selectedLocal == newValue) {
-                                        return;
-                                      }
-                                      setState(() {
-                                        selectedLocal = newValue;
-                                      });
-                                      print(selectedLocal);
-                                    },
-                                    items: listlocal.map((selectedLocal) {
-                                      return DropdownMenuItem(
-                                        child: new Text(selectedLocal,
-                                            style: TextStyle(
-                                                color: Color.fromRGBO(
-                                                    101, 255, 218, 50))),
-                                        value: selectedLocal,
-                                      );
-                                    }).toList(),
-                                  ),
-                                ),
-                                Flexible(
-                                    flex: 2,
-                                    child: MaterialButton(
-                                        color:
-                                            Color.fromRGBO(101, 255, 218, 50),
-                                        onPressed: () => {
-                                              changeLocality(
-                                                  selectedState, selectedLocal),
-                                            },
-                                        elevation: 5,
-                                        child: Text(
-                                          "Cari",
-                                          style: TextStyle(color: Colors.black),
-                                        )))
-                              ],
-                            ),
-                          ),
-                        )),
-                    Flexible(
-                        child: GridView.count(
-                            crossAxisCount: 2,
-                            childAspectRatio:
-                                (screenWidth / screenHeight) / 0.65,
-                            children:
-                                List.generate(productdata.length, (index) {
-                              return Card(
-                                  elevation: 10,
-                                  child: Padding(
-                                    padding: EdgeInsets.all(5),
-                                    child: GestureDetector(
-                                        onTap: () => loadProduct(index),
-                                        child: Column(
-                                          children: <Widget>[
-                                            Container(
-                                              height: screenHeight / 5.5,
-                                              width: screenWidth / 2.8,
-                                              child: CachedNetworkImage(
-                                                fit: BoxFit.cover,
-                                                imageUrl:
-                                                    "http://slumberjer.com/mypasar/productimages/${productdata[index]['imagename']}.jpg",
-                                                placeholder: (context, url) =>
-                                                    new CircularProgressIndicator(),
-                                                errorWidget:
-                                                    (context, url, error) =>
-                                                        new Icon(Icons.error),
+                              fontWeight: FontWeight.bold),
+                        ))))
+                      : Flexible(
+                          child: GridView.count(
+                              crossAxisCount: 2,
+                              childAspectRatio:
+                                  (screenWidth / screenHeight) / 0.65,
+                              children:
+                                  List.generate(productdata.length, (index) {
+                                return Card(
+                                    elevation: 10,
+                                    child: Padding(
+                                      padding: EdgeInsets.all(5),
+                                      child: GestureDetector(
+                                          onTap: () => loadProduct(index),
+                                          child: Column(
+                                            children: <Widget>[
+                                              Container(
+                                                height: screenHeight / 5.5,
+                                                width: screenWidth / 2.8,
+                                                child: CachedNetworkImage(
+                                                  fit: BoxFit.cover,
+                                                  imageUrl:
+                                                      "http://slumberjer.com/mypasar/productimages/${productdata[index]['imagename']}.jpg",
+                                                  placeholder: (context, url) =>
+                                                      new CircularProgressIndicator(),
+                                                  errorWidget:
+                                                      (context, url, error) =>
+                                                          new Icon(Icons.error),
+                                                ),
                                               ),
-                                            ),
-                                            SizedBox(height: 6),
-                                            //Text(productdata[index]['phone']),
-                                            //SizedBox(height: 3),
-                                            Flexible(
-                                                child: Text(
-                                              productdata[index]['prname'],
-                                              style: TextStyle(
-                                                  fontWeight: FontWeight.bold,
-                                                  color: Colors.white),
-                                              maxLines: 1,
-                                            )),
-                                            SizedBox(height: 3),
-
-                                            Text(
-                                              "RM" +
-                                                  double.parse(
-                                                          productdata[index]
-                                                              ['price'])
-                                                      .toStringAsFixed(2),
-                                              style: TextStyle(
-                                                  color: Colors.white),
-                                            ),
-                                            Text(
-                                                productdata[index]['quantity'] +
-                                                    " unit",
+                                              SizedBox(height: 6),
+                                              //Text(productdata[index]['phone']),
+                                              //SizedBox(height: 3),
+                                              Flexible(
+                                                  child: Text(
+                                                productdata[index]['prname'],
                                                 style: TextStyle(
-                                                    color: Colors.white)),
-                                          ],
-                                        )),
-                                  ));
-                            })))
-                  ],
-                ),
-              )),
-          floatingActionButton: SpeedDial(
-            animatedIcon: AnimatedIcons.menu_close,
-            children: [
-              SpeedDialChild(
-                  child: Icon(Icons.shopping_cart),
-                  label: "Pembelian saya",
-                  labelBackgroundColor: Colors.white,
-                  onTap: () => _buyScreen()),
-              SpeedDialChild(
-                  child: Icon(Icons.location_city),
-                  label: "Carian lokaliti",
-                  labelBackgroundColor: Colors.white, //_changeLocality()
-                  onTap: () => _searchState()),
-              SpeedDialChild(
-                  child: Icon(Icons.search),
-                  label: "Carian produk",
-                  labelBackgroundColor: Colors.white,
-                  onTap: () => _searchProduct()),
-              SpeedDialChild(
-                  child: Icon(Icons.list),
-                  label: "Carian ikut",
-                  labelBackgroundColor: Colors.white,
-                  onTap: () => _searchList()),
-            ],
-          ));
-    }
+                                                    fontWeight: FontWeight.bold,
+                                                    color: Colors.white),
+                                                maxLines: 1,
+                                              )),
+                                              SizedBox(height: 3),
+
+                                              Text(
+                                                "RM" +
+                                                    double.parse(
+                                                            productdata[index]
+                                                                ['price'])
+                                                        .toStringAsFixed(2),
+                                                style: TextStyle(
+                                                    color: Colors.white),
+                                              ),
+                                              Text(
+                                                  productdata[index]
+                                                          ['quantity'] +
+                                                      " unit",
+                                                  style: TextStyle(
+                                                      color: Colors.white)),
+                                            ],
+                                          )),
+                                    ));
+                              })))
+                ],
+              ),
+            )),
+        floatingActionButton: SpeedDial(
+          animatedIcon: AnimatedIcons.menu_close,
+          children: [
+            SpeedDialChild(
+                child: Icon(Icons.shopping_cart),
+                label: "Pembelian saya",
+                labelBackgroundColor: Colors.white,
+                onTap: () => _buyScreen()),
+            SpeedDialChild(
+                child: Icon(Icons.location_city),
+                label: "Carian lokaliti",
+                labelBackgroundColor: Colors.white, //_changeLocality()
+                onTap: () => _searchState()),
+            SpeedDialChild(
+                child: Icon(Icons.search),
+                label: "Carian produk",
+                labelBackgroundColor: Colors.white,
+                onTap: () => _searchProduct()),
+            SpeedDialChild(
+                child: Icon(Icons.list),
+                label: "Carian ikut",
+                labelBackgroundColor: Colors.white,
+                onTap: () => _searchList()),
+          ],
+        ));
   }
 
   Future<Null> refreshList() async {
@@ -709,10 +442,9 @@ class _TabScreen1State extends State<TabScreen1> with WidgetsBindingObserver {
   }
 
   _getLocation(int index, double delicost, double total) async {
-    ProgressDialog pr = new ProgressDialog(context,
-        type: ProgressDialogType.Normal, isDismissible: false);
     pr.style(message: "Mendapatkan lokasi...");
     pr.show();
+
     try {
       final Geolocator geolocator = Geolocator()..forceAndroidLocationManager;
       _currentPosition = await geolocator
@@ -794,19 +526,23 @@ class _TabScreen1State extends State<TabScreen1> with WidgetsBindingObserver {
   }
 
   void _loadDataLocality(String st, String lc) {
-    pr = new ProgressDialog(context,
-        type: ProgressDialogType.Normal, isDismissible: true);
-    pr.style(
-      message: "Memuat turun...",
-      backgroundColor: Colors.white,
-    );
-    pr.show();
-    if (locality) {
+   
+    if (locality && lc!=null) {
       curaddress = selectedLocation;
     }
     if (lc == null) {
       lc = "";
     }
+    if (st == null) {
+       Toast.show("Sila pilih negeri", context,
+              duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
+      return;
+    }
+     pr.style(
+      message: "Memuat turun...",
+      backgroundColor: Colors.white,
+    );
+    pr.show();
     String urlLoadProd =
         "https://slumberjer.com/mypasar/php/load_product_cust.php";
     http.post(urlLoadProd, body: {
@@ -819,15 +555,20 @@ class _TabScreen1State extends State<TabScreen1> with WidgetsBindingObserver {
     }).then((res) {
       print(res.body);
       setState(() {
-        curaddress = lc;
+        //curaddress = lc;
         if (res.body == "nodata") {
           productdata = null;
+          titlecenter = "Tiada produk dijumpai";
+          titletop = "Carian menjumpai sebarang produk";
+
           Toast.show("Produk tiada di lokaliti dipilih", context,
               duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
           pr.dismiss();
         } else {
           var extractdata = json.decode(res.body);
           productdata = extractdata["products"];
+          titletop = "Carian menjumpai "+ extractdata["products"].length.toString()+" produk";
+
           pr.dismiss();
         }
         pr.dismiss();
@@ -844,8 +585,6 @@ class _TabScreen1State extends State<TabScreen1> with WidgetsBindingObserver {
   }
 
   void _loadData(String ignore) {
-    ProgressDialog pr = new ProgressDialog(context,
-        type: ProgressDialogType.Normal, isDismissible: true);
     pr.style(
       message: "Memuat turun...",
       backgroundColor: Colors.white,
@@ -868,8 +607,13 @@ class _TabScreen1State extends State<TabScreen1> with WidgetsBindingObserver {
     }).then((res) {
       // print(res.body);
       setState(() {
+        _visiblesearch = false;
+        _visiblelist = false;
+        _visiblestates = false;
         if (res.body == "nodata") {
           productdata = null;
+          titlecenter = "Produk tidak dijumpai";
+          titletop = "Carian tidak menjumpai sebarang produk";
           Toast.show("Produk tiada di lokaliti dipilih", context,
               duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
           pr.dismiss();
@@ -877,6 +621,7 @@ class _TabScreen1State extends State<TabScreen1> with WidgetsBindingObserver {
           var extractdata = json.decode(res.body);
           productdata = extractdata["products"];
           print(productdata);
+         titletop = "Carian menjumpai "+ extractdata["products"].length.toString()+" produk";
           pr.dismiss();
         }
         pr.dismiss();
@@ -895,8 +640,6 @@ class _TabScreen1State extends State<TabScreen1> with WidgetsBindingObserver {
   }
 
   void _loadDataSort(String sortoption) {
-    ProgressDialog pr = new ProgressDialog(context,
-        type: ProgressDialogType.Normal, isDismissible: true);
     pr.style(message: "Menyusun");
     pr.show();
     if (locality) {
@@ -915,15 +658,28 @@ class _TabScreen1State extends State<TabScreen1> with WidgetsBindingObserver {
           "radius": widget.user.radius,
         })
         .then((res) {
-          print(res.body);
+          print(sortoption);
           setState(() {
             if (res.body == "nodata") {
               productdata = null;
-              Toast.show("Produk tiada di lokaliti dipilih", context,
+              titlecenter = "Produk tidak dijumpai";
+              Toast.show("Produk tiada jumpai", context,
                   duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
             } else {
               var extractdata = json.decode(res.body);
               productdata = extractdata["products"];
+              if (sortoption == "priceup") {
+                titletop = "Hasil carian paling mahal";
+              }
+              if (sortoption == "pricedown") {
+                titletop = "Hasil carian paling murah";
+              }
+              if (sortoption == "dateup") {
+                titletop = "Hasil carian paling baru";
+              }
+              if (sortoption == "datedown") {
+                titletop = "Hasil carian paling lama";
+              }
             }
           });
           pr.dismiss();
@@ -1454,7 +1210,8 @@ class _TabScreen1State extends State<TabScreen1> with WidgetsBindingObserver {
     // );
   }
 
-  void _insertOrder(int index, double total, double delicost) {//PROBLEM
+  void _insertOrder(int index, double total, double delicost) {
+    //PROBLEM
     if (double.parse(productdata[index]['km']) >
         double.parse(widget.user.radius)) {
       Toast.show(
@@ -1466,8 +1223,6 @@ class _TabScreen1State extends State<TabScreen1> with WidgetsBindingObserver {
           gravity: Toast.BOTTOM);
       return;
     }
-    ProgressDialog pr = new ProgressDialog(context,
-        type: ProgressDialogType.Normal, isDismissible: true);
     pr.style(message: "Pembelian...");
     pr.show();
 
@@ -1513,12 +1268,9 @@ class _TabScreen1State extends State<TabScreen1> with WidgetsBindingObserver {
     //Navigator.of(context, rootNavigator: true).pop();
   }
 
-  
-
   void changeLocality(String st, String lcl) {
     print(st);
     print(lcl);
-
     _loadDataLocality(st, lcl);
   }
 
@@ -1540,6 +1292,7 @@ class _TabScreen1State extends State<TabScreen1> with WidgetsBindingObserver {
   }
 
   _searchState() {
+    titletop = "";
     if (_visiblestates) {
       setState(() {
         _visiblestates = false;
@@ -1557,6 +1310,7 @@ class _TabScreen1State extends State<TabScreen1> with WidgetsBindingObserver {
 
   _searchProduct() {
     //print(_visiblesearch);
+    titletop = "";
     setState(() {
       if (_visiblesearch) {
         _visiblelist = false;
@@ -1573,9 +1327,8 @@ class _TabScreen1State extends State<TabScreen1> with WidgetsBindingObserver {
   void _searchItembyName(String prname) {
     try {
       print(widget.user.radius);
-      ProgressDialog pr = new ProgressDialog(context,
-          type: ProgressDialogType.Normal, isDismissible: true);
-      pr.style(message: "Searching...");
+
+      pr.style(message: "Memuat turun...");
       pr.show();
       String urlLoadJobs =
           "https://slumberjer.com/mypasar/php/load_product_cust.php";
@@ -1591,16 +1344,21 @@ class _TabScreen1State extends State<TabScreen1> with WidgetsBindingObserver {
           })
           .timeout(const Duration(seconds: 10))
           .then((res) {
-            if (res.body == "nodata") {
-              Toast.show("Carian tidak dijumpai", context,
-                  duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
-              pr.dismiss();
-              FocusScope.of(context).requestFocus(new FocusNode());
-              return;
-            }
             setState(() {
+              if (res.body == "nodata") {
+              titletop = "Carian '"+prname.toString() +"' tidak menjumpai sebarang produk ";
+                Toast.show("Carian tidak dijumpai", context,
+                    duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
+                //titletop = "Carian tidak dijumpai";
+                productdata = null;
+                pr.dismiss();
+                FocusScope.of(context).requestFocus(new FocusNode());
+                return;
+              }
               var extractdata = json.decode(res.body);
               productdata = extractdata["products"];
+              titletop = "Carian '"+prname.toString() +"' menjumpai "+ extractdata["products"].length.toString()+" produk";
+
               FocusScope.of(context).requestFocus(new FocusNode());
               pr.dismiss();
             });
@@ -1621,12 +1379,10 @@ class _TabScreen1State extends State<TabScreen1> with WidgetsBindingObserver {
     }
   }
 
-  void _searchItembySeller(String sellerphone) {
+  void _searchItembySeller(String sellerphone, String sellername) {
     try {
       print(widget.user.radius);
-      ProgressDialog pr = new ProgressDialog(context,
-          type: ProgressDialogType.Normal, isDismissible: true);
-      pr.style(message: "Searching...");
+      pr.style(message: "Mencari...");
       pr.show();
       String urlLoadJobs =
           "https://slumberjer.com/mypasar/php/load_product_cust.php";
@@ -1642,16 +1398,19 @@ class _TabScreen1State extends State<TabScreen1> with WidgetsBindingObserver {
           })
           .timeout(const Duration(seconds: 10))
           .then((res) {
-            if (res.body == "nodata") {
-              Toast.show("Carian tidak dijumpai", context,
-                  duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
-              pr.dismiss();
-              FocusScope.of(context).requestFocus(new FocusNode());
-              return;
-            }
             setState(() {
+              if (res.body == "nodata") {
+                titlecenter = "Produk tidak dijumpai";
+                Toast.show("Carian tidak dijumpai", context,
+                    duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
+                pr.dismiss();
+                FocusScope.of(context).requestFocus(new FocusNode());
+                return;
+              }
+
               var extractdata = json.decode(res.body);
               productdata = extractdata["products"];
+              titletop = "Senarai dari " + sellername;
               FocusScope.of(context).requestFocus(new FocusNode());
               pr.dismiss();
             });
@@ -1674,6 +1433,7 @@ class _TabScreen1State extends State<TabScreen1> with WidgetsBindingObserver {
 
   _searchList() {
     print(_visiblelist);
+    titletop = "";
     setState(() {
       if (_visiblelist) {
         _visiblelist = false;
@@ -1751,8 +1511,6 @@ class _TabScreen1State extends State<TabScreen1> with WidgetsBindingObserver {
   }
 
   void _onReport(int index) {
-    ProgressDialog pr = new ProgressDialog(context,
-        type: ProgressDialogType.Normal, isDismissible: true);
     pr.style(message: "Melaporkan...");
     pr.show();
     String urlReport = "https://slumberjer.com/mypasar/php/insert_report.php";
@@ -1793,11 +1551,11 @@ class _TabScreen1State extends State<TabScreen1> with WidgetsBindingObserver {
   }
 
   _gotoShop(int index) {
-    if (widget.user.name == "Tidak Berdaftar") {
-      Toast.show("Sila login/daftar akaun", context,
-          duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
-      return;
-    }
+    // if (widget.user.name == "Tidak Berdaftar") {
+    //   Toast.show("Sila login/daftar akaun", context,
+    //       duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
+    //   return;
+    // }
     showDialog(
       context: context,
       builder: (context) => new AlertDialog(
@@ -1814,7 +1572,8 @@ class _TabScreen1State extends State<TabScreen1> with WidgetsBindingObserver {
               onPressed: () {
                 Navigator.of(context).pop(false);
                 Navigator.of(context).pop(false);
-                _searchItembySeller(productdata[index]['phone']);
+                _searchItembySeller(
+                    productdata[index]['phone'], productdata[index]['name']);
               },
               child: Text(
                 "Ya",

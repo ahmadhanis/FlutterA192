@@ -31,6 +31,8 @@ class _SellerSellScreenState extends State<SellerSellScreen> {
   double screenHeight, screenWidth;
   String option = "Baru";
   String info = "Maklumat Penjualan Anda";
+  String titlecenter="";
+
   @override
   void initState() {
     super.initState();
@@ -45,66 +47,6 @@ class _SellerSellScreenState extends State<SellerSellScreen> {
     screenHeight = MediaQuery.of(context).size.height;
     screenWidth = MediaQuery.of(context).size.width;
     final f = new DateFormat('dd-MM-yyyy hh:mm a');
-    if (productdata == null) {
-      return Scaffold(
-          appBar: AppBar(
-            title: Container(
-                child: Text('Penjualan Saya',
-                    style: GoogleFonts.anaheim(
-                        fontWeight: FontWeight.bold, fontSize: 24))),
-          ),
-          body: RefreshIndicator(
-              key: refreshKey,
-              color: Color.fromRGBO(101, 255, 218, 50),
-              onRefresh: () async {
-                await _loadData("Baru");
-                loadDelivery();
-              },
-              child: Container(
-                  child: Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: <Widget>[
-                    SizedBox(
-                      height: 10,
-                    ),
-                    Text(
-                      info,
-                      style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 18,
-                          color: Colors.white),
-                    )
-                  ],
-                ),
-              ))),
-          floatingActionButton: SpeedDial(
-            animatedIcon: AnimatedIcons.menu_close,
-            children: [
-              SpeedDialChild(
-                  child: Icon(Icons.fiber_new),
-                  label: "Pesanan baru",
-                  labelBackgroundColor: Colors.white,
-                  onTap: () => _loadData("Baru")),
-              SpeedDialChild(
-                  child: Icon(Icons.play_circle_outline),
-                  label: "Pesanan sedang dihantar",
-                  labelBackgroundColor: Colors.white,
-                  onTap: () => _loadData("Penghantaran")),
-              SpeedDialChild(
-                  child: Icon(Icons.done_all),
-                  label: "Pesanan selesai",
-                  labelBackgroundColor: Colors.white,
-                  onTap: () => _loadData("Selesai")),
-              SpeedDialChild(
-                  child: Icon(MdiIcons.truckDeliveryOutline),
-                  label: "Penghantar",
-                  labelBackgroundColor: Colors.white,
-                  onTap: () => _loadPenghantar()),
-            ],
-          ));
-    }
     return Scaffold(
         appBar: AppBar(
           title: Container(
@@ -126,7 +68,18 @@ class _SellerSellScreenState extends State<SellerSellScreen> {
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
                         color: Colors.white)),
-                Expanded(
+                         productdata == null
+                      ? Flexible(
+                          child: Container(
+                              child: Center(
+                                  child: Text(
+                          titlecenter,
+                          style: TextStyle(
+                              color: Color.fromRGBO(101, 255, 218, 50),
+                              fontSize: 22,
+                              fontWeight: FontWeight.bold),
+                        ))))
+                      :Expanded(
                     child: ListView.builder(
                         itemCount: productdata == null ? 1 : productdata.length,
                         itemBuilder: (context, index) {
@@ -671,12 +624,15 @@ class _SellerSellScreenState extends State<SellerSellScreen> {
           info = "Tiada Maklumat";
           if (op == "Baru") {
             info = "Tiada Pesanan Baru";
+            titlecenter = info; 
           }
           if (op == "Penghantaran") {
             info = "Tiada Pesanan Dalam Penghantaran";
+            titlecenter = info;
           }
           if (op == "Selesai") {
             info = "Tiada Pesanan Telah Selesai";
+            titlecenter = info;
           }
         } else {
           var extractdata = json.decode(res.body);
