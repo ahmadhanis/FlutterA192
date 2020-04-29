@@ -60,7 +60,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   Widget lowerHalf(BuildContext context) {
     return Container(
-      height: screenHeight / 2,
+      height: screenHeight / 1.5,
       margin: EdgeInsets.only(top: screenHeight / 2.5),
       padding: EdgeInsets.only(left: 10, right: 10),
       child: Column(
@@ -76,13 +76,16 @@ class _LoginScreenState extends State<LoginScreen> {
                     child: Text(
                       "Login",
                       style: TextStyle(
-                        color: Colors.black,
+                        color: Colors.white,
                         fontSize: 26,
                         fontWeight: FontWeight.w600,
                       ),
                     ),
                   ),
                   TextField(
+                      style: TextStyle(
+                        color: Colors.white,
+                      ),
                       controller: _emailEditingController,
                       keyboardType: TextInputType.emailAddress,
                       decoration: InputDecoration(
@@ -90,6 +93,9 @@ class _LoginScreenState extends State<LoginScreen> {
                         icon: Icon(Icons.email),
                       )),
                   TextField(
+                    style: TextStyle(
+                      color: Colors.white,
+                    ),
                     controller: _passEditingController,
                     decoration: InputDecoration(
                       labelText: 'Password',
@@ -111,14 +117,19 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                       Text('Remember Me ',
                           style: TextStyle(
-                              fontSize: 16, fontWeight: FontWeight.bold)),
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white)),
                       MaterialButton(
                         shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(5.0)),
                         minWidth: 100,
                         height: 50,
-                        child: Text('Login'),
-                        color: Colors.blue[500],
+                        child: Text('Login',
+                            style: TextStyle(
+                              color: Colors.black,
+                            )),
+                        color: Color.fromRGBO(101, 255, 218, 50),
                         textColor: Colors.white,
                         elevation: 10,
                         onPressed: this._userLogin,
@@ -135,28 +146,33 @@ class _LoginScreenState extends State<LoginScreen> {
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              Text("Don't have an account? ", style: TextStyle(fontSize: 16.0)),
+              Text("Don't have an account? ",
+                  style: TextStyle(fontSize: 16.0, color: Colors.white)),
               GestureDetector(
                 onTap: _registerUser,
                 child: Text(
                   "Create Account",
-                  style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
+                  style: TextStyle(
+                      fontSize: 16.0,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white),
                 ),
               ),
             ],
           ),
-          SizedBox(
-            height: 5,
-          ),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              Text("Forgot your password ", style: TextStyle(fontSize: 16.0)),
+              Text("Forgot your password ",
+                  style: TextStyle(fontSize: 16.0, color: Colors.white)),
               GestureDetector(
                 onTap: _forgotPassword,
                 child: Text(
                   "Reset Password",
-                  style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
+                  style: TextStyle(
+                      fontSize: 16.0,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white),
                 ),
               ),
             ],
@@ -197,43 +213,41 @@ class _LoginScreenState extends State<LoginScreen> {
       pr.show();
       String _email = _emailEditingController.text;
       String _password = _passEditingController.text;
-      http
-          .post(urlLogin, body: {
-            "email": _email,
-            "password": _password,
-          })
+      http.post(urlLogin, body: {
+        "email": _email,
+        "password": _password,
+      })
           //.timeout(const Duration(seconds: 4))
           .then((res) {
-            print(res.body);
-            var string = res.body;
-            List userdata = string.split(",");
-            if (userdata[0] == "success") {
-              User _user = new User(
-                  name: userdata[1],
-                  email: _email,
-                  password: _password,
-                  phone: userdata[3],
-                  credit: userdata[4],
-                  datereg: userdata[5],
-                  quantity: userdata[6]);
-              pr.dismiss();
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (BuildContext context) => MainScreen(
-                            user: _user,
-                          )));
-            } else {
-              pr.dismiss();
-              Toast.show("Login failed", context,
-                  duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
-            }
-          })
-          .catchError((err) {
-            print(err);
-            pr.dismiss();
-          });
-    } on Exception  catch (_) {
+        print(res.body);
+        var string = res.body;
+        List userdata = string.split(",");
+        if (userdata[0] == "success") {
+          User _user = new User(
+              name: userdata[1],
+              email: _email,
+              password: _password,
+              phone: userdata[3],
+              credit: userdata[4],
+              datereg: userdata[5],
+              quantity: userdata[6]);
+          pr.dismiss();
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (BuildContext context) => MainScreen(
+                        user: _user,
+                      )));
+        } else {
+          pr.dismiss();
+          Toast.show("Login failed", context,
+              duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
+        }
+      }).catchError((err) {
+        print(err);
+        pr.dismiss();
+      });
+    } on Exception catch (_) {
       Toast.show("Error", context,
           duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
     }
@@ -252,13 +266,21 @@ class _LoginScreenState extends State<LoginScreen> {
       builder: (BuildContext context) {
         // return object of type Dialog
         return AlertDialog(
-          title: new Text("Forgot Password?"),
+          title: new Text(
+            "Forgot Password?",
+            style: TextStyle(
+              color: Colors.white,
+            ),
+          ),
           content: new Container(
             height: 100,
             child: Column(
               children: <Widget>[
                 Text(
                   "Enter your recovery email",
+                  style: TextStyle(
+                    color: Colors.white,
+                  ),
                 ),
                 TextField(
                     decoration: InputDecoration(
@@ -271,7 +293,12 @@ class _LoginScreenState extends State<LoginScreen> {
           actions: <Widget>[
             // usually buttons at the bottom of the dialog
             new FlatButton(
-              child: new Text("Yes"),
+              child: new Text(
+                "Yes",
+                style: TextStyle(
+                  color: Color.fromRGBO(101, 255, 218, 50),
+                ),
+              ),
               onPressed: () {
                 Navigator.of(context).pop();
                 print(
@@ -280,7 +307,12 @@ class _LoginScreenState extends State<LoginScreen> {
               },
             ),
             new FlatButton(
-              child: new Text("No"),
+              child: new Text(
+                "No",
+                style: TextStyle(
+                  color: Color.fromRGBO(101, 255, 218, 50),
+                ),
+              ),
               onPressed: () {
                 Navigator.of(context).pop();
               },
@@ -305,19 +337,41 @@ class _LoginScreenState extends State<LoginScreen> {
     return showDialog(
           context: context,
           builder: (context) => new AlertDialog(
-            title: new Text('Are you sure?'),
-            content: new Text('Do you want to exit an App'),
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.all(Radius.circular(20.0))),
+            title: new Text(
+              'Are you sure?',
+              style: TextStyle(
+                color: Colors.white,
+              ),
+            ),
+            content: new Text(
+              'Do you want to exit an App',
+              style: TextStyle(
+                color: Colors.white,
+              ),
+            ),
             actions: <Widget>[
               MaterialButton(
                   onPressed: () {
                     SystemChannels.platform.invokeMethod('SystemNavigator.pop');
                   },
-                  child: Text("Exit")),
+                  child: Text(
+                    "Exit",
+                    style: TextStyle(
+                      color: Color.fromRGBO(101, 255, 218, 50),
+                    ),
+                  )),
               MaterialButton(
                   onPressed: () {
                     Navigator.of(context).pop(false);
                   },
-                  child: Text("Cancel")),
+                  child: Text(
+                    "Cancel",
+                    style: TextStyle(
+                      color: Color.fromRGBO(101, 255, 218, 50),
+                    ),
+                  )),
             ],
           ),
         ) ??

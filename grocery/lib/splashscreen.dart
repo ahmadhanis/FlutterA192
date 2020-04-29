@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:grocery/loginscreen.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 void main() => runApp(MyApp());
 
@@ -12,10 +14,17 @@ class _MyAppState extends State<MyApp> {
   double screenHeight;
   @override
   Widget build(BuildContext context) {
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ]);
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      theme: new ThemeData(
-        primarySwatch: Colors.brown,
+      theme: ThemeData(
+        brightness: Brightness.dark,
+        textTheme: GoogleFonts.anaheimTextTheme(
+          Theme.of(context).textTheme,
+        ),
       ),
       title: 'My.Grocery',
       home: Scaffold(

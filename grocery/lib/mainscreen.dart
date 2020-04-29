@@ -7,8 +7,9 @@ import 'package:http/http.dart' as http;
 import 'package:progress_dialog/progress_dialog.dart';
 import 'package:toast/toast.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-
+import 'package:cached_network_image/cached_network_image.dart';
 import 'cartscreen.dart';
+import 'profilescreen.dart';
 
 class MainScreen extends StatefulWidget {
   final User user;
@@ -26,6 +27,7 @@ class _MainScreenState extends State<MainScreen> {
   bool _visible = false;
   String curtype = "Recent";
   String cartquantity = "0";
+  int quantity = 1;
 
   @override
   void initState() {
@@ -56,7 +58,8 @@ class _MainScreenState extends State<MainScreen> {
                 ),
                 Text(
                   "Loading Products",
-                  style: TextStyle(fontWeight: FontWeight.bold),
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold, color: Colors.white),
                 )
               ],
             ),
@@ -65,7 +68,12 @@ class _MainScreenState extends State<MainScreen> {
       return Scaffold(
         drawer: mainDrawer(context),
         appBar: AppBar(
-          title: Text('Products List'),
+          title: Text(
+            'Products List',
+            style: TextStyle(
+              color: Colors.white,
+            ),
+          ),
           actions: <Widget>[
             IconButton(
               icon: _visible
@@ -103,19 +111,17 @@ class _MainScreenState extends State<MainScreen> {
                                 children: <Widget>[
                                   FlatButton(
                                       onPressed: () => _sortItem("Recent"),
-                                      color: Colors.blue[500],
+                                      color: Color.fromRGBO(101, 255, 218, 50),
                                       padding: EdgeInsets.all(10.0),
                                       child: Column(
                                         // Replace with a Row for horizontal icon + text
                                         children: <Widget>[
-                                          Icon(
-                                            MdiIcons.update,
-                                            color: Colors.white,
-                                          ),
+                                          Icon(MdiIcons.update,
+                                              color: Colors.black),
                                           Text(
                                             "Recent",
                                             style:
-                                                TextStyle(color: Colors.white),
+                                                TextStyle(color: Colors.black),
                                           )
                                         ],
                                       )),
@@ -128,19 +134,19 @@ class _MainScreenState extends State<MainScreen> {
                                 children: <Widget>[
                                   FlatButton(
                                       onPressed: () => _sortItem("Drink"),
-                                      color: Colors.blue[500],
+                                      color: Color.fromRGBO(101, 255, 218, 50),
                                       padding: EdgeInsets.all(10.0),
                                       child: Column(
                                         // Replace with a Row for horizontal icon + text
                                         children: <Widget>[
                                           Icon(
                                             MdiIcons.beer,
-                                            color: Colors.white,
+                                            color: Colors.black,
                                           ),
                                           Text(
                                             "Drink",
                                             style:
-                                                TextStyle(color: Colors.white),
+                                                TextStyle(color: Colors.black),
                                           )
                                         ],
                                       )),
@@ -153,19 +159,19 @@ class _MainScreenState extends State<MainScreen> {
                                 children: <Widget>[
                                   FlatButton(
                                       onPressed: () => _sortItem("Canned Food"),
-                                      color: Colors.blue[500],
+                                      color: Color.fromRGBO(101, 255, 218, 50),
                                       padding: EdgeInsets.all(10.0),
                                       child: Column(
                                         // Replace with a Row for horizontal icon + text
                                         children: <Widget>[
                                           Icon(
                                             MdiIcons.foodVariant,
-                                            color: Colors.white,
+                                            color: Colors.black,
                                           ),
                                           Text(
                                             "Canned",
                                             style:
-                                                TextStyle(color: Colors.white),
+                                                TextStyle(color: Colors.black),
                                           )
                                         ],
                                       )),
@@ -178,19 +184,19 @@ class _MainScreenState extends State<MainScreen> {
                                 children: <Widget>[
                                   FlatButton(
                                       onPressed: () => _sortItem("Vegetable"),
-                                      color: Colors.blue[500],
+                                      color: Color.fromRGBO(101, 255, 218, 50),
                                       padding: EdgeInsets.all(10.0),
                                       child: Column(
                                         // Replace with a Row for horizontal icon + text
                                         children: <Widget>[
                                           Icon(
                                             MdiIcons.foodApple,
-                                            color: Colors.white,
+                                            color: Colors.black,
                                           ),
                                           Text(
                                             "Vegetable",
                                             style:
-                                                TextStyle(color: Colors.white),
+                                                TextStyle(color: Colors.black),
                                           )
                                         ],
                                       )),
@@ -203,19 +209,19 @@ class _MainScreenState extends State<MainScreen> {
                                 children: <Widget>[
                                   FlatButton(
                                       onPressed: () => _sortItem("Meat"),
-                                      color: Colors.blue[500],
+                                      color: Color.fromRGBO(101, 255, 218, 50),
                                       padding: EdgeInsets.all(10.0),
                                       child: Column(
                                         // Replace with a Row for horizontal icon + text
                                         children: <Widget>[
                                           Icon(
                                             MdiIcons.fish,
-                                            color: Colors.white,
+                                            color: Colors.black,
                                           ),
                                           Text(
                                             "Fish&Meat",
                                             style:
-                                                TextStyle(color: Colors.white),
+                                                TextStyle(color: Colors.black),
                                           )
                                         ],
                                       )),
@@ -228,19 +234,44 @@ class _MainScreenState extends State<MainScreen> {
                                 children: <Widget>[
                                   FlatButton(
                                       onPressed: () => _sortItem("Bread"),
-                                      color: Colors.blue[500],
+                                      color: Color.fromRGBO(101, 255, 218, 50),
                                       padding: EdgeInsets.all(10.0),
                                       child: Column(
                                         // Replace with a Row for horizontal icon + text
                                         children: <Widget>[
                                           Icon(
                                             MdiIcons.breadSlice,
-                                            color: Colors.white,
+                                            color: Colors.black,
                                           ),
                                           Text(
                                             "Bread",
                                             style:
-                                                TextStyle(color: Colors.white),
+                                                TextStyle(color: Colors.black),
+                                          )
+                                        ],
+                                      )),
+                                ],
+                              ),
+                              SizedBox(
+                                width: 3,
+                              ),
+                              Column(
+                                children: <Widget>[
+                                  FlatButton(
+                                      onPressed: () => _sortItem("Others"),
+                                      color: Color.fromRGBO(101, 255, 218, 50),
+                                      padding: EdgeInsets.all(10.0),
+                                      child: Column(
+                                        // Replace with a Row for horizontal icon + text
+                                        children: <Widget>[
+                                          Icon(
+                                            MdiIcons.ornament,
+                                            color: Colors.black,
+                                          ),
+                                          Text(
+                                            "Others",
+                                            style:
+                                                TextStyle(color: Colors.black),
                                           )
                                         ],
                                       )),
@@ -255,7 +286,7 @@ class _MainScreenState extends State<MainScreen> {
                   child: Card(
                     elevation: 5,
                     child: Container(
-                      height: screenHeight / 12,
+                      height: screenHeight / 12.5,
                       margin: EdgeInsets.fromLTRB(20, 2, 20, 2),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -264,6 +295,9 @@ class _MainScreenState extends State<MainScreen> {
                               child: Container(
                             height: 30,
                             child: TextField(
+                                style: TextStyle(
+                                  color: Colors.white,
+                                ),
                                 autofocus: false,
                                 controller: _prdController,
                                 decoration: InputDecoration(
@@ -272,20 +306,23 @@ class _MainScreenState extends State<MainScreen> {
                           )),
                           Flexible(
                               child: MaterialButton(
-                                  color: Colors.blue[500],
+                                  color: Color.fromRGBO(101, 255, 218, 50),
                                   onPressed: () =>
                                       {_sortItembyName(_prdController.text)},
                                   elevation: 5,
                                   child: Text(
                                     "Search Product",
-                                    style: TextStyle(color: Colors.white),
+                                    style: TextStyle(color: Colors.black),
                                   )))
                         ],
                       ),
                     ),
                   )),
               Text(curtype,
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                  style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white)),
               Flexible(
                   child: GridView.count(
                       crossAxisCount: 2,
@@ -301,40 +338,57 @@ class _MainScreenState extends State<MainScreen> {
                                   GestureDetector(
                                     onTap: () => _onImageDisplay(index),
                                     child: Container(
-                                        height: screenWidth / 4,
-                                        width: screenWidth / 4,
-                                        decoration: BoxDecoration(
-                                            shape: BoxShape.circle,
-                                            border:
-                                                Border.all(color: Colors.black),
-                                            image: DecorationImage(
-                                                fit: BoxFit.fill,
-                                                image: NetworkImage(
-                                                    "http://slumberjer.com/grocery/productimage/${productdata[index]['id']}.jpg")))),
+                                      height: screenHeight / 5.9,
+                                      width: screenWidth / 3.5,
+                                      child: ClipOval(
+                                          child: CachedNetworkImage(
+                                        fit: BoxFit.scaleDown,
+                                        imageUrl:
+                                            "http://slumberjer.com/grocery/productimage/${productdata[index]['id']}.jpg",
+                                        placeholder: (context, url) =>
+                                            new CircularProgressIndicator(),
+                                        errorWidget: (context, url, error) =>
+                                            new Icon(Icons.error),
+                                      )),
+                                    ),
                                   ),
                                   Text(productdata[index]['name'],
                                       maxLines: 1,
                                       style: TextStyle(
-                                          fontWeight: FontWeight.bold)),
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.white)),
                                   Text(
                                     "RM " + productdata[index]['price'],
-                                    style:
-                                        TextStyle(fontWeight: FontWeight.bold),
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.white),
                                   ),
-                                  Text("Quantity available:" +
-                                      productdata[index]['quantity']),
-                                  Text("Weight:" +
-                                      productdata[index]['weigth'] +
-                                      " gram"),
+                                  Text(
+                                    "Quantity available:" +
+                                        productdata[index]['quantity'],
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                  Text(
+                                    "Weight:" +
+                                        productdata[index]['weigth'] +
+                                        " gram",
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                    ),
+                                  ),
                                   MaterialButton(
                                     shape: RoundedRectangleBorder(
                                         borderRadius:
                                             BorderRadius.circular(20.0)),
                                     minWidth: 100,
-                                    height: 40,
-                                    child: Text('Add to Cart'),
-                                    color: Colors.blue[500],
-                                    textColor: Colors.white,
+                                    height: 30,
+                                    child: Text(
+                                      'Add to Cart',
+                                    ),
+                                    color: Color.fromRGBO(101, 255, 218, 50),
+                                    textColor: Colors.black,
                                     elevation: 10,
                                     onPressed: () => _addtocartdialog(index),
                                   ),
@@ -366,24 +420,26 @@ class _MainScreenState extends State<MainScreen> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.all(Radius.circular(20.0))),
             content: new Container(
-          height: screenHeight / 2.5,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              Container(
-                  height: screenWidth / 2,
-                  width: screenWidth / 2,
-                  decoration: BoxDecoration(
-                      //border: Border.all(color: Colors.black),
-                      image: DecorationImage(
-                          fit: BoxFit.fill,
-                          image: NetworkImage(
-                              "http://slumberjer.com/grocery/productimage/${productdata[index]['id']}.jpg")))),
-            ],
-          ),
-        ));
+              height: screenHeight / 2.5,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  Container(
+                      height: screenWidth / 1.5,
+                      width: screenWidth / 1.5,
+                      decoration: BoxDecoration(
+                          //border: Border.all(color: Colors.black),
+                          image: DecorationImage(
+                              fit: BoxFit.fill,
+                              image: NetworkImage(
+                                  "http://slumberjer.com/grocery/productimage/${productdata[index]['id']}.jpg")))),
+                ],
+              ),
+            ));
       },
     );
   }
@@ -424,11 +480,12 @@ class _MainScreenState extends State<MainScreen> {
             ),
           ),
           ListTile(
-            title: Text("Search product"),
-            trailing: Icon(Icons.arrow_forward),
-          ),
-          ListTile(
-              title: Text("Shopping Cart"),
+              title: Text(
+                "Shopping Cart",
+                style: TextStyle(
+                  color: Colors.white,
+                ),
+              ),
               trailing: Icon(Icons.arrow_forward),
               onTap: () => {
                     Navigator.pop(context),
@@ -440,49 +497,146 @@ class _MainScreenState extends State<MainScreen> {
                                 )))
                   }),
           ListTile(
-            title: Text("Purchased History"),
+            title: Text(
+              "Purchased History",
+              style: TextStyle(
+                color: Colors.white,
+              ),
+            ),
             trailing: Icon(Icons.arrow_forward),
           ),
           ListTile(
-            title: Text("User Profile"),
-            trailing: Icon(Icons.arrow_forward),
-          ),
+              title: Text(
+                "User Profile",
+                style: TextStyle(
+                  color: Colors.white,
+                ),
+              ),
+              trailing: Icon(Icons.arrow_forward),
+              onTap: () => {
+                    Navigator.pop(context),
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (BuildContext context) => ProfileScreen(
+                                  user: widget.user,
+                                )))
+                  }),
         ],
       ),
     );
   }
 
   _addtocartdialog(int index) {
+    quantity = 1;
     showDialog(
-      context: context,
-      builder: (context) => new AlertDialog(
-        title: new Text('Add to Cart?'),
-        actions: <Widget>[
-          MaterialButton(
-              onPressed: () {
-                Navigator.of(context).pop(false);
-                _addtoCart(index);
-              },
-              child: Text("Yes")),
-          MaterialButton(
-              onPressed: () {
-                Navigator.of(context).pop(false);
-              },
-              child: Text("Cancel")),
-        ],
-      ),
-    );
+        context: context,
+        builder: (context) {
+          return StatefulBuilder(builder: (context, newSetState) {
+            return AlertDialog(
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(20.0))),
+              title: new Text(
+                "Add " + productdata[index]['name'] + " to Cart?",
+                style: TextStyle(
+                  color: Colors.white,
+                ),
+              ),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  Text(
+                    "Select quantity of product",
+                    style: TextStyle(
+                      color: Colors.white,
+                    ),
+                  ),
+                  Row(
+                    children: <Widget>[
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                          FlatButton(
+                            onPressed: () => {
+                              newSetState(() {
+                                if (quantity > 1) {
+                                  quantity--;
+                                }
+                              })
+                            },
+                            child: Icon(
+                              MdiIcons.minus,
+                              color: Color.fromRGBO(101, 255, 218, 50),
+                            ),
+                          ),
+                          Text(
+                            quantity.toString(),
+                            style: TextStyle(
+                              color: Colors.white,
+                            ),
+                          ),
+                          FlatButton(
+                            onPressed: () => {
+                              newSetState(() {
+                                if (quantity <
+                                    (int.parse(productdata[index]['quantity']) -
+                                        10)) {
+                                  quantity++;
+                                } else {
+                                  Toast.show("Quantity not available", context,
+                                      duration: Toast.LENGTH_LONG,
+                                      gravity: Toast.BOTTOM);
+                                }
+                              })
+                            },
+                            child: Icon(
+                              MdiIcons.plus,
+                              color: Color.fromRGBO(101, 255, 218, 50),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  )
+                ],
+              ),
+              actions: <Widget>[
+                MaterialButton(
+                    onPressed: () {
+                      Navigator.of(context).pop(false);
+                      _addtoCart(index);
+                    },
+                    child: Text(
+                      "Yes",
+                      style: TextStyle(
+                        color: Color.fromRGBO(101, 255, 218, 50),
+                      ),
+                    )),
+                MaterialButton(
+                    onPressed: () {
+                      Navigator.of(context).pop(false);
+                    },
+                    child: Text(
+                      "Cancel",
+                      style: TextStyle(
+                        color: Color.fromRGBO(101, 255, 218, 50),
+                      ),
+                    )),
+              ],
+            );
+          });
+        });
   }
 
   void _addtoCart(int index) {
     try {
-      int quantity = int.parse(productdata[index]["quantity"]);
-      print(quantity);
+      int cquantity = int.parse(productdata[index]["quantity"]);
+      print(cquantity);
       print(productdata[index]["id"]);
       print(widget.user.email);
-      if (quantity > 0) {
+      if (cquantity > 0) {
         ProgressDialog pr = new ProgressDialog(context,
-            type: ProgressDialogType.Normal, isDismissible: false);
+            type: ProgressDialogType.Normal, isDismissible: true);
         pr.style(message: "Add to cart...");
         pr.show();
         String urlLoadJobs =
@@ -490,11 +644,14 @@ class _MainScreenState extends State<MainScreen> {
         http.post(urlLoadJobs, body: {
           "email": widget.user.email,
           "proid": productdata[index]["id"],
+          "quantity": quantity.toString(),
         }).then((res) {
           print(res.body);
           if (res.body == "failed") {
             Toast.show("Failed add to cart", context,
                 duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
+            pr.dismiss();
+            return;
           } else {
             List respond = res.body.split(",");
             setState(() {
@@ -522,7 +679,7 @@ class _MainScreenState extends State<MainScreen> {
   void _sortItem(String type) {
     try {
       ProgressDialog pr = new ProgressDialog(context,
-          type: ProgressDialogType.Normal, isDismissible: false);
+          type: ProgressDialogType.Normal, isDismissible: true);
       pr.style(message: "Searching...");
       pr.show();
       String urlLoadJobs =
@@ -552,7 +709,7 @@ class _MainScreenState extends State<MainScreen> {
     try {
       print(prname);
       ProgressDialog pr = new ProgressDialog(context,
-          type: ProgressDialogType.Normal, isDismissible: false);
+          type: ProgressDialogType.Normal, isDismissible: true);
       pr.style(message: "Searching...");
       pr.show();
       String urlLoadJobs =
