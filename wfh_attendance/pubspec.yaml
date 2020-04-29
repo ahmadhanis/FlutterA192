@@ -36,6 +36,8 @@ dev_dependencies:
   geocoder: ^0.2.1
   intl: ^0.16.1
   recase: ^3.0.0
+  google_fonts:
+  date_util: ^0.1.4
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

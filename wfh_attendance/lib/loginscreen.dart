@@ -74,7 +74,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     child: Text(
                       "Login",
                       style: TextStyle(
-                        color: Colors.black,
+                        color: Colors.white,
                         fontSize: 26,
                         fontWeight: FontWeight.w600,
                       ),
@@ -83,11 +83,17 @@ class _LoginScreenState extends State<LoginScreen> {
                   TextField(
                       controller: _idEditingController,
                       keyboardType: TextInputType.number,
+                      style: TextStyle(
+                        color: Colors.white,
+                      ),
                       decoration: InputDecoration(
                         labelText: 'Staff ID',
                         icon: Icon(Icons.card_membership),
                       )),
                   TextField(
+                    style: TextStyle(
+                      color: Colors.white,
+                    ),
                     controller: _passEditingController,
                     decoration: InputDecoration(
                       labelText: 'Password',
@@ -109,15 +115,19 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                       Text('Remember Me ',
                           style: TextStyle(
-                              fontSize: 16, fontWeight: FontWeight.bold)),
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white)),
                       MaterialButton(
                         shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(5.0)),
                         minWidth: 100,
                         height: 50,
-                        child: Text('Login'),
-                        color: Colors.blue,
-                        textColor: Colors.white,
+                        child: Text(
+                          'Login',
+                        ),
+                        color: Color.fromRGBO(101, 255, 218, 50),
+                        textColor: Colors.black,
                         elevation: 10,
                         onPressed: _userLogin,
                       ),
@@ -133,12 +143,16 @@ class _LoginScreenState extends State<LoginScreen> {
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              Text("Don't have an account? ", style: TextStyle(fontSize: 16.0)),
+              Text("Don't have an account? ",
+                  style: TextStyle(fontSize: 16.0, color: Colors.white)),
               GestureDetector(
                 onTap: _registerUser,
                 child: Text(
                   "Create Account",
-                  style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
+                  style: TextStyle(
+                      fontSize: 16.0,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white),
                 ),
               ),
             ],
@@ -182,39 +196,41 @@ class _LoginScreenState extends State<LoginScreen> {
     String _id = _idEditingController.text;
     String _password = _passEditingController.text;
 
-    http.post(urlLogin, body: {
-      "id": _id,
-      "password": _password,
-    }).then((res) {
-      var string = res.body;
-      print(res.body);
-      List userdata = string.split(",");
-      if (userdata[0] == "success") {
-        User _user = new User(
-          name: userdata[1],
-          id: _id,
-          password: _password,
-        );
-        pr.dismiss();
-        Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (BuildContext context) => MainScreen(
-                      user: _user,
-                    )));
-        Toast.show("Login success", context,
-            duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
-        
-      } else {
-        pr.dismiss();
-        Toast.show("Login failed", context,
-            duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
-        
-      }
-    }).timeout(Duration(seconds: 5)).catchError((err) {
-      print(err);
-      pr.dismiss();
-    });
+    http
+        .post(urlLogin, body: {
+          "id": _id,
+          "password": _password,
+        })
+        .then((res) {
+          var string = res.body;
+          print(res.body);
+          List userdata = string.split(",");
+          if (userdata[0] == "success") {
+            User _user = new User(
+              name: userdata[1],
+              id: _id,
+              password: _password,
+            );
+            pr.dismiss();
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (BuildContext context) => MainScreen(
+                          user: _user,
+                        )));
+            Toast.show("Login success", context,
+                duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
+          } else {
+            pr.dismiss();
+            Toast.show("Login failed", context,
+                duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
+          }
+        })
+        .timeout(Duration(seconds: 5))
+        .catchError((err) {
+          print(err);
+          pr.dismiss();
+        });
   }
 
   void _registerUser() {
@@ -236,19 +252,36 @@ class _LoginScreenState extends State<LoginScreen> {
     return showDialog(
           context: context,
           builder: (context) => new AlertDialog(
-            title: new Text('Exit this application'),
-            content: new Text('Are you sure?'),
+            title: new Text(
+              'Exit this application',
+              style: TextStyle(
+                color: Colors.white,
+              ),
+            ),
+            content: new Text('Are you sure?',style: TextStyle(
+                color: Colors.white,
+              ),),
             actions: <Widget>[
               MaterialButton(
                   onPressed: () {
                     SystemChannels.platform.invokeMethod('SystemNavigator.pop');
                   },
-                  child: Text("Exit")),
+                  child: Text(
+                    "Exit",
+                    style: TextStyle(
+                      color: Color.fromRGBO(101, 255, 218, 50),
+                    ),
+                  )),
               MaterialButton(
                   onPressed: () {
                     Navigator.of(context).pop(false);
                   },
-                  child: Text("Cancel")),
+                  child: Text(
+                    "Cancel",
+                    style: TextStyle(
+                      color: Color.fromRGBO(101, 255, 218, 50),
+                    ),
+                  )),
             ],
           ),
         ) ??

@@ -23,13 +23,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   @override
   Widget build(BuildContext context) {
     screenHeight = MediaQuery.of(context).size.height;
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      theme: new ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      title: 'Material App',
-      home: Scaffold(
+    return Scaffold(
           resizeToAvoidBottomPadding: false,
           body: Stack(
             children: <Widget>[
@@ -37,7 +31,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
               lowerHalf(context),
               pageTitle(),
             ],
-          )),
+          ),
     );
   }
 
@@ -69,7 +63,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     child: Text(
                       "Register",
                       style: TextStyle(
-                        color: Colors.black,
+                        color: Colors.white,
                         fontSize: 26,
                         fontWeight: FontWeight.w600,
                       ),
@@ -77,6 +71,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   ),
                   TextField(
                       controller: _nameEditingController,
+                      style: TextStyle(color: Colors.white,),
                       keyboardType: TextInputType.text,
                       decoration: InputDecoration(
                         labelText: 'Name',
@@ -84,6 +79,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       )),
                   TextField(
                       controller: _idEditingController,
+                      style: TextStyle(color: Colors.white,),
                       keyboardType: TextInputType.phone,
                       decoration: InputDecoration(
                         labelText: 'Staff ID',
@@ -91,6 +87,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       )),
                   TextField(
                     controller: _passEditingController,
+                    style: TextStyle(color: Colors.white,),
+
                     decoration: InputDecoration(
                       labelText: 'Password',
                       icon: Icon(Icons.lock),
@@ -106,8 +104,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     minWidth: 350,
                     height: 50,
                     child: Text('Register'),
-                    color: Colors.blue,
-                    textColor: Colors.white,
+                    color: Color.fromRGBO(101, 255, 218, 50),
+                    textColor: Colors.black,
                     elevation: 10,
                     onPressed: _regDialog,
                   ),
@@ -121,12 +119,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              Text("Already register? ", style: TextStyle(fontSize: 16.0)),
+              Text("Already register? ", style: TextStyle(fontSize: 16.0,color: Colors.white,)),
               GestureDetector(
                 onTap: _loginScreen,
                 child: Text(
                   "Login",
-                  style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
+                  style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold,color: Colors.white,),
                 ),
               ),
             ],
@@ -163,7 +161,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     showDialog(
       context: context,
       builder: (context) => new AlertDialog(
-        title: new Text('Register your account?'),
+        title: new Text('Register your account?',style: TextStyle(color: Colors.white,),),
         actions: <Widget>[
           MaterialButton(
               onPressed: () {
@@ -171,12 +169,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 _onRegister();
                 
               },
-              child: Text("Yes")),
+              child: Text("Yes",style: TextStyle(color: Color.fromRGBO(101, 255, 218, 50),),)),
           MaterialButton(
               onPressed: () {
                 Navigator.of(context).pop(false);
               },
-              child: Text("Cancel")),
+              child: Text("Cancel",style: TextStyle(color: Color.fromRGBO(101, 255, 218, 50),),)),
         ],
       ),
     );

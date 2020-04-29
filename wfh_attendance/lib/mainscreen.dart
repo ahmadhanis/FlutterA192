@@ -7,6 +7,7 @@ import 'package:toast/toast.dart';
 import 'package:http/http.dart' as http;
 import 'package:geocoder/geocoder.dart';
 import 'package:progress_dialog/progress_dialog.dart';
+import 'package:date_util/date_util.dart';
 
 void main() => runApp(MainScreen());
 
@@ -28,6 +29,9 @@ class _MainScreenState extends State<MainScreen> {
 
   final fa = new DateFormat('dd');
   final f = new DateFormat('dd-MM-yyyy hh:mm a');
+  var dateUtility;
+  var numdaymonth;
+
   List<String> monthlist = [
     "January",
     "Febuary",
@@ -90,8 +94,11 @@ class _MainScreenState extends State<MainScreen> {
   void initState() {
     super.initState();
     DateTime now = DateTime.now();
+    dateUtility = new DateUtil();
+
     curmonth = now.month.toString();
     curyear = now.year.toString();
+    numdaymonth = dateUtility.daysInMonth(now.month, now.year);
     print(curmonth);
     print(curyear);
     WidgetsBinding.instance
@@ -104,7 +111,10 @@ class _MainScreenState extends State<MainScreen> {
     screenWidth = MediaQuery.of(context).size.width;
     return Scaffold(
       appBar: AppBar(
-        title: Text('Record Your Attendance'),
+        title: Text('Record Your Attendance',
+            style: TextStyle(
+              color: Colors.white,
+            )),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
@@ -112,28 +122,47 @@ class _MainScreenState extends State<MainScreen> {
           // Add your onPressed code here!
         },
         child: Icon(Icons.add),
-        backgroundColor: Colors.blue,
+        backgroundColor: Color.fromRGBO(101, 255, 218, 50),
         tooltip: "Record your attendance",
       ),
       body: Column(
         children: <Widget>[
           Container(
             child: Text("Your Attendance: " + widget.user.name,
-                style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold)),
+                style: TextStyle(
+                    fontSize: 18.0,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white)),
           ),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: <Widget>[
               Container(
                 child: Text("Month: " + curmonth,
-                    style:
-                        TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold)),
+                    style: TextStyle(
+                        fontSize: 16.0,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white)),
               ),
               Container(
                 child: Text("Year: " + curyear,
-                    style:
-                        TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold)),
+                    style: TextStyle(
+                        fontSize: 16.0,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white)),
               ),
+              userattlist == null
+                  ? Text("")
+                  : Container(
+                      child: Text(
+                          userattlist.length.toString() +
+                              "/" +
+                              numdaymonth.toString(),
+                          style: TextStyle(
+                              fontSize: 16.0,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white)),
+                    ),
             ],
           ),
           Card(
@@ -151,8 +180,8 @@ class _MainScreenState extends State<MainScreen> {
                       hint: Text(
                         'Month',
                         style: TextStyle(
-                            //color: Color.fromRGBO(101, 255, 218, 50),
-                            ),
+                          color: Color.fromRGBO(101, 255, 218, 50),
+                        ),
                       ), // Not necessary for Option 1
                       value: selectedMonth,
                       onChanged: (newValue) {
@@ -163,7 +192,9 @@ class _MainScreenState extends State<MainScreen> {
                       },
                       items: monthlist.map((selectedMonth) {
                         return DropdownMenuItem(
-                          child: new Text(selectedMonth, style: TextStyle()),
+                          child: new Text(selectedMonth,
+                              style: TextStyle(
+                                  color: Color.fromRGBO(101, 255, 218, 50))),
                           value: selectedMonth,
                         );
                       }).toList(),
@@ -176,8 +207,8 @@ class _MainScreenState extends State<MainScreen> {
                       hint: Text(
                         'Year',
                         style: TextStyle(
-                            //color: Color.fromRGBO(101, 255, 218, 50),
-                            ),
+                          color: Color.fromRGBO(101, 255, 218, 50),
+                        ),
                       ), // Not necessary for Option 1
                       value: selectedYear,
                       onChanged: (newValue) {
@@ -188,21 +219,23 @@ class _MainScreenState extends State<MainScreen> {
                       },
                       items: yearlist.map((selectedYear) {
                         return DropdownMenuItem(
-                          child: new Text(selectedYear, style: TextStyle()),
+                          child: new Text(selectedYear,
+                              style: TextStyle(
+                                  color: Color.fromRGBO(101, 255, 218, 50))),
                           value: selectedYear,
                         );
                       }).toList(),
                     ),
                   ),
                   MaterialButton(
-                      color: Colors.blue,
+                      color: Color.fromRGBO(101, 255, 218, 50),
                       onPressed: () => {
                             changeAtt(selectedMonth, selectedYear),
                           },
                       elevation: 5,
                       child: Text(
                         "Search",
-                        style: TextStyle(color: Colors.white),
+                        style: TextStyle(color: Colors.black),
                       ))
                 ],
               ),
@@ -214,70 +247,86 @@ class _MainScreenState extends State<MainScreen> {
                       child: Center(
                           child: Text(
                   titlecenter,
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white),
                 ))))
               : Flexible(
-                  child: ListView.builder(
-                      itemCount: userattlist == null ? 1 : userattlist.length,
-                      itemBuilder: (context, index) {
-                        return Padding(
-                            padding: EdgeInsets.all(2),
-                            child: Card(
-                              elevation: 5,
-                              child: InkWell(
-                                onLongPress: () => _deleteDetail(index),
-                                child: Padding(
-                                    padding: EdgeInsets.all(3),
-                                    child: Row(
-                                      children: <Widget>[
-                                        CircleAvatar(
-                                          backgroundColor:
-                                              Theme.of(context).platform ==
-                                                      TargetPlatform.android
-                                                  ? Colors.blue
-                                                  : Colors.blue,
-                                          child: Text(
-                                            fa.format(DateTime.parse(
-                                                userattlist[index]['date'])),
-                                            style: TextStyle(fontSize: 16.0),
-                                          ),
-                                        ),
-                                        SizedBox(
-                                          width: 10,
-                                        ),
-                                        Expanded(
-                                          child: Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: <Widget>[
-                                              Text(
-                                                  "Record ID:" +
-                                                      userattlist[index]['rid'],
-                                                  style: TextStyle(
-                                                      fontWeight:
-                                                          FontWeight.bold)),
-                                              Text("Lat:" +
+                  child: GridView.count(
+                  crossAxisCount: 2,
+                  childAspectRatio: (screenWidth / screenHeight) / 0.65,
+                  children: List.generate(userattlist.length, (index) {
+                    return Padding(
+                        padding: EdgeInsets.all(2),
+                        child: Card(
+                          elevation: 5,
+                          child: InkWell(
+                            onLongPress: () => _deleteDetail(index),
+                            child: Padding(
+                                padding: EdgeInsets.all(3),
+                                child: Row(
+                                  children: <Widget>[
+                                    CircleAvatar(
+                                      backgroundColor: Theme.of(context)
+                                                  .platform ==
+                                              TargetPlatform.android
+                                          ? Color.fromRGBO(101, 255, 218, 50)
+                                          : Color.fromRGBO(101, 255, 218, 50),
+                                      child: Text(
+                                        fa.format(DateTime.parse(
+                                            userattlist[index]['date'])),
+                                        style: TextStyle(fontSize: 16.0),
+                                      ),
+                                    ),
+                                    SizedBox(
+                                      width: 10,
+                                    ),
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: <Widget>[
+                                          Text(
+                                              "Record ID:" +
+                                                  userattlist[index]['rid'],
+                                              style: TextStyle(
+                                                  fontWeight: FontWeight.bold,
+                                                  color: Colors.white)),
+                                          Text(
+                                              "Lat:" +
                                                   userattlist[index]
                                                       ['latitude'] +
                                                   "/" +
                                                   "Lon:" +
                                                   userattlist[index]
-                                                      ['longitude']),
-                                              Text("Date:" +
-                                                  f.format(DateTime.parse(
-                                                      userattlist[index]
-                                                          ['date']))),
-                                              Text(userattlist[index]
-                                                  ['address']),
-                                            ],
-                                          ),
-                                        ),
-                                      ],
-                                    )),
-                              ),
-                            ));
-                      }),
-                )
+                                                      ['longitude'],
+                                              style: TextStyle(
+                                                color: Colors.white,
+                                              )),
+                                          Text(
+                                              "Date:" +
+                                                  f.format(
+                                                    DateTime.parse(
+                                                        userattlist[index]
+                                                            ['date']),
+                                                  ),
+                                              style: TextStyle(
+                                                color: Colors.white,
+                                              )),
+                                          Text(userattlist[index]['address'],
+                                              style: TextStyle(
+                                                color: Colors.white,
+                                              )),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                )),
+                          ),
+                        ));
+                  }),
+                ))
         ],
       ),
     );
@@ -338,12 +387,27 @@ class _MainScreenState extends State<MainScreen> {
         builder: (BuildContext context) {
           // return object of type Dialog
           return AlertDialog(
-            title: new Text("Record Your Attendance  " + f.format(now)),
-            content: Container(child: Text("at " + curaddress)),
+            title: new Text("Record Your Attendance  " + f.format(now),
+                style: TextStyle(
+                  color: Colors.white,
+                )),
+            content: Container(
+              child: Text(
+                "at " + curaddress,
+                style: TextStyle(
+                  color: Colors.white,
+                ),
+              ),
+            ),
             actions: <Widget>[
               // usually buttons at the bottom of the dialog
               new FlatButton(
-                child: new Text("Yes"),
+                child: new Text(
+                  "Yes",
+                  style: TextStyle(
+                    color: Color.fromRGBO(101, 255, 218, 50),
+                  ),
+                ),
                 onPressed: () {
                   http.post("http://slumberjer.com/wfh/insert_att.php", body: {
                     "id": widget.user.id,
@@ -368,7 +432,12 @@ class _MainScreenState extends State<MainScreen> {
                 },
               ),
               new FlatButton(
-                child: new Text("No"),
+                child: new Text(
+                  "No",
+                  style: TextStyle(
+                    color: Color.fromRGBO(101, 255, 218, 50),
+                  ),
+                ),
                 onPressed: () {
                   Navigator.of(context).pop();
                 },
@@ -396,7 +465,7 @@ class _MainScreenState extends State<MainScreen> {
           userattlist = null;
           Toast.show("No records", context,
               duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
-              titlecenter = "No records found";
+          titlecenter = "No records found";
         } else {
           var extractdata = json.decode(res.body);
           userattlist = extractdata["records"];
@@ -414,11 +483,21 @@ class _MainScreenState extends State<MainScreen> {
         builder: (BuildContext context) {
           // return object of type Dialog
           return AlertDialog(
-            title: new Text("Delete Record " + userattlist[index]["rid"] + "?"),
+            title: new Text(
+              "Delete Record " + userattlist[index]["rid"] + "?",
+              style: TextStyle(
+                color: Colors.white,
+              ),
+            ),
             actions: <Widget>[
               // usually buttons at the bottom of the dialog
               new FlatButton(
-                child: new Text("Yes"),
+                child: new Text(
+                  "Yes",
+                  style: TextStyle(
+                    color: Color.fromRGBO(101, 255, 218, 50),
+                  ),
+                ),
                 onPressed: () async {
                   http.post("https://slumberjer.com/wfh/delete_record.php",
                       body: {
@@ -440,7 +519,12 @@ class _MainScreenState extends State<MainScreen> {
                 },
               ),
               new FlatButton(
-                child: new Text("No"),
+                child: new Text(
+                  "No",
+                  style: TextStyle(
+                    color: Color.fromRGBO(101, 255, 218, 50),
+                  ),
+                ),
                 onPressed: () {
                   Navigator.of(context).pop();
                 },
