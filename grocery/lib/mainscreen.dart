@@ -323,12 +323,13 @@ class _MainScreenState extends State<MainScreen> {
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
                       color: Colors.white)),
-              Flexible(
+              Expanded(
                   child: GridView.count(
+                    
                       crossAxisCount: 2,
-                      childAspectRatio: (screenWidth / screenHeight) / 0.8,
+                      childAspectRatio: (screenWidth / screenHeight),
                       children: List.generate(productdata.length, (index) {
-                        return Card(
+                        return Container(child: Card(
                             elevation: 10,
                             child: Padding(
                               padding: EdgeInsets.all(5),
@@ -338,11 +339,11 @@ class _MainScreenState extends State<MainScreen> {
                                   GestureDetector(
                                     onTap: () => _onImageDisplay(index),
                                     child: Container(
-                                      height: screenHeight / 5.9,
-                                      width: screenWidth / 3.5,
+                                      height: screenHeight / 4,
+                                      width: screenWidth / 2,
                                       child: ClipOval(
                                           child: CachedNetworkImage(
-                                        fit: BoxFit.scaleDown,
+                                        fit: BoxFit.cover,
                                         imageUrl:
                                             "http://slumberjer.com/grocery/productimage/${productdata[index]['id']}.jpg",
                                         placeholder: (context, url) =>
@@ -394,7 +395,7 @@ class _MainScreenState extends State<MainScreen> {
                                   ),
                                 ],
                               ),
-                            ));
+                            )));
                       })))
             ],
           ),
@@ -420,11 +421,15 @@ class _MainScreenState extends State<MainScreen> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
+          backgroundColor: Colors.white,
             shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.all(Radius.circular(20.0))),
+
             content: new Container(
-              height: screenHeight / 2.5,
+              color: Colors.white,
+              height: screenHeight / 2.2,
               child: Column(
+                mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
@@ -434,7 +439,7 @@ class _MainScreenState extends State<MainScreen> {
                       decoration: BoxDecoration(
                           //border: Border.all(color: Colors.black),
                           image: DecorationImage(
-                              fit: BoxFit.fill,
+                              fit: BoxFit.scaleDown,
                               image: NetworkImage(
                                   "http://slumberjer.com/grocery/productimage/${productdata[index]['id']}.jpg")))),
                 ],
@@ -477,8 +482,20 @@ class _MainScreenState extends State<MainScreen> {
                 widget.user.name.toString().substring(0, 1).toUpperCase(),
                 style: TextStyle(fontSize: 40.0),
               ),
+              backgroundImage: NetworkImage("http://slumberjer.com/grocery/profileimages/${widget.user.email}.jpg?"),
+              
             ),
+            onDetailsPressed: ()=>{
+              Navigator.pop(context),
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (BuildContext context) => ProfileScreen(
+                                  user: widget.user,
+                                )))
+            },
           ),
+          
           ListTile(
               title: Text(
                 "Shopping Cart",
@@ -552,6 +569,7 @@ class _MainScreenState extends State<MainScreen> {
                     ),
                   ),
                   Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,

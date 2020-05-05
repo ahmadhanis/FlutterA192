@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Generation Time: Mar 20, 2020 at 11:50 PM
+-- Generation Time: May 05, 2020 at 09:25 PM
 -- Server version: 10.3.22-MariaDB-cll-lve
 -- PHP Version: 7.3.6
 
@@ -31,20 +31,19 @@ SET time_zone = "+00:00";
 CREATE TABLE `CART` (
   `EMAIL` varchar(50) NOT NULL,
   `PRODID` varchar(20) NOT NULL,
-  `PRICE` varchar(10) NOT NULL,
-  `QUANTITY` varchar(10) NOT NULL,
-  `PRODNAME` varchar(100) NOT NULL
+  `CQUANTITY` varchar(10) NOT NULL
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 --
 -- Dumping data for table `CART`
 --
 
-INSERT INTO `CART` (`EMAIL`, `PRODID`, `PRICE`, `QUANTITY`, `PRODNAME`) VALUES
-('slumberjer@gmail.com', '1001', '51.6', '4', 'Nescafe Blend & Brew Original 3 in 1'),
-('slumberjer@gmail.com', '1003', '80.5', '7', 'Ah Huat White Coffee'),
-('slumberjer@gmail.com', '1005', '39.8', '2', 'Power Root Alicafe 5 in 1 Tongkat Ali & Ginseng Premix Coffee '),
-('slumberjer@gmail.com', '1006', '9.8', '2', 'Penguin Lychees');
+INSERT INTO `CART` (`EMAIL`, `PRODID`, `CQUANTITY`) VALUES
+('slumberjer@gmail.com', '1017', '2'),
+('slumberjer@gmail.com', '1004', '3'),
+('hahahaha', '1024', '1'),
+('jane356@gmail.com', '1003', '1'),
+('slumberjer@gmail.com', '1015', '2');
 
 -- --------------------------------------------------------
 
@@ -80,7 +79,19 @@ INSERT INTO `PRODUCT` (`ID`, `NAME`, `PRICE`, `QUANTITY`, `WEIGHT`, `TYPE`, `DAT
 ('1011', 'Grade 1 Carrots', '1.30', '100', '1000', 'Vegetable', '2020-03-15 07:51:45.212246'),
 ('1012', 'Large Onion', '6.50', '100', '1000', 'Vegetable', '2020-03-15 07:51:45.212246'),
 ('1013', 'Potatoes', '2.60', '100', '1000', 'Vegetable', '2020-03-15 07:51:45.212246'),
-('1014', 'Cabbage', '1.70', '200', '1000', 'Vegetable', '2020-03-15 07:51:45.212246');
+('1014', 'Cabbage', '1.70', '200', '1000', 'Vegetable', '2020-03-15 07:51:45.212246'),
+('1015', 'Ikan Kembong Temenung', '4.00', '100', '1000', 'Meat', '2020-03-21 15:48:09.109094'),
+('1016', 'Siakap', '12.00', '20', '1000', 'Meat', '2020-03-21 15:52:49.094250'),
+('1017', 'Chicken Drumstick', '12', '20', '1000', 'Meat', '2020-03-21 15:54:42.180187'),
+('1018', 'Aussie Chilled Beef Cube', '20.00', '20', '400', 'Meat', '2020-03-21 15:56:38.039000'),
+('1019', 'Mighty White Natural White', '2.90', '20', '550', 'Bread', '2020-03-21 16:15:43.296491'),
+('1020', 'Fuji Bakery Banana Cake', '6.00', '20', '600', 'Bread', '2020-03-21 16:05:47.133000'),
+('1021', 'Gardenia Delicia Chocolate', '0.90', '40', '50', 'Bread', '2020-03-21 15:07:34.055000'),
+('1022', 'Gardenia Twiggies Vanilla', '1.60', '20', '80', 'Bread', '2020-03-21 16:10:51.055000'),
+('1023', 'Eva Strawberry Mixed Fruit', '5.6', '20', '450', 'Canned Food', '2020-03-21 16:13:06.000000'),
+('1024', 'Qplus Large Farm Fresh Egg', '2.70', '40', '450', 'Meat', '2020-03-21 16:14:23.000000'),
+('1025', 'Coca-Cola Coke Zero 1.5L', '3.00', '20', '200', 'Drink', '2020-03-21 16:14:56.000000'),
+('1026', '100 Plus Original Isotonic', '3.00', '20', '250', 'Drink', '2020-03-21 16:17:21.000000');
 
 -- --------------------------------------------------------
 
@@ -103,14 +114,9 @@ CREATE TABLE `USER` (
 --
 
 INSERT INTO `USER` (`NAME`, `EMAIL`, `PHONE`, `PASSWORD`, `CREDIT`, `VERIFY`, `DATEREG`) VALUES
-('test', 'test@gmail.com', '0123456789', 'e0458fa47f4bb956174fda2b4f1d377e87ceb94f', '0', '1', '2020-03-12'),
-('', '', '', 'da39a3ee5e6b4b0d3255bfef95601890afd80709', '0', '1', '2020-03-12'),
-('erf', 'ef', '2345', '81fe8bfe87576c3ecb22426f8e57847382917acf', '0', '1', '2020-03-13'),
-('Grocery Max', 'max@gmali.com', '012345610', '7c4a8d09ca3762af61e59520943dc26494f8941b', '0', '1', '2020-03-13'),
-('g', 'fgfghgh', '2445345', 'f292f45093a9af6635a5992bae7680d4c18fbd53', '0', '1', '2020-03-14'),
-('gan', 'qw', '12345', '8cb2237d0679ca88db6464eac60da96345513964', '0', '1', '2020-03-14'),
-('Aiden', 'aidenleong98@gmail.com', '0169324212', '8a27c1095b70092fe84b679300fd54a205f80dec', '0', '1', '2020-03-15'),
-('Shukur	', 'mohdshukur98f@icloud.com	', '0125090254', 'b4e6259fb9767b468f00b56e2246e106bf5d6ef9', '0', '1', '2020-03-15');
+('Ahmad Hanis', 'slumberjer@gmail.com', '0194702493', 'dd5fef9c1c1da1394d6d34b248c51be2ad740840', '10', '1', '2020-03-12'),
+('hahahaha', 'hahahaha', '12', '2e3c0feeabaeb595f91f6dcc1639939ea012c490', '0', '1', '2020-05-04'),
+('jane', 'jane356@gmail.com', '0112345234', '07041c3f30e153a3dc06a5a3293128e3e62d76f8', '0', '1', '2020-05-04');
 
 --
 -- Indexes for dumped tables

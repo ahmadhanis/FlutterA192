@@ -3,7 +3,7 @@ error_reporting(0);
 include_once ("dbconnect.php");
 $email = $_POST['email'];
 $prodid = $_POST['proid'];
-
+$userquantity = $_POST['quantity'];
 
 $sqlquantity = "SELECT * FROM CART WHERE EMAIL = '$email'";
 
@@ -22,11 +22,11 @@ if ($result->num_rows > 0) {
     while ($row = $result ->fetch_assoc()){
         $prquantity = $row["CQUANTITY"];
     }
-    $prquantity = $prquantity + 1;
+    $prquantity = $prquantity + $userquantity;
     $sqlinsert = "UPDATE CART SET CQUANTITY = '$prquantity' WHERE PRODID = '$prodid' AND EMAIL = '$email'";
     
 }else{
-    $sqlinsert = "INSERT INTO CART(EMAIL,PRODID,CQUANTITY) VALUES ('$email','$prodid','1')";
+    $sqlinsert = "INSERT INTO CART(EMAIL,PRODID,CQUANTITY) VALUES ('$email','$prodid',$userquantity)";
 }
 
 if ($conn->query($sqlinsert) === true)
