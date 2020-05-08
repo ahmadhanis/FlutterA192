@@ -266,6 +266,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   void _takePicture() async {
+    if (widget.user.email == "unregistered") {
+      Toast.show("Please register to use this function", context,
+          duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
+      return;
+    }
     File _image = await ImagePicker.pickImage(
         source: ImageSource.camera, maxHeight: 400, maxWidth: 300);
     //print(_image.lengthSync());
@@ -297,6 +302,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   void changeName() {
+    if (widget.user.email == "unregistered") {
+      Toast.show("Please register to use this function", context,
+          duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
+      return;
+    }
     TextEditingController nameController = TextEditingController();
     showDialog(
         context: context,
@@ -346,6 +356,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   _changeName(String name) {
+    if (widget.user.email == "unregistered") {
+      Toast.show("Please register to use this function", context,
+          duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
+      return;
+    }
     if (name == "" || name == null) {
       Toast.show("Please enter your new name", context,
           duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
@@ -374,6 +389,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   void changePassword() {
+    if (widget.user.email == "unregistered") {
+      Toast.show("Please register to use this function", context,
+          duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
+      return;
+    }
     TextEditingController passController = TextEditingController();
     TextEditingController pass2Controller = TextEditingController();
     showDialog(
@@ -470,6 +490,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   void changePhone() {
+    if (widget.user.email == "unregistered") {
+      Toast.show("Please register to use this function", context,
+          duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
+      return;
+    }
     TextEditingController phoneController = TextEditingController();
     showDialog(
         context: context,
