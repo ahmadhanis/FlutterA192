@@ -62,13 +62,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     child: Text(
                       "Register",
                       style: TextStyle(
-                        color: Colors.black,
+                        color: Colors.white,
                         fontSize: 26,
                         fontWeight: FontWeight.w600,
                       ),
                     ),
                   ),
                   TextField(
+                    style: TextStyle(color: Colors.white,),
                       controller: _nameEditingController,
                       keyboardType: TextInputType.text,
                       decoration: InputDecoration(
@@ -76,6 +77,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         icon: Icon(Icons.person),
                       )),
                   TextField(
+                    style: TextStyle(color: Colors.white,),
+
                       controller: _emailEditingController,
                       keyboardType: TextInputType.emailAddress,
                       decoration: InputDecoration(
@@ -83,6 +86,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         icon: Icon(Icons.email),
                       )),
                   TextField(
+                    style: TextStyle(color: Colors.white,),
+
                       controller: _phoneditingController,
                       keyboardType: TextInputType.phone,
                       decoration: InputDecoration(
@@ -90,6 +95,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         icon: Icon(Icons.phone),
                       )),
                   TextField(
+                    style: TextStyle(color: Colors.white,),
+
                     controller: _passEditingController,
                     decoration: InputDecoration(
                       labelText: 'Password',
@@ -113,7 +120,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         onTap: _showEULA,
                         child: Text('I Agree to Terms  ',
                             style: TextStyle(
-                                fontSize: 16, fontWeight: FontWeight.bold)),
+                                fontSize: 16, fontWeight: FontWeight.bold,color: Colors.white)),
                       ),
                       MaterialButton(
                         shape: RoundedRectangleBorder(
@@ -121,8 +128,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         minWidth: 115,
                         height: 50,
                         child: Text('Register'),
-                        color: Colors.blue[500],
-                        textColor: Colors.white,
+                        color: Color.fromRGBO(101, 255, 218, 50),
+                        textColor: Colors.black,
                         elevation: 10,
                         onPressed: _onRegister,
                       ),
@@ -138,12 +145,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              Text("Already register? ", style: TextStyle(fontSize: 16.0)),
+              Text("Already register? ", style: TextStyle(fontSize: 16.0,color: Colors.white)),
               GestureDetector(
                 onTap: _loginScreen,
                 child: Text(
                   "Login",
-                  style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
+                  style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold,color: Colors.white),
                 ),
               ),
             ],
