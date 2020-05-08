@@ -9,6 +9,7 @@ import 'package:progress_dialog/progress_dialog.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:geocoder/geocoder.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 class CartScreen extends StatefulWidget {
   final User user;
@@ -80,7 +81,7 @@ class _CartScreenState extends State<CartScreen> {
           appBar: AppBar(
             title: Text('My Cart'),
           ),
-          body: Center(
+          body: Container(
             child: ListView.builder(
                 itemCount: cartData == null ? 1 : cartData.length + 2,
                 itemBuilder: (context, index) {
@@ -114,7 +115,7 @@ class _CartScreenState extends State<CartScreen> {
                                     Container(
                                       // color: Colors.red,
                                       width: screenWidth / 2,
-                                      height: screenHeight / 3,
+                                     // height: screenHeight / 3,
                                       child: Column(
                                         children: <Widget>[
                                           Row(
@@ -142,14 +143,14 @@ class _CartScreenState extends State<CartScreen> {
                                         child: SizedBox(
                                             width: 2,
                                             child: Container(
-                                              height: screenWidth / 2,
+                                             // height: screenWidth / 2,
                                               color: Colors.grey,
                                             ))),
                                     Expanded(
                                         child: Container(
                                       //color: Colors.blue,
                                       width: screenWidth / 2,
-                                      height: screenHeight / 3,
+                                      //height: screenHeight / 3,
                                       child: Column(
                                         children: <Widget>[
                                           Row(
@@ -210,7 +211,7 @@ class _CartScreenState extends State<CartScreen> {
                   }
                   if (index == cartData.length + 1) {
                     return Container(
-                        height: screenHeight / 3,
+                        //height: screenHeight / 3,
                         child: Card(
                           elevation: 5,
                           child: Column(
@@ -233,7 +234,7 @@ class _CartScreenState extends State<CartScreen> {
                                         0: FlexColumnWidth(7),
                                         1: FlexColumnWidth(3),
                                       },
-                                      // border: TableBorder.all(color: Colors.white),
+                                       //border: TableBorder.all(color: Colors.white),
                                       children: [
                                         TableRow(children: [
                                           TableCell(
@@ -374,18 +375,20 @@ class _CartScreenState extends State<CartScreen> {
                           child: Row(children: <Widget>[
                             Column(
                               children: <Widget>[
-                                ClipOval(
-                                  child: Container(
-                                      height: screenWidth / 4.8,
-                                      width: screenWidth / 4.8,
-                                      decoration: BoxDecoration(
-                                          //shape: BoxShape.circle,
-                                          //border: Border.all(color: Colors.black),
-                                          image: DecorationImage(
-                                              fit: BoxFit.fill,
-                                              image: NetworkImage(
-                                                  "http://slumberjer.com/grocery/productimage/${cartData[index]['id']}.jpg")))),
-                                ),
+                               Container(
+                                      height: screenHeight / 8,
+                                      width: screenWidth / 5,
+                                      child: ClipOval(
+                                          child: CachedNetworkImage(
+                                        fit: BoxFit.scaleDown,
+                                        imageUrl:
+                                            "http://slumberjer.com/grocery/productimage/${cartData[index]['id']}.jpg",
+                                        placeholder: (context, url) =>
+                                            new CircularProgressIndicator(),
+                                        errorWidget: (context, url, error) =>
+                                            new Icon(Icons.error),
+                                      )),
+                                    ),
                                 Text(
                                   "RM " + cartData[index]['price'],
                                   style: TextStyle(
