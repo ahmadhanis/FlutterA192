@@ -325,89 +325,98 @@ class _MainScreenState extends State<MainScreen> {
                       color: Colors.white)),
               Expanded(
                   child: GridView.count(
-                    
                       crossAxisCount: 2,
-                      childAspectRatio: (screenWidth / screenHeight),
+                      childAspectRatio: (screenWidth / screenHeight) / 0.75,
                       children: List.generate(productdata.length, (index) {
-                        return Container(child: Card(
-                            elevation: 10,
-                            child: Padding(
-                              padding: EdgeInsets.all(5),
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: <Widget>[
-                                  GestureDetector(
-                                    onTap: () => _onImageDisplay(index),
-                                    child: Container(
-                                      height: screenHeight / 4,
-                                      width: screenWidth / 2,
-                                      child: ClipOval(
-                                          child: CachedNetworkImage(
-                                        fit: BoxFit.cover,
-                                        imageUrl:
-                                            "http://slumberjer.com/grocery/productimage/${productdata[index]['id']}.jpg",
-                                        placeholder: (context, url) =>
-                                            new CircularProgressIndicator(),
-                                        errorWidget: (context, url, error) =>
-                                            new Icon(Icons.error),
-                                      )),
-                                    ),
+                        return Container(
+                            child: Card(
+                                elevation: 10,
+                                child: Padding(
+                                  padding: EdgeInsets.all(5),
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: <Widget>[
+                                      GestureDetector(
+                                        onTap: () => _onImageDisplay(index),
+                                        child: Container(
+                                          height: screenHeight / 5.9,
+                                          width: screenWidth / 3.5,
+                                          child: ClipOval(
+                                              child: CachedNetworkImage(
+                                            fit: BoxFit.scaleDown,
+                                            imageUrl:
+                                                "http://slumberjer.com/grocery/productimage/${productdata[index]['id']}.jpg",
+                                            placeholder: (context, url) =>
+                                                new CircularProgressIndicator(),
+                                            errorWidget:
+                                                (context, url, error) =>
+                                                    new Icon(Icons.error),
+                                          )),
+                                        ),
+                                      ),
+                                      Text(productdata[index]['name'],
+                                          maxLines: 1,
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              color: Colors.white)),
+                                      Text(
+                                        "RM " + productdata[index]['price'],
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.white),
+                                      ),
+                                      Text(
+                                        "Quantity available:" +
+                                            productdata[index]['quantity'],
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                                      Text(
+                                        "Weight:" +
+                                            productdata[index]['weigth'] +
+                                            " gram",
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                                      MaterialButton(
+                                        shape: RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(20.0)),
+                                        minWidth: 100,
+                                        height: 30,
+                                        child: Text(
+                                          'Add to Cart',
+                                        ),
+                                        color:
+                                            Color.fromRGBO(101, 255, 218, 50),
+                                        textColor: Colors.black,
+                                        elevation: 10,
+                                        onPressed: () =>
+                                            _addtocartdialog(index),
+                                      ),
+                                    ],
                                   ),
-                                  Text(productdata[index]['name'],
-                                      maxLines: 1,
-                                      style: TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          color: Colors.white)),
-                                  Text(
-                                    "RM " + productdata[index]['price'],
-                                    style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.white),
-                                  ),
-                                  Text(
-                                    "Quantity available:" +
-                                        productdata[index]['quantity'],
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                    ),
-                                  ),
-                                  Text(
-                                    "Weight:" +
-                                        productdata[index]['weigth'] +
-                                        " gram",
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                    ),
-                                  ),
-                                  MaterialButton(
-                                    shape: RoundedRectangleBorder(
-                                        borderRadius:
-                                            BorderRadius.circular(20.0)),
-                                    minWidth: 100,
-                                    height: 30,
-                                    child: Text(
-                                      'Add to Cart',
-                                    ),
-                                    color: Color.fromRGBO(101, 255, 218, 50),
-                                    textColor: Colors.black,
-                                    elevation: 10,
-                                    onPressed: () => _addtocartdialog(index),
-                                  ),
-                                ],
-                              ),
-                            )));
+                                )));
                       })))
             ],
           ),
         ),
         floatingActionButton: FloatingActionButton.extended(
           onPressed: () {
-            Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (BuildContext context) => CartScreen(
-                          user: widget.user,
-                        )));
+            if (widget.user.email == "unregistered") {
+              Toast.show("Please register to use this function", context,
+                  duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
+              return;
+            } else {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (BuildContext context) => CartScreen(
+                            user: widget.user,
+                          )));
+            }
           },
           icon: Icon(Icons.add_shopping_cart),
           label: Text(cartquantity),
@@ -421,10 +430,9 @@ class _MainScreenState extends State<MainScreen> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          backgroundColor: Colors.white,
+            backgroundColor: Colors.white,
             shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.all(Radius.circular(20.0))),
-
             content: new Container(
               color: Colors.white,
               height: screenHeight / 2.2,
@@ -482,20 +490,19 @@ class _MainScreenState extends State<MainScreen> {
                 widget.user.name.toString().substring(0, 1).toUpperCase(),
                 style: TextStyle(fontSize: 40.0),
               ),
-              backgroundImage: NetworkImage("http://slumberjer.com/grocery/profileimages/${widget.user.email}.jpg?"),
-              
+              backgroundImage: NetworkImage(
+                  "http://slumberjer.com/grocery/profileimages/${widget.user.email}.jpg?"),
             ),
-            onDetailsPressed: ()=>{
+            onDetailsPressed: () => {
               Navigator.pop(context),
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (BuildContext context) => ProfileScreen(
-                                  user: widget.user,
-                                )))
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (BuildContext context) => ProfileScreen(
+                            user: widget.user,
+                          )))
             },
           ),
-          
           ListTile(
               title: Text(
                 "Shopping Cart",
@@ -506,12 +513,7 @@ class _MainScreenState extends State<MainScreen> {
               trailing: Icon(Icons.arrow_forward),
               onTap: () => {
                     Navigator.pop(context),
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (BuildContext context) => CartScreen(
-                                  user: widget.user,
-                                )))
+                    gotoCart(),
                   }),
           ListTile(
             title: Text(
@@ -545,6 +547,11 @@ class _MainScreenState extends State<MainScreen> {
   }
 
   _addtocartdialog(int index) {
+    if (widget.user.email == "unregistered") {
+      Toast.show("Please register to use this function", context,
+          duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
+      return;
+    }
     quantity = 1;
     showDialog(
         context: context,
@@ -766,6 +773,21 @@ class _MainScreenState extends State<MainScreen> {
     } catch (e) {
       Toast.show("Error", context,
           duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
+    }
+  }
+
+  gotoCart() {
+    if (widget.user.email == "unregistered") {
+      Toast.show("Please register to use this function", context,
+          duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
+      return;
+    } else {
+      Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (BuildContext context) => CartScreen(
+                    user: widget.user,
+                  )));
     }
   }
 }
