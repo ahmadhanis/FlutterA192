@@ -2,7 +2,8 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:grocery/adminproduct.dart';
+import 'package:grocery/editproduct.dart';
+import 'package:grocery/product.dart';
 import 'package:grocery/user.dart';
 import 'package:http/http.dart' as http;
 import 'package:progress_dialog/progress_dialog.dart';
@@ -10,18 +11,18 @@ import 'package:toast/toast.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'cartscreen.dart';
-import 'profilescreen.dart';
+import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 
-class MainScreen extends StatefulWidget {
+class AdminProduct extends StatefulWidget {
   final User user;
 
-  const MainScreen({Key key, this.user}) : super(key: key);
+  const AdminProduct({Key key, this.user}) : super(key: key);
 
   @override
-  _MainScreenState createState() => _MainScreenState();
+  _AdminProductState createState() => _AdminProductState();
 }
 
-class _MainScreenState extends State<MainScreen> {
+class _AdminProductState extends State<AdminProduct> {
   List productdata;
   int curnumber = 1;
   double screenHeight, screenWidth;
@@ -30,12 +31,12 @@ class _MainScreenState extends State<MainScreen> {
   String cartquantity = "0";
   int quantity = 1;
   bool _isadmin = false;
-
+  var _tapPosition;
   @override
   void initState() {
     super.initState();
     _loadData();
-    if (widget.user.email == "admin@grocery.com"){
+    if (widget.user.email == "admin@grocery.com") {
       _isadmin = true;
     }
   }
@@ -49,7 +50,7 @@ class _MainScreenState extends State<MainScreen> {
     if (productdata == null) {
       return Scaffold(
           appBar: AppBar(
-            title: Text('Products List'),
+            title: Text('Manage Your Products'),
           ),
           body: Container(
               child: Center(
@@ -71,10 +72,9 @@ class _MainScreenState extends State<MainScreen> {
           )));
     } else {
       return Scaffold(
-        drawer: mainDrawer(context),
         appBar: AppBar(
           title: Text(
-            'Products List',
+            'Manage Your Products',
             style: TextStyle(
               color: Colors.white,
             ),
@@ -331,100 +331,83 @@ class _MainScreenState extends State<MainScreen> {
               Expanded(
                   child: GridView.count(
                       crossAxisCount: 2,
-                      childAspectRatio: (screenWidth / screenHeight) / 0.8,
+                      childAspectRatio: (screenWidth / screenHeight) / 0.65,
                       children: List.generate(productdata.length, (index) {
                         return Container(
-                            child: Card(
-                                elevation: 10,
-                                child: Padding(
-                                  padding: EdgeInsets.all(5),
-                                  child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: <Widget>[
-                                      GestureDetector(
-                                        onTap: () => _onImageDisplay(index),
-                                        child: Container(
-                                          height: screenHeight / 5.9,
-                                          width: screenWidth / 3.5,
-                                          child: ClipOval(
+                            child: InkWell(
+                                onTap: () => _showPopupMenu(index),
+                                onTapDown: _storePosition,
+                                child: Card(
+                                    elevation: 10,
+                                    child: Padding(
+                                      padding: EdgeInsets.all(5),
+                                      child: Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: <Widget>[
+                                          Container(
+                                            height: screenHeight / 5.9,
+                                            width: screenWidth / 3.5,
+                                            child: ClipOval(
                                               child: CachedNetworkImage(
-                                            fit: BoxFit.scaleDown,
-                                            imageUrl:
-                                                "http://slumberjer.com/grocery/productimage/${productdata[index]['id']}.jpg",
-                                            placeholder: (context, url) =>
-                                                new CircularProgressIndicator(),
-                                            errorWidget:
-                                                (context, url, error) =>
-                                                    new Icon(Icons.error),
-                                          )),
-                                        ),
+                                                fit: BoxFit.scaleDown,
+                                                imageUrl:
+                                                    "http://slumberjer.com/grocery/productimage/${productdata[index]['id']}.jpg",
+                                                placeholder: (context, url) =>
+                                                    new CircularProgressIndicator(),
+                                                errorWidget:
+                                                    (context, url, error) =>
+                                                        new Icon(Icons.error),
+                                              ),
+                                            ),
+                                          ),
+                                          Text(productdata[index]['name'],
+                                              maxLines: 1,
+                                              style: TextStyle(
+                                                  fontWeight: FontWeight.bold,
+                                                  color: Colors.white)),
+                                          Text(
+                                            "RM " + productdata[index]['price'],
+                                            style: TextStyle(
+                                                fontWeight: FontWeight.bold,
+                                                color: Colors.white),
+                                          ),
+                                          Text(
+                                            "Quantity available:" +
+                                                productdata[index]['quantity'],
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                            ),
+                                          ),
+                                          Text(
+                                            "Weight:" +
+                                                productdata[index]['weigth'] +
+                                                " gram",
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                            ),
+                                          ),
+                                        ],
                                       ),
-                                      Text(productdata[index]['name'],
-                                          maxLines: 1,
-                                          style: TextStyle(
-                                              fontWeight: FontWeight.bold,
-                                              color: Colors.white)),
-                                      Text(
-                                        "RM " + productdata[index]['price'],
-                                        style: TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                            color: Colors.white),
-                                      ),
-                                      Text(
-                                        "Quantity available:" +
-                                            productdata[index]['quantity'],
-                                        style: TextStyle(
-                                          color: Colors.white,
-                                        ),
-                                      ),
-                                      Text(
-                                        "Weight:" +
-                                            productdata[index]['weigth'] +
-                                            " gram",
-                                        style: TextStyle(
-                                          color: Colors.white,
-                                        ),
-                                      ),
-                                      MaterialButton(
-                                        shape: RoundedRectangleBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(20.0)),
-                                        minWidth: 100,
-                                        height: 30,
-                                        child: Text(
-                                          'Add to Cart',
-                                        ),
-                                        color:
-                                            Color.fromRGBO(101, 255, 218, 50),
-                                        textColor: Colors.black,
-                                        elevation: 10,
-                                        onPressed: () =>
-                                            _addtocartdialog(index),
-                                      ),
-                                    ],
-                                  ),
-                                )));
+                                    ))));
                       })))
             ],
           ),
         ),
-        floatingActionButton: FloatingActionButton.extended(
-          onPressed: () {
-            if (widget.user.email == "unregistered") {
-              Toast.show("Please register to use this function", context,
-                  duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
-              return;
-            } else {
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (BuildContext context) => CartScreen(
-                            user: widget.user,
-                          )));
-            }
-          },
-          icon: Icon(Icons.add_shopping_cart),
-          label: Text(cartquantity),
+        floatingActionButton: SpeedDial(
+          animatedIcon: AnimatedIcons.menu_close,
+          children: [
+            SpeedDialChild(
+                child: Icon(Icons.new_releases),
+                label: "New Product",
+                labelBackgroundColor: Colors.white,
+                onTap: () => null),
+            SpeedDialChild(
+                child: Icon(Icons.report),
+                label: "Product Report",
+                labelBackgroundColor: Colors.white, //_changeLocality()
+                onTap: () => null),
+          ],
         ),
       );
     }
@@ -465,6 +448,7 @@ class _MainScreenState extends State<MainScreen> {
   void _loadData() {
     String urlLoadJobs = "https://slumberjer.com/grocery/php/load_products.php";
     http.post(urlLoadJobs, body: {}).then((res) {
+      print(res.body);
       setState(() {
         var extractdata = json.decode(res.body);
         productdata = extractdata["products"];
@@ -473,126 +457,6 @@ class _MainScreenState extends State<MainScreen> {
     }).catchError((err) {
       print(err);
     });
-  }
-
-  Widget mainDrawer(BuildContext context) {
-    return Drawer(
-      child: ListView(
-        children: <Widget>[
-          UserAccountsDrawerHeader(
-            accountName: Text(widget.user.name),
-            accountEmail: Text(widget.user.email),
-            otherAccountsPictures: <Widget>[
-              Text("RM " + widget.user.credit,
-                  style: TextStyle(fontSize: 16.0, color: Colors.white)),
-            ],
-            currentAccountPicture: CircleAvatar(
-              backgroundColor:
-                  Theme.of(context).platform == TargetPlatform.android
-                      ? Colors.white
-                      : Colors.white,
-              child: Text(
-                widget.user.name.toString().substring(0, 1).toUpperCase(),
-                style: TextStyle(fontSize: 40.0),
-              ),
-              backgroundImage: NetworkImage(
-                  "http://slumberjer.com/grocery/profileimages/${widget.user.email}.jpg?"),
-            ),
-            onDetailsPressed: () => {
-              Navigator.pop(context),
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (BuildContext context) => ProfileScreen(
-                            user: widget.user,
-                          )))
-            },
-          ),
-          ListTile(
-              title: Text(
-                "Shopping Cart",
-                style: TextStyle(
-                  color: Colors.white,
-                ),
-              ),
-              trailing: Icon(Icons.arrow_forward),
-              onTap: () => {
-                    Navigator.pop(context),
-                    gotoCart(),
-                  }),
-          ListTile(
-            title: Text(
-              "Purchased History",
-              style: TextStyle(
-                color: Colors.white,
-              ),
-            ),
-            trailing: Icon(Icons.arrow_forward),
-          ),
-          ListTile(
-              title: Text(
-                "User Profile",
-                style: TextStyle(
-                  color: Colors.white,
-                ),
-              ),
-              trailing: Icon(Icons.arrow_forward),
-              onTap: () => {
-                    Navigator.pop(context),
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (BuildContext context) => ProfileScreen(
-                                  user: widget.user,
-                                )))
-                  }),
-          Visibility(
-            visible: _isadmin,
-            child: Column(
-              children: <Widget>[
-                Divider(
-                  height: 2,
-                  color: Colors.white,
-                ),
-                Center(
-                  child: Text(
-                    "Admin Menu",
-                    style: TextStyle(color: Colors.white),
-                  ),
-                ),
-                ListTile(
-                  title: Text(
-                    "My Products",
-                    style: TextStyle(
-                      color: Colors.white,
-                    ),
-                  ),
-                  trailing: Icon(Icons.arrow_forward),
-                   onTap: () => {
-                    Navigator.pop(context),
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (BuildContext context) => AdminProduct(
-                                  user: widget.user,
-                                )))
-                  }
-                ),
-                ListTile(
-                  title: Text(
-                    "Customer Orders",
-                    style: TextStyle(
-                      color: Colors.white,
-                    ),
-                  ),
-                  trailing: Icon(Icons.arrow_forward),
-                ),
-              ],
-            ),
-          )
-        ],
-      ),
-    );
   }
 
   _addtocartdialog(int index) {
@@ -838,5 +702,68 @@ class _MainScreenState extends State<MainScreen> {
                     user: widget.user,
                   )));
     }
+  }
+
+  Future<void> _onProductDetail(int index) async {
+    print(productdata[index]['name']);
+    Product product = new Product(
+        pid: productdata[index]['id'],
+        name: productdata[index]['name'],
+        price: productdata[index]['price'],
+        quantity: productdata[index]['quantity'],
+        weigth: productdata[index]['weigth'],
+        type: productdata[index]['type'],
+        date: productdata[index]['date']);
+    await Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (BuildContext context) => EditProduct(
+                  user: widget.user,
+                  product: product,
+                )));
+                 _loadData();
+  }
+
+  _showPopupMenu(int index) async {
+    final RenderBox overlay = Overlay.of(context).context.findRenderObject();
+
+    await showMenu(
+      context: context,
+      color: Colors.white,
+      position: RelativeRect.fromRect(
+          _tapPosition & Size(40, 40), // smaller rect, the touch area
+          Offset.zero & overlay.size // Bigger rect, the entire screen
+          ),
+      items: [
+        //onLongPress: () => _showPopupMenu(), //onLongTapCard(index),
+
+        PopupMenuItem(
+          child: GestureDetector(
+              onTap: () =>
+                  {Navigator.of(context).pop(), _onProductDetail(index)},
+              child: Text(
+                "Update Product?",
+                style: TextStyle(
+                  color: Colors.black,
+                ),
+              )),
+        ),
+        PopupMenuItem(
+          child: GestureDetector(
+              onTap: null,
+              child: Text(
+                "Delete Product?",
+                style: TextStyle(
+                  color: Colors.black
+                ),
+              )),
+        ),
+      ],
+      elevation: 8.0,
+    );
+  }
+
+  void _storePosition(TapDownDetails details) {
+    _tapPosition = details.globalPosition;
   }
 }

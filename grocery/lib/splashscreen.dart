@@ -146,7 +146,7 @@ class _ProgressIndicatorState extends State<ProgressIndicator>
       } else {
         Toast.show("Fail to login with stored credential. Login as unregistered account.", context,
           duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
-        loginUser("unregistered","123456789",ctx);
+        loginUser("unregistered@grocery.com","123456789",ctx);
        }
     }).catchError((err) {
       print(err);
