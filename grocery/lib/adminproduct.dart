@@ -31,7 +31,7 @@ class _AdminProductState extends State<AdminProduct> {
   String curtype = "Recent";
   String cartquantity = "0";
   int quantity = 1;
-
+String titlecenter = "No product found";
   var _tapPosition;
   @override
   void initState() {
@@ -45,30 +45,7 @@ class _AdminProductState extends State<AdminProduct> {
     screenWidth = MediaQuery.of(context).size.width;
     TextEditingController _prdController = new TextEditingController();
 
-    if (productdata == null) {
-      return Scaffold(
-          appBar: AppBar(
-            title: Text('Manage Your Products'),
-          ),
-          body: Container(
-              child: Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: <Widget>[
-                CircularProgressIndicator(),
-                SizedBox(
-                  height: 10,
-                ),
-                Text(
-                  "Loading Products",
-                  style: TextStyle(
-                      fontWeight: FontWeight.bold, color: Colors.white),
-                )
-              ],
-            ),
-          )));
-    } else {
+    
       return Scaffold(
         appBar: AppBar(
           title: Text(
@@ -326,6 +303,16 @@ class _AdminProductState extends State<AdminProduct> {
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
                       color: Colors.white)),
+               productdata == null? Flexible(
+                          child: Container(
+                              child: Center(
+                                  child: Text(
+                          titlecenter,
+                          style: TextStyle(
+                              color: Color.fromRGBO(101, 255, 218, 50),
+                              fontSize: 22,
+                              fontWeight: FontWeight.bold),
+                        )))):
               Expanded(
                   child: GridView.count(
                       crossAxisCount: 2,
@@ -348,7 +335,7 @@ class _AdminProductState extends State<AdminProduct> {
                                             width: screenWidth / 3.5,
                                             child: ClipOval(
                                               child: CachedNetworkImage(
-                                                fit: BoxFit.scaleDown,
+                                                fit: BoxFit.fill,
                                                 imageUrl:
                                                     "http://slumberjer.com/grocery/productimage/${productdata[index]['id']}.jpg",
                                                 placeholder: (context, url) =>
@@ -408,7 +395,7 @@ class _AdminProductState extends State<AdminProduct> {
           ],
         ),
       );
-    }
+    
   }
 
   void _loadData() {
@@ -649,8 +636,9 @@ class _AdminProductState extends State<AdminProduct> {
     });
   }
 
-  void createNewProduct() {
-    Navigator.push(context,
+  Future<void> createNewProduct() async {
+   await Navigator.push(context,
         MaterialPageRoute(builder: (BuildContext context) => NewProduct()));
+        _loadData();
   }
 }

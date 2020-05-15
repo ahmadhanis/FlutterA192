@@ -7,6 +7,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:toast/toast.dart';
 import 'package:http/http.dart' as http;
 import 'package:progress_dialog/progress_dialog.dart';
+import 'package:image_cropper/image_cropper.dart';
 
 class NewProduct extends StatefulWidget {
   @override
@@ -16,7 +17,8 @@ class NewProduct extends StatefulWidget {
 class _NewProductState extends State<NewProduct> {
   double screenHeight, screenWidth;
   File _image;
-  String _scanBarcode = 'Unknown';
+  var _tapPosition;
+  String _scanBarcode = 'click here to scan';
   String pathAsset = 'assets/images/phonecam.png';
   TextEditingController prnameEditingController = new TextEditingController();
   TextEditingController priceEditingController = new TextEditingController();
@@ -77,7 +79,7 @@ class _NewProductState extends State<NewProduct> {
                 SizedBox(height: 5),
                 Container(
                     width: screenWidth / 1.2,
-                    height: screenHeight / 2,
+                    //height: screenHeight / 2,
                     child: Card(
                         elevation: 6,
                         child: Padding(
@@ -92,7 +94,7 @@ class _NewProductState extends State<NewProduct> {
                                           child: Container(
                                               alignment: Alignment.centerLeft,
                                               height: 30,
-                                              child: Text("ID Produk",
+                                              child: Text("Product ID",
                                                   style: TextStyle(
                                                     fontWeight: FontWeight.bold,
                                                     color: Colors.white,
@@ -105,7 +107,8 @@ class _NewProductState extends State<NewProduct> {
                                               alignment: Alignment.centerLeft,
                                               height: 30,
                                               child: GestureDetector(
-                                                onTap: _onGetId,
+                                                onTap: _showPopupMenu,
+                                                onTapDown: _storePosition,
                                                 child: Text(_scanBarcode,
                                                     style: TextStyle(
                                                       color: Colors.white,
@@ -379,8 +382,45 @@ class _NewProductState extends State<NewProduct> {
 
   void _choose() async {
     _image = await ImagePicker.pickImage(
-        source: ImageSource.camera, maxHeight: 400, maxWidth: 300);
+        source: ImageSource.camera, maxHeight: 800, maxWidth: 800);
+    _cropImage();
     setState(() {});
+  }
+
+  Future<Null> _cropImage() async {
+    File croppedFile = await ImageCropper.cropImage(
+        sourcePath: _image.path,
+        aspectRatioPresets: Platform.isAndroid
+            ? [
+                CropAspectRatioPreset.square,
+                //CropAspectRatioPreset.ratio3x2,
+                //CropAspectRatioPreset.original,
+                //CropAspectRatioPreset.ratio4x3,
+                //CropAspectRatioPreset.ratio16x9
+              ]
+            : [
+                //CropAspectRatioPreset.original,
+                CropAspectRatioPreset.square,
+                //CropAspectRatioPreset.ratio3x2,
+                //CropAspectRatioPreset.ratio4x3,
+                //CropAspectRatioPreset.ratio5x3,
+                //CropAspectRatioPreset.ratio5x4,
+                //CropAspectRatioPreset.ratio7x5,
+                //CropAspectRatioPreset.ratio16x9
+              ],
+        androidUiSettings: AndroidUiSettings(
+            toolbarTitle: 'Cropper',
+            toolbarColor: Colors.deepOrange,
+            toolbarWidgetColor: Colors.white,
+            initAspectRatio: CropAspectRatioPreset.original,
+            lockAspectRatio: false),
+        iosUiSettings: IOSUiSettings(
+          title: 'Cropper',
+        ));
+    if (croppedFile != null) {
+      _image = croppedFile;
+      setState(() {});
+    }
   }
 
   void _onGetId() {
@@ -404,7 +444,11 @@ class _NewProductState extends State<NewProduct> {
     if (!mounted) return;
 
     setState(() {
-      _scanBarcode = barcodeScanRes;
+      if (barcodeScanRes == "-1") {
+        _scanBarcode = "click here to scan";
+      } else {
+        _scanBarcode = barcodeScanRes;
+      }
     });
   }
 
@@ -430,6 +474,36 @@ class _NewProductState extends State<NewProduct> {
   }
 
   void _insertNewProduct() {
+    if (_scanBarcode == "click here to scan") {
+      Toast.show("Please scan product id", context,
+          duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
+      return;
+    }
+    if (_image == null) {
+      Toast.show("Please take product photo", context,
+          duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
+      return;
+    }
+    if (prnameEditingController.text.length < 4) {
+      Toast.show("Please enter product name", context,
+          duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
+      return;
+    }
+    if (qtyEditingController.text.length < 1) {
+      Toast.show("Please enter product quantity", context,
+          duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
+      return;
+    }
+    if (priceEditingController.text.length < 1) {
+      Toast.show("Please enter product price", context,
+          duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
+      return;
+    }
+    if (weigthEditingController.text.length < 1) {
+      Toast.show("Please enter product weight", context,
+          duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
+      return;
+    }
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -438,7 +512,7 @@ class _NewProductState extends State<NewProduct> {
           shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.all(Radius.circular(20.0))),
           title: new Text(
-            "Update Product Id ",
+            "Insert New Product Id " + prnameEditingController.text,
             style: TextStyle(
               color: Colors.white,
             ),
@@ -477,37 +551,12 @@ class _NewProductState extends State<NewProduct> {
   }
 
   insertProduct() {
-    if (_scanBarcode.length < 2) {
-      Toast.show("Please scan product id", context,
-          duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
-      return;
-    }
-    if (prnameEditingController.text.length < 4) {
-      Toast.show("Please enter product name", context,
-          duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
-      return;
-    }
-    if (qtyEditingController.text.length < 1) {
-      Toast.show("Please enter product quantity", context,
-          duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
-      return;
-    }
-    if (priceEditingController.text.length < 1) {
-      Toast.show("Please enter product price", context,
-          duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
-      return;
-    }
-    if (weigthEditingController.text.length < 1) {
-      Toast.show("Please enter product weight", context,
-          duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
-      return;
-    }
     double price = double.parse(priceEditingController.text);
     double weigth = double.parse(weigthEditingController.text);
 
     ProgressDialog pr = new ProgressDialog(context,
         type: ProgressDialogType.Normal, isDismissible: false);
-    pr.style(message: "Updating product...");
+    pr.style(message: "Inserting new product...");
     pr.show();
     String base64Image = base64Encode(_image.readAsBytesSync());
 
@@ -516,7 +565,7 @@ class _NewProductState extends State<NewProduct> {
       "prname": prnameEditingController.text,
       "quantity": qtyEditingController.text,
       "price": price.toStringAsFixed(2),
-      "type": typeEditingController.text,
+      "type": selectedType,
       "weight": weigth.toStringAsFixed(2),
       "encoded_string": base64Image,
     }).then((res) {
@@ -534,5 +583,125 @@ class _NewProductState extends State<NewProduct> {
       print(err);
       pr.dismiss();
     });
+  }
+
+  _showPopupMenu() async {
+    final RenderBox overlay = Overlay.of(context).context.findRenderObject();
+
+    await showMenu(
+      context: context,
+      color: Colors.white,
+      position: RelativeRect.fromRect(
+          _tapPosition & Size(40, 40), // smaller rect, the touch area
+          Offset.zero & overlay.size // Bigger rect, the entire screen
+          ),
+      items: [
+        //onLongPress: () => _showPopupMenu(), //onLongTapCard(index),
+
+        PopupMenuItem(
+          child: GestureDetector(
+              onTap: () => {Navigator.of(context).pop(), _onGetId()},
+              child: Text(
+                "Scan Barcode",
+                style: TextStyle(
+                  color: Colors.black,
+                ),
+              )),
+        ),
+        PopupMenuItem(
+          child: GestureDetector(
+              onTap: () => {Navigator.of(context).pop(), scanQR()},
+              child: Text(
+                "Scan QR Code",
+                style: TextStyle(color: Colors.black),
+              )),
+        ),
+        PopupMenuItem(
+          child: GestureDetector(
+              onTap: () => {Navigator.of(context).pop(), _manCode()},
+              child: Text(
+                "Manual",
+                style: TextStyle(color: Colors.black),
+              )),
+        ),
+      ],
+      elevation: 8.0,
+    );
+  }
+
+  void _storePosition(TapDownDetails details) {
+    _tapPosition = details.globalPosition;
+  }
+
+  _manCode() {
+    TextEditingController pridedtctrl = new TextEditingController(); 
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        // return object of type Dialog
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.all(Radius.circular(20.0))),
+          title: new Text(
+            "Enter Product ID ",
+            style: TextStyle(
+              color: Colors.white,
+            ),
+          ),
+          content: new Container(
+            margin: EdgeInsets.fromLTRB(5, 1, 5, 1),
+            height: 30,
+            child: TextFormField(
+                style: TextStyle(
+                  color: Colors.white,
+                ),
+                controller: pridedtctrl,
+                keyboardType: TextInputType.number,
+                textInputAction: TextInputAction.next,
+               decoration: new InputDecoration(
+                  fillColor: Colors.white,
+                  border: new OutlineInputBorder(
+                    borderRadius: new BorderRadius.circular(5.0),
+                    borderSide: new BorderSide(),
+                  ),
+                  //fillColor: Colors.green
+                )),
+          ),
+          actions: <Widget>[
+            // usually buttons at the bottom of the dialog
+            new FlatButton(
+              child: new Text(
+                "Yes",
+                style: TextStyle(
+                  color: Color.fromRGBO(101, 255, 218, 50),
+                ),
+              ),
+              onPressed: () {
+                Navigator.of(context).pop();
+                setState(() {
+                  if (pridedtctrl.text.length>5){
+                      _scanBarcode = pridedtctrl.text;
+                  }else{
+                    
+                  }
+                  
+                });
+              },
+            ),
+            new FlatButton(
+              child: new Text(
+                "No",
+                style: TextStyle(
+                  color: Color.fromRGBO(101, 255, 218, 50),
+                ),
+              ),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 }

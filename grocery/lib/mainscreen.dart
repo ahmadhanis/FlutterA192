@@ -31,6 +31,7 @@ class _MainScreenState extends State<MainScreen> {
   String cartquantity = "0";
   int quantity = 1;
   bool _isadmin = false;
+  String titlecenter = "No product found";
 
   @override
   void initState() {
@@ -47,404 +48,399 @@ class _MainScreenState extends State<MainScreen> {
     screenWidth = MediaQuery.of(context).size.width;
     TextEditingController _prdController = new TextEditingController();
 
-    if (productdata == null) {
-      return WillPopScope(
-          onWillPop: _onBackPressed,
-          child: Scaffold(
-              appBar: AppBar(
-                title: Text('Products List'),
+    return WillPopScope(
+        onWillPop: _onBackPressed,
+        child: Scaffold(
+          drawer: mainDrawer(context),
+          appBar: AppBar(
+            title: Text(
+              'Products List',
+              style: TextStyle(
+                color: Colors.white,
               ),
-              body: Container(
-                  child: Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: <Widget>[
-                    CircularProgressIndicator(),
-                    SizedBox(
-                      height: 10,
-                    ),
-                    Text(
-                      "Loading Products",
-                      style: TextStyle(
-                          fontWeight: FontWeight.bold, color: Colors.white),
-                    )
-                  ],
-                ),
-              ))));
-    } else {
-      return WillPopScope(
-          onWillPop: _onBackPressed,
-          child: Scaffold(
-            drawer: mainDrawer(context),
-            appBar: AppBar(
-              title: Text(
-                'Products List',
-                style: TextStyle(
-                  color: Colors.white,
-                ),
-              ),
-              actions: <Widget>[
-                IconButton(
-                  icon: _visible
-                      ? new Icon(Icons.expand_more)
-                      : new Icon(Icons.expand_less),
-                  onPressed: () {
-                    setState(() {
-                      if (_visible) {
-                        _visible = false;
-                      } else {
-                        _visible = true;
-                      }
-                    });
-                  },
-                ),
-
-                //
-              ],
             ),
-            body: Container(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: <Widget>[
-                  Visibility(
+            actions: <Widget>[
+              IconButton(
+                icon: _visible
+                    ? new Icon(Icons.expand_more)
+                    : new Icon(Icons.expand_less),
+                onPressed: () {
+                  setState(() {
+                    if (_visible) {
+                      _visible = false;
+                    } else {
+                      _visible = true;
+                    }
+                  });
+                },
+              ),
+
+              //
+            ],
+          ),
+          body: Container(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: <Widget>[
+                Visibility(
+                  visible: _visible,
+                  child: Card(
+                      elevation: 10,
+                      child: Padding(
+                          padding: EdgeInsets.all(5),
+                          child: SingleChildScrollView(
+                            scrollDirection: Axis.horizontal,
+                            child: Row(
+                              children: <Widget>[
+                                Column(
+                                  children: <Widget>[
+                                    FlatButton(
+                                        onPressed: () => _sortItem("Recent"),
+                                        color:
+                                            Color.fromRGBO(101, 255, 218, 50),
+                                        padding: EdgeInsets.all(10.0),
+                                        child: Column(
+                                          // Replace with a Row for horizontal icon + text
+                                          children: <Widget>[
+                                            Icon(MdiIcons.update,
+                                                color: Colors.black),
+                                            Text(
+                                              "Recent",
+                                              style: TextStyle(
+                                                  color: Colors.black),
+                                            )
+                                          ],
+                                        )),
+                                  ],
+                                ),
+                                SizedBox(
+                                  width: 3,
+                                ),
+                                Column(
+                                  children: <Widget>[
+                                    FlatButton(
+                                        onPressed: () => _sortItem("Drink"),
+                                        color:
+                                            Color.fromRGBO(101, 255, 218, 50),
+                                        padding: EdgeInsets.all(10.0),
+                                        child: Column(
+                                          // Replace with a Row for horizontal icon + text
+                                          children: <Widget>[
+                                            Icon(
+                                              MdiIcons.beer,
+                                              color: Colors.black,
+                                            ),
+                                            Text(
+                                              "Drink",
+                                              style: TextStyle(
+                                                  color: Colors.black),
+                                            )
+                                          ],
+                                        )),
+                                  ],
+                                ),
+                                SizedBox(
+                                  width: 3,
+                                ),
+                                Column(
+                                  children: <Widget>[
+                                    FlatButton(
+                                        onPressed: () =>
+                                            _sortItem("Canned Food"),
+                                        color:
+                                            Color.fromRGBO(101, 255, 218, 50),
+                                        padding: EdgeInsets.all(10.0),
+                                        child: Column(
+                                          // Replace with a Row for horizontal icon + text
+                                          children: <Widget>[
+                                            Icon(
+                                              MdiIcons.foodVariant,
+                                              color: Colors.black,
+                                            ),
+                                            Text(
+                                              "Canned",
+                                              style: TextStyle(
+                                                  color: Colors.black),
+                                            )
+                                          ],
+                                        )),
+                                  ],
+                                ),
+                                SizedBox(
+                                  width: 3,
+                                ),
+                                Column(
+                                  children: <Widget>[
+                                    FlatButton(
+                                        onPressed: () => _sortItem("Vegetable"),
+                                        color:
+                                            Color.fromRGBO(101, 255, 218, 50),
+                                        padding: EdgeInsets.all(10.0),
+                                        child: Column(
+                                          // Replace with a Row for horizontal icon + text
+                                          children: <Widget>[
+                                            Icon(
+                                              MdiIcons.foodApple,
+                                              color: Colors.black,
+                                            ),
+                                            Text(
+                                              "Vegetable",
+                                              style: TextStyle(
+                                                  color: Colors.black),
+                                            )
+                                          ],
+                                        )),
+                                  ],
+                                ),
+                                SizedBox(
+                                  width: 3,
+                                ),
+                                Column(
+                                  children: <Widget>[
+                                    FlatButton(
+                                        onPressed: () => _sortItem("Meat"),
+                                        color:
+                                            Color.fromRGBO(101, 255, 218, 50),
+                                        padding: EdgeInsets.all(10.0),
+                                        child: Column(
+                                          // Replace with a Row for horizontal icon + text
+                                          children: <Widget>[
+                                            Icon(
+                                              MdiIcons.fish,
+                                              color: Colors.black,
+                                            ),
+                                            Text(
+                                              "Fish&Meat",
+                                              style: TextStyle(
+                                                  color: Colors.black),
+                                            )
+                                          ],
+                                        )),
+                                  ],
+                                ),
+                                SizedBox(
+                                  width: 3,
+                                ),
+                                Column(
+                                  children: <Widget>[
+                                    FlatButton(
+                                        onPressed: () => _sortItem("Bread"),
+                                        color:
+                                            Color.fromRGBO(101, 255, 218, 50),
+                                        padding: EdgeInsets.all(10.0),
+                                        child: Column(
+                                          // Replace with a Row for horizontal icon + text
+                                          children: <Widget>[
+                                            Icon(
+                                              MdiIcons.breadSlice,
+                                              color: Colors.black,
+                                            ),
+                                            Text(
+                                              "Bread",
+                                              style: TextStyle(
+                                                  color: Colors.black),
+                                            )
+                                          ],
+                                        )),
+                                  ],
+                                ),
+                                SizedBox(
+                                  width: 3,
+                                ),
+                                Column(
+                                  children: <Widget>[
+                                    FlatButton(
+                                        onPressed: () => _sortItem("Others"),
+                                        color:
+                                            Color.fromRGBO(101, 255, 218, 50),
+                                        padding: EdgeInsets.all(10.0),
+                                        child: Column(
+                                          // Replace with a Row for horizontal icon + text
+                                          children: <Widget>[
+                                            Icon(
+                                              MdiIcons.ornament,
+                                              color: Colors.black,
+                                            ),
+                                            Text(
+                                              "Others",
+                                              style: TextStyle(
+                                                  color: Colors.black),
+                                            )
+                                          ],
+                                        )),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ))),
+                ),
+                Visibility(
                     visible: _visible,
                     child: Card(
-                        elevation: 10,
-                        child: Padding(
-                            padding: EdgeInsets.all(5),
-                            child: SingleChildScrollView(
-                              scrollDirection: Axis.horizontal,
-                              child: Row(
-                                children: <Widget>[
-                                  Column(
-                                    children: <Widget>[
-                                      FlatButton(
-                                          onPressed: () => _sortItem("Recent"),
-                                          color:
-                                              Color.fromRGBO(101, 255, 218, 50),
-                                          padding: EdgeInsets.all(10.0),
-                                          child: Column(
-                                            // Replace with a Row for horizontal icon + text
-                                            children: <Widget>[
-                                              Icon(MdiIcons.update,
-                                                  color: Colors.black),
-                                              Text(
-                                                "Recent",
-                                                style: TextStyle(
-                                                    color: Colors.black),
-                                              )
-                                            ],
-                                          )),
-                                    ],
+                      elevation: 5,
+                      child: Container(
+                        height: screenHeight / 12.5,
+                        margin: EdgeInsets.fromLTRB(20, 2, 20, 2),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          children: <Widget>[
+                            Flexible(
+                                child: Container(
+                              height: 30,
+                              child: TextField(
+                                  style: TextStyle(
+                                    color: Colors.white,
                                   ),
-                                  SizedBox(
-                                    width: 3,
-                                  ),
-                                  Column(
-                                    children: <Widget>[
-                                      FlatButton(
-                                          onPressed: () => _sortItem("Drink"),
-                                          color:
-                                              Color.fromRGBO(101, 255, 218, 50),
-                                          padding: EdgeInsets.all(10.0),
-                                          child: Column(
-                                            // Replace with a Row for horizontal icon + text
-                                            children: <Widget>[
-                                              Icon(
-                                                MdiIcons.beer,
-                                                color: Colors.black,
-                                              ),
-                                              Text(
-                                                "Drink",
-                                                style: TextStyle(
-                                                    color: Colors.black),
-                                              )
-                                            ],
-                                          )),
-                                    ],
-                                  ),
-                                  SizedBox(
-                                    width: 3,
-                                  ),
-                                  Column(
-                                    children: <Widget>[
-                                      FlatButton(
-                                          onPressed: () =>
-                                              _sortItem("Canned Food"),
-                                          color:
-                                              Color.fromRGBO(101, 255, 218, 50),
-                                          padding: EdgeInsets.all(10.0),
-                                          child: Column(
-                                            // Replace with a Row for horizontal icon + text
-                                            children: <Widget>[
-                                              Icon(
-                                                MdiIcons.foodVariant,
-                                                color: Colors.black,
-                                              ),
-                                              Text(
-                                                "Canned",
-                                                style: TextStyle(
-                                                    color: Colors.black),
-                                              )
-                                            ],
-                                          )),
-                                    ],
-                                  ),
-                                  SizedBox(
-                                    width: 3,
-                                  ),
-                                  Column(
-                                    children: <Widget>[
-                                      FlatButton(
-                                          onPressed: () =>
-                                              _sortItem("Vegetable"),
-                                          color:
-                                              Color.fromRGBO(101, 255, 218, 50),
-                                          padding: EdgeInsets.all(10.0),
-                                          child: Column(
-                                            // Replace with a Row for horizontal icon + text
-                                            children: <Widget>[
-                                              Icon(
-                                                MdiIcons.foodApple,
-                                                color: Colors.black,
-                                              ),
-                                              Text(
-                                                "Vegetable",
-                                                style: TextStyle(
-                                                    color: Colors.black),
-                                              )
-                                            ],
-                                          )),
-                                    ],
-                                  ),
-                                  SizedBox(
-                                    width: 3,
-                                  ),
-                                  Column(
-                                    children: <Widget>[
-                                      FlatButton(
-                                          onPressed: () => _sortItem("Meat"),
-                                          color:
-                                              Color.fromRGBO(101, 255, 218, 50),
-                                          padding: EdgeInsets.all(10.0),
-                                          child: Column(
-                                            // Replace with a Row for horizontal icon + text
-                                            children: <Widget>[
-                                              Icon(
-                                                MdiIcons.fish,
-                                                color: Colors.black,
-                                              ),
-                                              Text(
-                                                "Fish&Meat",
-                                                style: TextStyle(
-                                                    color: Colors.black),
-                                              )
-                                            ],
-                                          )),
-                                    ],
-                                  ),
-                                  SizedBox(
-                                    width: 3,
-                                  ),
-                                  Column(
-                                    children: <Widget>[
-                                      FlatButton(
-                                          onPressed: () => _sortItem("Bread"),
-                                          color:
-                                              Color.fromRGBO(101, 255, 218, 50),
-                                          padding: EdgeInsets.all(10.0),
-                                          child: Column(
-                                            // Replace with a Row for horizontal icon + text
-                                            children: <Widget>[
-                                              Icon(
-                                                MdiIcons.breadSlice,
-                                                color: Colors.black,
-                                              ),
-                                              Text(
-                                                "Bread",
-                                                style: TextStyle(
-                                                    color: Colors.black),
-                                              )
-                                            ],
-                                          )),
-                                    ],
-                                  ),
-                                  SizedBox(
-                                    width: 3,
-                                  ),
-                                  Column(
-                                    children: <Widget>[
-                                      FlatButton(
-                                          onPressed: () => _sortItem("Others"),
-                                          color:
-                                              Color.fromRGBO(101, 255, 218, 50),
-                                          padding: EdgeInsets.all(10.0),
-                                          child: Column(
-                                            // Replace with a Row for horizontal icon + text
-                                            children: <Widget>[
-                                              Icon(
-                                                MdiIcons.ornament,
-                                                color: Colors.black,
-                                              ),
-                                              Text(
-                                                "Others",
-                                                style: TextStyle(
-                                                    color: Colors.black),
-                                              )
-                                            ],
-                                          )),
-                                    ],
-                                  ),
-                                ],
-                              ),
-                            ))),
-                  ),
-                  Visibility(
-                      visible: _visible,
-                      child: Card(
-                        elevation: 5,
-                        child: Container(
-                          height: screenHeight / 12.5,
-                          margin: EdgeInsets.fromLTRB(20, 2, 20, 2),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceAround,
-                            children: <Widget>[
-                              Flexible(
-                                  child: Container(
-                                height: 30,
-                                child: TextField(
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                    ),
-                                    autofocus: false,
-                                    controller: _prdController,
-                                    decoration: InputDecoration(
-                                        icon: Icon(Icons.search),
-                                        border: OutlineInputBorder())),
-                              )),
-                              Flexible(
-                                  child: MaterialButton(
-                                      color: Color.fromRGBO(101, 255, 218, 50),
-                                      onPressed: () => {
-                                            _sortItembyName(_prdController.text)
-                                          },
-                                      elevation: 5,
-                                      child: Text(
-                                        "Search Product",
-                                        style: TextStyle(color: Colors.black),
-                                      )))
-                            ],
-                          ),
+                                  autofocus: false,
+                                  controller: _prdController,
+                                  decoration: InputDecoration(
+                                      icon: Icon(Icons.search),
+                                      border: OutlineInputBorder())),
+                            )),
+                            Flexible(
+                                child: MaterialButton(
+                                    color: Color.fromRGBO(101, 255, 218, 50),
+                                    onPressed: () =>
+                                        {_sortItembyName(_prdController.text)},
+                                    elevation: 5,
+                                    child: Text(
+                                      "Search Product",
+                                      style: TextStyle(color: Colors.black),
+                                    )))
+                          ],
                         ),
-                      )),
-                  Text(curtype,
-                      style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white)),
-                  Expanded(
-                      child: GridView.count(
-                          crossAxisCount: 2,
-                          childAspectRatio: (screenWidth / screenHeight) / 0.8,
-                          children: List.generate(productdata.length, (index) {
-                            return Container(
-                                child: Card(
-                                    elevation: 10,
-                                    child: Padding(
-                                      padding: EdgeInsets.all(5),
-                                      child: Column(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: <Widget>[
-                                          GestureDetector(
-                                            onTap: () => _onImageDisplay(index),
-                                            child: Container(
-                                              height: screenHeight / 5.9,
-                                              width: screenWidth / 3.5,
-                                              child: ClipOval(
-                                                  child: CachedNetworkImage(
-                                                fit: BoxFit.scaleDown,
-                                                imageUrl:
-                                                    "http://slumberjer.com/grocery/productimage/${productdata[index]['id']}.jpg",
-                                                placeholder: (context, url) =>
-                                                    new CircularProgressIndicator(),
-                                                errorWidget:
-                                                    (context, url, error) =>
-                                                        new Icon(Icons.error),
-                                              )),
+                      ),
+                    )),
+                Text(curtype,
+                    style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white)),
+                productdata == null
+                    ? Flexible(
+                        child: Container(
+                            child: Center(
+                                child: Text(
+                        titlecenter,
+                        style: TextStyle(
+                            color: Color.fromRGBO(101, 255, 218, 50),
+                            fontSize: 22,
+                            fontWeight: FontWeight.bold),
+                      ))))
+                    : Expanded(
+                        child: GridView.count(
+                            crossAxisCount: 2,
+                            childAspectRatio:
+                                (screenWidth / screenHeight) / 0.8,
+                            children:
+                                List.generate(productdata.length, (index) {
+                              return Container(
+                                  child: Card(
+                                      elevation: 10,
+                                      child: Padding(
+                                        padding: EdgeInsets.all(5),
+                                        child: Column(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: <Widget>[
+                                            GestureDetector(
+                                              onTap: () =>
+                                                  _onImageDisplay(index),
+                                              child: Container(
+                                                height: screenHeight / 5.9,
+                                                width: screenWidth / 3.5,
+                                                child: ClipOval(
+                                                    child: CachedNetworkImage(
+                                                  fit: BoxFit.fill,
+                                                  imageUrl:
+                                                      "http://slumberjer.com/grocery/productimage/${productdata[index]['id']}.jpg",
+                                                  placeholder: (context, url) =>
+                                                      new CircularProgressIndicator(),
+                                                  errorWidget:
+                                                      (context, url, error) =>
+                                                          new Icon(Icons.error),
+                                                )),
+                                              ),
                                             ),
-                                          ),
-                                          Text(productdata[index]['name'],
-                                              maxLines: 1,
+                                            Text(productdata[index]['name'],
+                                                maxLines: 1,
+                                                style: TextStyle(
+                                                    fontWeight: FontWeight.bold,
+                                                    color: Colors.white)),
+                                            Text(
+                                              "RM " +
+                                                  productdata[index]['price'],
                                               style: TextStyle(
                                                   fontWeight: FontWeight.bold,
-                                                  color: Colors.white)),
-                                          Text(
-                                            "RM " + productdata[index]['price'],
-                                            style: TextStyle(
-                                                fontWeight: FontWeight.bold,
-                                                color: Colors.white),
-                                          ),
-                                          Text(
-                                            "Quantity available:" +
-                                                productdata[index]['quantity'],
-                                            style: TextStyle(
-                                              color: Colors.white,
+                                                  color: Colors.white),
                                             ),
-                                          ),
-                                          Text(
-                                            "Weight:" +
-                                                productdata[index]['weigth'] +
-                                                " gram",
-                                            style: TextStyle(
-                                              color: Colors.white,
+                                            Text(
+                                              "Quantity available:" +
+                                                  productdata[index]
+                                                      ['quantity'],
+                                              style: TextStyle(
+                                                color: Colors.white,
+                                              ),
                                             ),
-                                          ),
-                                          MaterialButton(
-                                            shape: RoundedRectangleBorder(
-                                                borderRadius:
-                                                    BorderRadius.circular(
-                                                        20.0)),
-                                            minWidth: 100,
-                                            height: 30,
-                                            child: Text(
-                                              'Add to Cart',
+                                            Text(
+                                              "Weight:" +
+                                                  productdata[index]['weigth'] +
+                                                  " gram",
+                                              style: TextStyle(
+                                                color: Colors.white,
+                                              ),
                                             ),
-                                            color: Color.fromRGBO(
-                                                101, 255, 218, 50),
-                                            textColor: Colors.black,
-                                            elevation: 10,
-                                            onPressed: () =>
-                                                _addtocartdialog(index),
-                                          ),
-                                        ],
-                                      ),
-                                    )));
-                          })))
-                ],
-              ),
+                                            MaterialButton(
+                                              shape: RoundedRectangleBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          20.0)),
+                                              minWidth: 100,
+                                              height: 30,
+                                              child: Text(
+                                                'Add to Cart',
+                                              ),
+                                              color: Color.fromRGBO(
+                                                  101, 255, 218, 50),
+                                              textColor: Colors.black,
+                                              elevation: 10,
+                                              onPressed: () =>
+                                                  _addtocartdialog(index),
+                                            ),
+                                          ],
+                                        ),
+                                      )));
+                            })))
+              ],
             ),
-            floatingActionButton: FloatingActionButton.extended(
-              onPressed: () {
-                if (widget.user.email == "unregistered") {
-                  Toast.show("Please register to use this function", context,
-                      duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
-                  return;
-                } else {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (BuildContext context) => CartScreen(
-                                user: widget.user,
-                              )));
-                }
-              },
-              icon: Icon(Icons.add_shopping_cart),
-              label: Text(cartquantity),
-            ),
-          ));
-    }
+          ),
+          floatingActionButton: FloatingActionButton.extended(
+            onPressed: () {
+              if (widget.user.email == "unregistered") {
+                Toast.show("Please register to use this function", context,
+                    duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
+                return;
+              } else if (widget.user.email == "admin@grocery.com") {
+                Toast.show("Admin mode!!!", context,
+                    duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
+                return;
+              } else if (widget.user.quantity == "0") {
+                Toast.show("Cart empty", context,
+                    duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
+                return;
+              } else {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (BuildContext context) => CartScreen(
+                              user: widget.user,
+                            )));
+              }
+            },
+            icon: Icon(Icons.add_shopping_cart),
+            label: Text(cartquantity),
+          ),
+        ));
   }
 
   _onImageDisplay(int index) {
@@ -525,6 +521,18 @@ class _MainScreenState extends State<MainScreen> {
                           )))
             },
           ),
+          ListTile(
+              title: Text(
+                "Product List",
+                style: TextStyle(
+                  color: Colors.white,
+                ),
+              ),
+              trailing: Icon(Icons.arrow_forward),
+              onTap: () => {
+                    Navigator.pop(context),
+                    _loadData(),
+                  }),
           ListTile(
               title: Text(
                 "Shopping Cart",
@@ -615,6 +623,11 @@ class _MainScreenState extends State<MainScreen> {
   _addtocartdialog(int index) {
     if (widget.user.email == "unregistered") {
       Toast.show("Please register to use this function", context,
+          duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
+      return;
+    }
+    if (widget.user.email == "admin@grocery.com") {
+      Toast.show("Admin Mode!!!", context,
           duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
       return;
     }
@@ -845,6 +858,14 @@ class _MainScreenState extends State<MainScreen> {
   gotoCart() {
     if (widget.user.email == "unregistered") {
       Toast.show("Please register to use this function", context,
+          duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
+      return;
+    } else if (widget.user.email == "admin@grocery.com") {
+      Toast.show("Admin mode!!!", context,
+          duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
+      return;
+    } else if (widget.user.quantity == "0") {
+      Toast.show("Cart empty", context,
           duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
       return;
     } else {

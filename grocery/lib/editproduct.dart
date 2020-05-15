@@ -66,7 +66,7 @@ class _EditProductState extends State<EditProduct> {
           children: <Widget>[
             SizedBox(height: 10),
             Container(
-              height: screenHeight / 2.8,
+              height: screenHeight / 3,
               width: screenWidth / 1.5,
               child: CachedNetworkImage(
                 fit: BoxFit.fill,
@@ -79,7 +79,7 @@ class _EditProductState extends State<EditProduct> {
             SizedBox(height: 6),
             Container(
                 width: screenWidth / 1.2,
-                height: screenHeight / 2.3,
+                //height: screenHeight / 2,
                 child: Card(
                     elevation: 6,
                     child: Padding(

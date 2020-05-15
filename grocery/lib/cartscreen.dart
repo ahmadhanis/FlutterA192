@@ -53,30 +53,7 @@ class _CartScreenState extends State<CartScreen> {
     screenHeight = MediaQuery.of(context).size.height;
     screenWidth = MediaQuery.of(context).size.width;
 
-    if (cartData == null) {
-      return Scaffold(
-          appBar: AppBar(
-            title: Text('My Cart'),
-          ),
-          body: Container(
-              child: Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: <Widget>[
-                CircularProgressIndicator(),
-                SizedBox(
-                  height: 10,
-                ),
-                Text(
-                  "Loading Your Cart",
-                  style: TextStyle(
-                      fontWeight: FontWeight.bold, color: Colors.white),
-                )
-              ],
-            ),
-          )));
-    } else {
+    
       return Scaffold(
           appBar: AppBar(
             title: Text('My Cart'),
@@ -505,7 +482,7 @@ class _CartScreenState extends State<CartScreen> {
                           ])));
                 }),
           ));
-    }
+
   }
 
   void _loadCart() {
