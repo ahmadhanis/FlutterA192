@@ -90,8 +90,15 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  flutter_barcode_scanner:
+    dependency: "direct dev"
+    description:
+      name: flutter_barcode_scanner
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.0.0"
   flutter_cache_manager:
-    dependency: transitive
+    dependency: "direct dev"
     description:
       name: flutter_cache_manager
       url: "https://pub.dartlang.org"
@@ -103,14 +110,14 @@ packages:
       name: flutter_plugin_android_lifecycle
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.0.6"
-  flutter_staggered_grid_view:
+    version: "1.0.7"
+  flutter_speed_dial:
     dependency: "direct dev"
     description:
-      name: flutter_staggered_grid_view
+      name: flutter_speed_dial
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.3.0"
+    version: "1.2.5"
   flutter_test:
     dependency: "direct dev"
     description: flutter
