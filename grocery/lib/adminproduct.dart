@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:grocery/editproduct.dart';
+import 'package:grocery/newproduct.dart';
 import 'package:grocery/product.dart';
 import 'package:grocery/user.dart';
 import 'package:http/http.dart' as http;
@@ -30,15 +31,12 @@ class _AdminProductState extends State<AdminProduct> {
   String curtype = "Recent";
   String cartquantity = "0";
   int quantity = 1;
-  bool _isadmin = false;
+
   var _tapPosition;
   @override
   void initState() {
     super.initState();
     _loadData();
-    if (widget.user.email == "admin@grocery.com") {
-      _isadmin = true;
-    }
   }
 
   @override
@@ -401,7 +399,7 @@ class _AdminProductState extends State<AdminProduct> {
                 child: Icon(Icons.new_releases),
                 label: "New Product",
                 labelBackgroundColor: Colors.white,
-                onTap: () => null),
+                onTap: createNewProduct),
             SpeedDialChild(
                 child: Icon(Icons.report),
                 label: "Product Report",
@@ -411,38 +409,6 @@ class _AdminProductState extends State<AdminProduct> {
         ),
       );
     }
-  }
-
-  _onImageDisplay(int index) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-            backgroundColor: Colors.white,
-            shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.all(Radius.circular(20.0))),
-            content: new Container(
-              color: Colors.white,
-              height: screenHeight / 2.2,
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  Container(
-                      height: screenWidth / 1.5,
-                      width: screenWidth / 1.5,
-                      decoration: BoxDecoration(
-                          //border: Border.all(color: Colors.black),
-                          image: DecorationImage(
-                              fit: BoxFit.scaleDown,
-                              image: NetworkImage(
-                                  "http://slumberjer.com/grocery/productimage/${productdata[index]['id']}.jpg")))),
-                ],
-              ),
-            ));
-      },
-    );
   }
 
   void _loadData() {
@@ -457,161 +423,6 @@ class _AdminProductState extends State<AdminProduct> {
     }).catchError((err) {
       print(err);
     });
-  }
-
-  _addtocartdialog(int index) {
-    if (widget.user.email == "unregistered") {
-      Toast.show("Please register to use this function", context,
-          duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
-      return;
-    }
-    quantity = 1;
-    showDialog(
-        context: context,
-        builder: (context) {
-          return StatefulBuilder(builder: (context, newSetState) {
-            return AlertDialog(
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.all(Radius.circular(20.0))),
-              title: new Text(
-                "Add " + productdata[index]['name'] + " to Cart?",
-                style: TextStyle(
-                  color: Colors.white,
-                ),
-              ),
-              content: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: <Widget>[
-                  Text(
-                    "Select quantity of product",
-                    style: TextStyle(
-                      color: Colors.white,
-                    ),
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: <Widget>[
-                          FlatButton(
-                            onPressed: () => {
-                              newSetState(() {
-                                if (quantity > 1) {
-                                  quantity--;
-                                }
-                              })
-                            },
-                            child: Icon(
-                              MdiIcons.minus,
-                              color: Color.fromRGBO(101, 255, 218, 50),
-                            ),
-                          ),
-                          Text(
-                            quantity.toString(),
-                            style: TextStyle(
-                              color: Colors.white,
-                            ),
-                          ),
-                          FlatButton(
-                            onPressed: () => {
-                              newSetState(() {
-                                if (quantity <
-                                    (int.parse(productdata[index]['quantity']) -
-                                        10)) {
-                                  quantity++;
-                                } else {
-                                  Toast.show("Quantity not available", context,
-                                      duration: Toast.LENGTH_LONG,
-                                      gravity: Toast.BOTTOM);
-                                }
-                              })
-                            },
-                            child: Icon(
-                              MdiIcons.plus,
-                              color: Color.fromRGBO(101, 255, 218, 50),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  )
-                ],
-              ),
-              actions: <Widget>[
-                MaterialButton(
-                    onPressed: () {
-                      Navigator.of(context).pop(false);
-                      _addtoCart(index);
-                    },
-                    child: Text(
-                      "Yes",
-                      style: TextStyle(
-                        color: Color.fromRGBO(101, 255, 218, 50),
-                      ),
-                    )),
-                MaterialButton(
-                    onPressed: () {
-                      Navigator.of(context).pop(false);
-                    },
-                    child: Text(
-                      "Cancel",
-                      style: TextStyle(
-                        color: Color.fromRGBO(101, 255, 218, 50),
-                      ),
-                    )),
-              ],
-            );
-          });
-        });
-  }
-
-  void _addtoCart(int index) {
-    try {
-      int cquantity = int.parse(productdata[index]["quantity"]);
-      print(cquantity);
-      print(productdata[index]["id"]);
-      print(widget.user.email);
-      if (cquantity > 0) {
-        ProgressDialog pr = new ProgressDialog(context,
-            type: ProgressDialogType.Normal, isDismissible: true);
-        pr.style(message: "Add to cart...");
-        pr.show();
-        String urlLoadJobs =
-            "https://slumberjer.com/grocery/php/insert_cart.php";
-        http.post(urlLoadJobs, body: {
-          "email": widget.user.email,
-          "proid": productdata[index]["id"],
-          "quantity": quantity.toString(),
-        }).then((res) {
-          print(res.body);
-          if (res.body == "failed") {
-            Toast.show("Failed add to cart", context,
-                duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
-            pr.dismiss();
-            return;
-          } else {
-            List respond = res.body.split(",");
-            setState(() {
-              cartquantity = respond[1];
-            });
-            Toast.show("Success add to cart", context,
-                duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
-          }
-          pr.dismiss();
-        }).catchError((err) {
-          print(err);
-          pr.dismiss();
-        });
-        pr.dismiss();
-      } else {
-        Toast.show("Out of stock", context,
-            duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
-      }
-    } catch (e) {
-      Toast.show("Failed add to cart", context,
-          duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
-    }
   }
 
   void _sortItem(String type) {
@@ -704,7 +515,7 @@ class _AdminProductState extends State<AdminProduct> {
     }
   }
 
-  Future<void> _onProductDetail(int index) async {
+  _onProductDetail(int index) async {
     print(productdata[index]['name']);
     Product product = new Product(
         pid: productdata[index]['id'],
@@ -721,7 +532,7 @@ class _AdminProductState extends State<AdminProduct> {
                   user: widget.user,
                   product: product,
                 )));
-                 _loadData();
+    _loadData();
   }
 
   _showPopupMenu(int index) async {
@@ -750,12 +561,11 @@ class _AdminProductState extends State<AdminProduct> {
         ),
         PopupMenuItem(
           child: GestureDetector(
-              onTap: null,
+              onTap: () =>
+                  {Navigator.of(context).pop(), _deleteProductDialog(index)},
               child: Text(
                 "Delete Product?",
-                style: TextStyle(
-                  color: Colors.black
-                ),
+                style: TextStyle(color: Colors.black),
               )),
         ),
       ],
@@ -765,5 +575,82 @@ class _AdminProductState extends State<AdminProduct> {
 
   void _storePosition(TapDownDetails details) {
     _tapPosition = details.globalPosition;
+  }
+
+  void _deleteProductDialog(int index) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        // return object of type Dialog
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.all(Radius.circular(20.0))),
+          title: new Text(
+            "Delete Product Id " + productdata[index]['id'],
+            style: TextStyle(
+              color: Colors.white,
+            ),
+          ),
+          content:
+              new Text("Are you sure?", style: TextStyle(color: Colors.white)),
+          actions: <Widget>[
+            // usually buttons at the bottom of the dialog
+            new FlatButton(
+              child: new Text(
+                "Yes",
+                style: TextStyle(
+                  color: Color.fromRGBO(101, 255, 218, 50),
+                ),
+              ),
+              onPressed: () {
+                Navigator.of(context).pop();
+                _deleteProduct(index);
+              },
+            ),
+            new FlatButton(
+              child: new Text(
+                "No",
+                style: TextStyle(
+                  color: Color.fromRGBO(101, 255, 218, 50),
+                ),
+              ),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _deleteProduct(int index) {
+    ProgressDialog pr = new ProgressDialog(context,
+        type: ProgressDialogType.Normal, isDismissible: false);
+    pr.style(message: "Deleting product...");
+    pr.show();
+    http.post("https://slumberjer.com/grocery/php/delete_product.php", body: {
+      "proid": productdata[index]['id'],
+    }).then((res) {
+      print(res.body);
+      pr.dismiss();
+      if (res.body == "success") {
+        Toast.show("Delete success", context,
+            duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
+        _loadData();
+        Navigator.of(context).pop();
+      } else {
+        Toast.show("Delete failed", context,
+            duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
+      }
+    }).catchError((err) {
+      print(err);
+      pr.dismiss();
+    });
+  }
+
+  void createNewProduct() {
+    Navigator.push(context,
+        MaterialPageRoute(builder: (BuildContext context) => NewProduct()));
   }
 }
