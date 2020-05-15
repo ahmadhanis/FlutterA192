@@ -29,7 +29,7 @@ class _LoginScreenState extends State<LoginScreen> {
     super.initState();
     print("Hello i'm in INITSTATE");
     this.loadPref();
-  }
+  } 
 
   @override
   Widget build(BuildContext context) {

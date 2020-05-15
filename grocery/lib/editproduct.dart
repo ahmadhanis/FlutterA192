@@ -7,27 +7,34 @@ import 'product.dart';
 import 'user.dart';
 
 class EditProduct extends StatefulWidget {
-final User user;
-final Product product;
+  final User user;
+  final Product product;
 
   const EditProduct({Key key, this.user, this.product}) : super(key: key);
-
 
   @override
   _EditProductState createState() => _EditProductState();
 }
 
 class _EditProductState extends State<EditProduct> {
- 
   TextEditingController prnameEditingController = new TextEditingController();
   TextEditingController priceEditingController = new TextEditingController();
   TextEditingController qtyEditingController = new TextEditingController();
   TextEditingController typeEditingController = new TextEditingController();
   TextEditingController weigthEditingController = new TextEditingController();
   double screenHeight, screenWidth;
-  final focus = FocusNode();
+  final focus0 = FocusNode();
   final focus1 = FocusNode();
   final focus2 = FocusNode();
+  final focus3 = FocusNode();
+  String selectedType;
+  List<String> listType = [
+    "Drink",
+    "Canned Food","Vegetable",
+    "Meat",
+    "Bread",
+    "Other",
+  ];
 
   @override
   void initState() {
@@ -38,6 +45,7 @@ class _EditProductState extends State<EditProduct> {
     qtyEditingController.text = widget.product.quantity;
     typeEditingController.text = widget.product.type;
     weigthEditingController.text = widget.product.weigth;
+    selectedType = widget.product.type;
     print(weigthEditingController.text);
   }
 
@@ -61,7 +69,7 @@ class _EditProductState extends State<EditProduct> {
               height: screenHeight / 2.8,
               width: screenWidth / 1.5,
               child: CachedNetworkImage(
-                fit: BoxFit.cover,
+                fit: BoxFit.fill,
                 imageUrl:
                     "http://slumberjer.com/grocery/productimage/${widget.product.pid}.jpg",
                 placeholder: (context, url) => new CircularProgressIndicator(),
@@ -71,7 +79,7 @@ class _EditProductState extends State<EditProduct> {
             SizedBox(height: 6),
             Container(
                 width: screenWidth / 1.2,
-                height: screenHeight / 2.5,
+                height: screenHeight / 2.3,
                 child: Card(
                     elevation: 6,
                     child: Padding(
@@ -125,14 +133,13 @@ class _EditProductState extends State<EditProduct> {
                                             style: TextStyle(
                                               color: Colors.white,
                                             ),
-                                            controller:
-                                                prnameEditingController,
+                                            controller: prnameEditingController,
                                             keyboardType: TextInputType.text,
                                             textInputAction:
                                                 TextInputAction.next,
                                             onFieldSubmitted: (v) {
                                               FocusScope.of(context)
-                                                  .requestFocus(focus);
+                                                  .requestFocus(focus0);
                                             },
                                             decoration: new InputDecoration(
                                               contentPadding:
@@ -172,7 +179,7 @@ class _EditProductState extends State<EditProduct> {
                                             keyboardType: TextInputType.number,
                                             textInputAction:
                                                 TextInputAction.next,
-                                            focusNode: focus,
+                                            focusNode: focus0,
                                             onFieldSubmitted: (v) {
                                               FocusScope.of(context)
                                                   .requestFocus(focus1);
@@ -243,26 +250,39 @@ class _EditProductState extends State<EditProduct> {
                                     TableCell(
                                       child: Container(
                                         margin: EdgeInsets.fromLTRB(5, 1, 5, 1),
-                                        height: 30,
-                                        child: TextFormField(
-                                            style: TextStyle(
-                                              color: Colors.white,
-                                            ),
-                                            controller: typeEditingController,
-                                            keyboardType: TextInputType.number,
-                                            textInputAction:
-                                                TextInputAction.done,
-                                            focusNode: focus2,
-                                            decoration: new InputDecoration(
-                                              fillColor: Colors.white,
-                                              border: new OutlineInputBorder(
-                                                borderRadius:
-                                                    new BorderRadius.circular(
-                                                        5.0),
-                                                borderSide: new BorderSide(),
+                                        height: 40,
+                                        child: Container(
+                                          height: 40,
+                                          child: DropdownButton(
+                                            //sorting dropdownoption
+                                            hint: Text(
+                                              'Type',
+                                              style: TextStyle(
+                                                color: Color.fromRGBO(
+                                                    101, 255, 218, 50),
                                               ),
-                                              //fillColor: Colors.green
-                                            )),
+                                            ), // Not necessary for Option 1
+                                            value: selectedType,
+                                            onChanged: (newValue) {
+                                              setState(() {
+                                                selectedType = newValue;
+                                                print(selectedType);
+                                              });
+                                            },
+                                            items: listType.map((selectedType) {
+                                              return DropdownMenuItem(
+                                                child: new Text(selectedType,
+                                                    style: TextStyle(
+                                                        color: Color.fromRGBO(
+                                                            101,
+                                                            255,
+                                                            218,
+                                                            50))),
+                                                value: selectedType,
+                                              );
+                                            }).toList(),
+                                          ),
+                                        ),
                                       ),
                                     ),
                                   ]),
@@ -288,10 +308,10 @@ class _EditProductState extends State<EditProduct> {
                                             keyboardType: TextInputType.number,
                                             textInputAction:
                                                 TextInputAction.next,
-                                            focusNode: focus1,
+                                            focusNode: focus2,
                                             onFieldSubmitted: (v) {
                                               FocusScope.of(context)
-                                                  .requestFocus(focus2);
+                                                  .requestFocus(focus3);
                                             },
                                             decoration: new InputDecoration(
                                               fillColor: Colors.white,
@@ -318,7 +338,7 @@ class _EditProductState extends State<EditProduct> {
                               textColor: Colors.black,
                               elevation: 5,
                               onPressed: () =>
-                                  updateProductDialog(widget.product.pid),
+                                  updateProductDialog(),
                             ),
                           ],
                         )))),
@@ -328,7 +348,8 @@ class _EditProductState extends State<EditProduct> {
     );
   }
 
-  updateProductDialog(String index) {
+
+  updateProductDialog() {
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -355,7 +376,7 @@ class _EditProductState extends State<EditProduct> {
               ),
               onPressed: () {
                 Navigator.of(context).pop();
-                updateProduct(index);
+                updateProduct();
               },
             ),
             new FlatButton(
@@ -375,7 +396,7 @@ class _EditProductState extends State<EditProduct> {
     );
   }
 
-  updateProduct(String index) {
+  updateProduct() {
     if (prnameEditingController.text.length < 4) {
       Toast.show("Please enter product name", context,
           duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
@@ -401,7 +422,7 @@ class _EditProductState extends State<EditProduct> {
 
     ProgressDialog pr = new ProgressDialog(context,
         type: ProgressDialogType.Normal, isDismissible: false);
-    pr.style(message: "Sedang kemaskini produk...");
+    pr.style(message: "Updating product...");
     pr.show();
 
     http.post("https://slumberjer.com/grocery/php/update_product.php", body: {
@@ -415,11 +436,11 @@ class _EditProductState extends State<EditProduct> {
       print(res.body);
       pr.dismiss();
       if (res.body == "success") {
-        Toast.show("Kemaskini produk berjaya", context,
+        Toast.show("Update success", context,
             duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
         Navigator.of(context).pop();
       } else {
-        Toast.show("Kemaskini produk tidak berjaya", context,
+        Toast.show("Update failed", context,
             duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
       }
     }).catchError((err) {
