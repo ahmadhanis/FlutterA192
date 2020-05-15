@@ -39,7 +39,7 @@ class _CartScreenState extends State<CartScreen> {
   CameraPosition _userpos;
   double deliverycharge;
   double amountpayable;
-
+  String titlecenter = "Loading your cart";
   @override
   void initState() {
     super.initState();
@@ -53,436 +53,501 @@ class _CartScreenState extends State<CartScreen> {
     screenHeight = MediaQuery.of(context).size.height;
     screenWidth = MediaQuery.of(context).size.width;
 
-    
-      return Scaffold(
-          appBar: AppBar(
-            title: Text('My Cart'),
-          ),
-          body: Container(
-            child: ListView.builder(
-                itemCount: cartData == null ? 1 : cartData.length + 2,
-                itemBuilder: (context, index) {
-                  if (index == cartData.length) {
-                    return Container(
-                        height: screenHeight / 2.4,
-                        width: screenWidth / 2.5,
-                        child: InkWell(
-                          onLongPress: () => {print("Delete")},
-                          child: Card(
-                            //color: Colors.yellow,
-                            elevation: 5,
-                            child: Column(
-                              children: <Widget>[
-                                SizedBox(
-                                  height: 10,
-                                ),
-                                Text("Delivery Option",
-                                    style: TextStyle(
-                                        fontSize: 18.0,
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.white)),
-                                Text("Weight:" + _weight.toString() + " KG",
-                                    style: TextStyle(
-                                        fontSize: 16.0,
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.white)),
-                                Expanded(
-                                    child: Row(
-                                  children: <Widget>[
-                                    Container(
-                                      // color: Colors.red,
-                                      width: screenWidth / 2,
-                                     // height: screenHeight / 3,
-                                      child: Column(
-                                        children: <Widget>[
-                                          Row(
-                                            children: <Widget>[
-                                              Checkbox(
-                                                value: _selfPickup,
-                                                onChanged: (bool value) {
-                                                  _onSelfPickUp(value);
-                                                },
+    return Scaffold(
+        appBar: AppBar(
+          title: Text('My Cart'),
+        ),
+        body: Container(
+            child: Column(
+          children: <Widget>[
+            Text("Content of your Cart",style: TextStyle(color: Colors.white, fontSize: 18,fontWeight: FontWeight.bold),),
+            cartData == null
+                ? Flexible(
+                    child: Container(
+                        child: Center(
+                            child: Text(
+                    titlecenter,
+                    style: TextStyle(
+                        color: Color.fromRGBO(101, 255, 218, 50),
+                        fontSize: 22,
+                        fontWeight: FontWeight.bold),
+                  ))))
+                : Expanded(
+                  
+                    child: ListView.builder(
+                        itemCount: cartData == null ? 1 : cartData.length + 2,
+                        itemBuilder: (context, index) {
+                          if (index == cartData.length) {
+                            return Container(
+                                height: screenHeight / 2.4,
+                                width: screenWidth / 2.5,
+                                child: InkWell(
+                                  onLongPress: () => {print("Delete")},
+                                  child: Card(
+                                    //color: Colors.yellow,
+                                    elevation: 5,
+                                    child: Column(
+                                      children: <Widget>[
+                                        SizedBox(
+                                          height: 10,
+                                        ),
+                                        Text("Delivery Option",
+                                            style: TextStyle(
+                                                fontSize: 18.0,
+                                                fontWeight: FontWeight.bold,
+                                                color: Colors.white)),
+                                        Text(
+                                            "Weight:" +
+                                                _weight.toString() +
+                                                " KG",
+                                            style: TextStyle(
+                                                fontSize: 16.0,
+                                                fontWeight: FontWeight.bold,
+                                                color: Colors.white)),
+                                        Expanded(
+                                            child: Row(
+                                          children: <Widget>[
+                                            Container(
+                                              // color: Colors.red,
+                                              width: screenWidth / 2,
+                                              // height: screenHeight / 3,
+                                              child: Column(
+                                                children: <Widget>[
+                                                  Row(
+                                                    children: <Widget>[
+                                                      Checkbox(
+                                                        value: _selfPickup,
+                                                        onChanged:
+                                                            (bool value) {
+                                                          _onSelfPickUp(value);
+                                                        },
+                                                      ),
+                                                      Text(
+                                                        "Self Pickup",
+                                                        style: TextStyle(
+                                                          color: Colors.white,
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ],
                                               ),
-                                              Text(
-                                                "Self Pickup",
-                                                style: TextStyle(
-                                                  color: Colors.white,
+                                            ),
+                                            Padding(
+                                                padding: EdgeInsets.fromLTRB(
+                                                    2, 1, 2, 1),
+                                                child: SizedBox(
+                                                    width: 2,
+                                                    child: Container(
+                                                      // height: screenWidth / 2,
+                                                      color: Colors.grey,
+                                                    ))),
+                                            Expanded(
+                                                child: Container(
+                                              //color: Colors.blue,
+                                              width: screenWidth / 2,
+                                              //height: screenHeight / 3,
+                                              child: Column(
+                                                children: <Widget>[
+                                                  Row(
+                                                    children: <Widget>[
+                                                      Checkbox(
+                                                        value: _homeDelivery,
+                                                        onChanged:
+                                                            (bool value) {
+                                                          _onHomeDelivery(
+                                                              value);
+                                                        },
+                                                      ),
+                                                      Text(
+                                                        "Home Delivery",
+                                                        style: TextStyle(
+                                                          color: Colors.white,
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                  FlatButton(
+                                                    color: Color.fromRGBO(
+                                                        101, 255, 218, 50),
+                                                    onPressed: () =>
+                                                        {_loadMapDialog()},
+                                                    child: Icon(
+                                                      MdiIcons.locationEnter,
+                                                      color: Colors.black,
+                                                    ),
+                                                  ),
+                                                  Text("Current Address:",
+                                                      style: TextStyle(
+                                                          fontWeight:
+                                                              FontWeight.bold,
+                                                          color: Colors.white)),
+                                                  Row(
+                                                    children: <Widget>[
+                                                      Text("  "),
+                                                      Flexible(
+                                                        child: Text(
+                                                          curaddress ??
+                                                              "Address not set",
+                                                          maxLines: 3,
+                                                          overflow: TextOverflow
+                                                              .ellipsis,
+                                                          style: TextStyle(
+                                                            color: Colors.white,
+                                                          ),
+                                                        ),
+                                                      )
+                                                    ],
+                                                  ),
+                                                ],
+                                              ),
+                                            )),
+                                          ],
+                                        ))
+                                      ],
+                                    ),
+                                  ),
+                                ));
+                          }
+
+                          if (index == cartData.length + 1) {
+                            return Container(
+                                //height: screenHeight / 3,
+                                child: Card(
+                              elevation: 5,
+                              child: Column(
+                                children: <Widget>[
+                                  SizedBox(
+                                    height: 10,
+                                  ),
+                                  Text("Payment",
+                                      style: TextStyle(
+                                          fontSize: 20.0,
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.white)),
+                                  SizedBox(height: 10),
+                                  Container(
+                                      padding:
+                                          EdgeInsets.fromLTRB(50, 0, 50, 0),
+                                      //color: Colors.red,
+                                      child: Table(
+                                          defaultColumnWidth:
+                                              FlexColumnWidth(1.0),
+                                          columnWidths: {
+                                            0: FlexColumnWidth(7),
+                                            1: FlexColumnWidth(3),
+                                          },
+                                          //border: TableBorder.all(color: Colors.white),
+                                          children: [
+                                            TableRow(children: [
+                                              TableCell(
+                                                child: Container(
+                                                    alignment:
+                                                        Alignment.centerLeft,
+                                                    height: 20,
+                                                    child: Text(
+                                                        "Total Item Price ",
+                                                        style: TextStyle(
+                                                            fontWeight:
+                                                                FontWeight.bold,
+                                                            color:
+                                                                Colors.white))),
+                                              ),
+                                              TableCell(
+                                                child: Container(
+                                                  alignment:
+                                                      Alignment.centerLeft,
+                                                  height: 20,
+                                                  child: Text(
+                                                      "RM" +
+                                                              _totalprice
+                                                                  .toStringAsFixed(
+                                                                      2) ??
+                                                          "0.0",
+                                                      style: TextStyle(
+                                                          fontWeight:
+                                                              FontWeight.bold,
+                                                          fontSize: 14,
+                                                          color: Colors.white)),
                                                 ),
                                               ),
-                                            ],
+                                            ]),
+                                            TableRow(children: [
+                                              TableCell(
+                                                child: Container(
+                                                    alignment:
+                                                        Alignment.centerLeft,
+                                                    height: 20,
+                                                    child: Text(
+                                                        "Delivery Charge ",
+                                                        style: TextStyle(
+                                                            fontWeight:
+                                                                FontWeight.bold,
+                                                            color:
+                                                                Colors.white))),
+                                              ),
+                                              TableCell(
+                                                child: Container(
+                                                  alignment:
+                                                      Alignment.centerLeft,
+                                                  height: 20,
+                                                  child: Text(
+                                                      "RM" +
+                                                              deliverycharge
+                                                                  .toStringAsFixed(
+                                                                      2) ??
+                                                          "0.0",
+                                                      style: TextStyle(
+                                                          fontWeight:
+                                                              FontWeight.bold,
+                                                          fontSize: 14,
+                                                          color: Colors.white)),
+                                                ),
+                                              ),
+                                            ]),
+                                            TableRow(children: [
+                                              TableCell(
+                                                child: Container(
+                                                    alignment:
+                                                        Alignment.centerLeft,
+                                                    height: 20,
+                                                    child: Text(
+                                                        "Store Credit RM" +
+                                                            widget.user.credit,
+                                                        style: TextStyle(
+                                                            fontWeight:
+                                                                FontWeight.bold,
+                                                            color:
+                                                                Colors.white))),
+                                              ),
+                                              TableCell(
+                                                child: Container(
+                                                  alignment:
+                                                      Alignment.centerLeft,
+                                                  height: 20,
+                                                  child: Checkbox(
+                                                    value: _storeCredit,
+                                                    onChanged: (bool value) {
+                                                      _onStoreCredit(value);
+                                                    },
+                                                  ),
+                                                ),
+                                              ),
+                                            ]),
+                                            TableRow(children: [
+                                              TableCell(
+                                                child: Container(
+                                                    alignment:
+                                                        Alignment.centerLeft,
+                                                    height: 20,
+                                                    child: Text("Total Amount ",
+                                                        style: TextStyle(
+                                                            fontWeight:
+                                                                FontWeight.bold,
+                                                            color:
+                                                                Colors.white))),
+                                              ),
+                                              TableCell(
+                                                child: Container(
+                                                  alignment:
+                                                      Alignment.centerLeft,
+                                                  height: 20,
+                                                  child: Text(
+                                                      "RM" +
+                                                              amountpayable
+                                                                  .toStringAsFixed(
+                                                                      2) ??
+                                                          "0.0",
+                                                      style: TextStyle(
+                                                          fontWeight:
+                                                              FontWeight.bold,
+                                                          color: Colors.white)),
+                                                ),
+                                              ),
+                                            ]),
+                                          ])),
+                                  SizedBox(
+                                    height: 10,
+                                  ),
+                                  MaterialButton(
+                                    shape: RoundedRectangleBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(20.0)),
+                                    minWidth: 200,
+                                    height: 40,
+                                    child: Text('Make Payment'),
+                                    color: Color.fromRGBO(101, 255, 218, 50),
+                                    textColor: Colors.black,
+                                    elevation: 10,
+                                    onPressed: makePayment,
+                                  ),
+                                ],
+                              ),
+                            ));
+                          }
+                          index -= 0;
+
+                          return Card(
+                              elevation: 10,
+                              child: Padding(
+                                  padding: EdgeInsets.all(5),
+                                  child: Row(children: <Widget>[
+                                    Column(
+                                      children: <Widget>[
+                                        Container(
+                                          height: screenHeight / 8,
+                                          width: screenWidth / 5,
+                                          child: ClipOval(
+                                              child: CachedNetworkImage(
+                                            fit: BoxFit.scaleDown,
+                                            imageUrl:
+                                                "http://slumberjer.com/grocery/productimage/${cartData[index]['id']}.jpg",
+                                            placeholder: (context, url) =>
+                                                new CircularProgressIndicator(),
+                                            errorWidget:
+                                                (context, url, error) =>
+                                                    new Icon(Icons.error),
+                                          )),
+                                        ),
+                                        Text(
+                                          "RM " + cartData[index]['price'],
+                                          style: TextStyle(
+                                            color: Colors.white,
                                           ),
-                                        ],
-                                      ),
+                                        ),
+                                      ],
                                     ),
                                     Padding(
                                         padding:
-                                            EdgeInsets.fromLTRB(2, 1, 2, 1),
+                                            EdgeInsets.fromLTRB(5, 1, 10, 1),
                                         child: SizedBox(
                                             width: 2,
                                             child: Container(
-                                             // height: screenWidth / 2,
+                                              height: screenWidth / 3.5,
                                               color: Colors.grey,
                                             ))),
-                                    Expanded(
-                                        child: Container(
-                                      //color: Colors.blue,
-                                      width: screenWidth / 2,
-                                      //height: screenHeight / 3,
-                                      child: Column(
-                                        children: <Widget>[
-                                          Row(
-                                            children: <Widget>[
-                                              Checkbox(
-                                                value: _homeDelivery,
-                                                onChanged: (bool value) {
-                                                  _onHomeDelivery(value);
-                                                },
-                                              ),
-                                              Text(
-                                                "Home Delivery",
-                                                style: TextStyle(
-                                                  color: Colors.white,
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                          FlatButton(
-                                            color: Color.fromRGBO(
-                                                101, 255, 218, 50),
-                                            onPressed: () => {_loadMapDialog()},
-                                            child: Icon(
-                                              MdiIcons.locationEnter,
-                                              color: Colors.black,
-                                            ),
-                                          ),
-                                          Text("Current Address:",
-                                              style: TextStyle(
-                                                  fontWeight: FontWeight.bold,
-                                                  color: Colors.white)),
-                                          Row(
-                                            children: <Widget>[
-                                              Text("  "),
-                                              Flexible(
-                                                child: Text(
-                                                  curaddress ??
-                                                      "Address not set",
-                                                  maxLines: 3,
-                                                  overflow:
-                                                      TextOverflow.ellipsis,
-                                                  style: TextStyle(
-                                                    color: Colors.white,
-                                                  ),
-                                                ),
-                                              )
-                                            ],
-                                          ),
-                                        ],
-                                      ),
-                                    )),
-                                  ],
-                                ))
-                              ],
-                            ),
-                          ),
-                        ));
-                  }
-                  if (index == cartData.length + 1) {
-                    return Container(
-                        //height: screenHeight / 3,
-                        child: Card(
-                          elevation: 5,
-                          child: Column(
-                            children: <Widget>[
-                              SizedBox(
-                                height: 10,
-                              ),
-                              Text("Payment",
-                                  style: TextStyle(
-                                      fontSize: 20.0,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.white)),
-                              SizedBox(height: 10),
-                              Container(
-                                  padding: EdgeInsets.fromLTRB(50, 0, 50, 0),
-                                  //color: Colors.red,
-                                  child: Table(
-                                      defaultColumnWidth: FlexColumnWidth(1.0),
-                                      columnWidths: {
-                                        0: FlexColumnWidth(7),
-                                        1: FlexColumnWidth(3),
-                                      },
-                                       //border: TableBorder.all(color: Colors.white),
-                                      children: [
-                                        TableRow(children: [
-                                          TableCell(
-                                            child: Container(
-                                                alignment: Alignment.centerLeft,
-                                                height: 20,
-                                                child: Text("Total Item Price ",
-                                                    style: TextStyle(
-                                                        fontWeight:
-                                                            FontWeight.bold,
-                                                        color: Colors.white))),
-                                          ),
-                                          TableCell(
-                                            child: Container(
-                                              alignment: Alignment.centerLeft,
-                                              height: 20,
-                                              child: Text(
-                                                  "RM" +
-                                                          _totalprice
-                                                              .toStringAsFixed(
-                                                                  2) ??
-                                                      "0.0",
-                                                  style: TextStyle(
-                                                      fontWeight:
-                                                          FontWeight.bold,
-                                                      fontSize: 14,
-                                                      color: Colors.white)),
-                                            ),
-                                          ),
-                                        ]),
-                                        TableRow(children: [
-                                          TableCell(
-                                            child: Container(
-                                                alignment: Alignment.centerLeft,
-                                                height: 20,
-                                                child: Text("Delivery Charge ",
-                                                    style: TextStyle(
-                                                        fontWeight:
-                                                            FontWeight.bold,
-                                                        color: Colors.white))),
-                                          ),
-                                          TableCell(
-                                            child: Container(
-                                              alignment: Alignment.centerLeft,
-                                              height: 20,
-                                              child: Text(
-                                                  "RM" +
-                                                          deliverycharge
-                                                              .toStringAsFixed(
-                                                                  2) ??
-                                                      "0.0",
-                                                  style: TextStyle(
-                                                      fontWeight:
-                                                          FontWeight.bold,
-                                                      fontSize: 14,
-                                                      color: Colors.white)),
-                                            ),
-                                          ),
-                                        ]),
-                                        TableRow(children: [
-                                          TableCell(
-                                            child: Container(
-                                                alignment: Alignment.centerLeft,
-                                                height: 20,
-                                                child: Text(
-                                                    "Store Credit RM" +
-                                                        widget.user.credit,
-                                                    style: TextStyle(
-                                                        fontWeight:
-                                                            FontWeight.bold,
-                                                        color: Colors.white))),
-                                          ),
-                                          TableCell(
-                                            child: Container(
-                                              alignment: Alignment.centerLeft,
-                                              height: 20,
-                                              child: Checkbox(
-                                                value: _storeCredit,
-                                                onChanged: (bool value) {
-                                                  _onStoreCredit(value);
-                                                },
-                                              ),
-                                            ),
-                                          ),
-                                        ]),
-                                        TableRow(children: [
-                                          TableCell(
-                                            child: Container(
-                                                alignment: Alignment.centerLeft,
-                                                height: 20,
-                                                child: Text("Total Amount ",
-                                                    style: TextStyle(
-                                                        fontWeight:
-                                                            FontWeight.bold,
-                                                        color: Colors.white))),
-                                          ),
-                                          TableCell(
-                                            child: Container(
-                                              alignment: Alignment.centerLeft,
-                                              height: 20,
-                                              child: Text(
-                                                  "RM" +
-                                                          amountpayable
-                                                              .toStringAsFixed(
-                                                                  2) ??
-                                                      "0.0",
-                                                  style: TextStyle(
-                                                      fontWeight:
-                                                          FontWeight.bold,
-                                                      color: Colors.white)),
-                                            ),
-                                          ),
-                                        ]),
-                                      ])),
-                              SizedBox(
-                                height: 10,
-                              ),
-                              MaterialButton(
-                                shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(20.0)),
-                                minWidth: 200,
-                                height: 40,
-                                child: Text('Make Payment'),
-                                color: Color.fromRGBO(101, 255, 218, 50),
-                                textColor: Colors.black,
-                                elevation: 10,
-                                onPressed: makePayment,
-                              ),
-                            ],
-                          ),
-                        ));
-                  }
-                  index -= 0;
-                  return Card(
-                      elevation: 10,
-                      child: Padding(
-                          padding: EdgeInsets.all(5),
-                          child: Row(children: <Widget>[
-                            Column(
-                              children: <Widget>[
-                               Container(
-                                      height: screenHeight / 8,
-                                      width: screenWidth / 5,
-                                      child: ClipOval(
-                                          child: CachedNetworkImage(
-                                        fit: BoxFit.scaleDown,
-                                        imageUrl:
-                                            "http://slumberjer.com/grocery/productimage/${cartData[index]['id']}.jpg",
-                                        placeholder: (context, url) =>
-                                            new CircularProgressIndicator(),
-                                        errorWidget: (context, url, error) =>
-                                            new Icon(Icons.error),
-                                      )),
-                                    ),
-                                Text(
-                                  "RM " + cartData[index]['price'],
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            Padding(
-                                padding: EdgeInsets.fromLTRB(5, 1, 10, 1),
-                                child: SizedBox(
-                                    width: 2,
-                                    child: Container(
-                                      height: screenWidth / 3.5,
-                                      color: Colors.grey,
-                                    ))),
-                            Container(
-                                width: screenWidth / 1.45,
-                                //color: Colors.blue,
-                                child: Row(
-                                  //crossAxisAlignment: CrossAxisAlignment.center,
-                                  //mainAxisAlignment: MainAxisAlignment.center,
-                                  children: <Widget>[
-                                    Flexible(
-                                      child: Column(
-                                        children: <Widget>[
-                                          Text(
-                                            cartData[index]['name'],
-                                            style: TextStyle(
-                                                fontWeight: FontWeight.bold,
-                                                fontSize: 16,
-                                                color: Colors.white),
-                                            maxLines: 1,
-                                          ),
-                                          Text(
-                                            "Available " +
-                                                cartData[index]['quantity'] +
-                                                " unit",
-                                            style: TextStyle(
-                                              color: Colors.white,
-                                            ),
-                                          ),
-                                          Text(
-                                            "Your Quantity " +
-                                                cartData[index]['cquantity'],
-                                            style: TextStyle(
-                                              color: Colors.white,
-                                            ),
-                                          ),
-                                          Container(
-                                              height: 20,
-                                              child: Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.center,
+                                    Container(
+                                        width: screenWidth / 1.45,
+                                        //color: Colors.blue,
+                                        child: Row(
+                                          //crossAxisAlignment: CrossAxisAlignment.center,
+                                          //mainAxisAlignment: MainAxisAlignment.center,
+                                          children: <Widget>[
+                                            Flexible(
+                                              child: Column(
                                                 children: <Widget>[
-                                                  FlatButton(
-                                                    onPressed: () => {
-                                                      _updateCart(index, "add")
-                                                    },
-                                                    child: Icon(
-                                                      MdiIcons.plus,
-                                                      color: Color.fromRGBO(
-                                                          101, 255, 218, 50),
-                                                    ),
+                                                  Text(
+                                                    cartData[index]['name'],
+                                                    style: TextStyle(
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                        fontSize: 16,
+                                                        color: Colors.white),
+                                                    maxLines: 1,
                                                   ),
                                                   Text(
-                                                    cartData[index]
-                                                        ['cquantity'],
+                                                    "Available " +
+                                                        cartData[index]
+                                                            ['quantity'] +
+                                                        " unit",
                                                     style: TextStyle(
                                                       color: Colors.white,
                                                     ),
                                                   ),
-                                                  FlatButton(
-                                                    onPressed: () => {
-                                                      _updateCart(
-                                                          index, "remove")
-                                                    },
-                                                    child: Icon(
-                                                      MdiIcons.minus,
-                                                      color: Color.fromRGBO(
-                                                          101, 255, 218, 50),
+                                                  Text(
+                                                    "Your Quantity " +
+                                                        cartData[index]
+                                                            ['cquantity'],
+                                                    style: TextStyle(
+                                                      color: Colors.white,
                                                     ),
                                                   ),
+                                                  Container(
+                                                      height: 20,
+                                                      child: Row(
+                                                        mainAxisAlignment:
+                                                            MainAxisAlignment
+                                                                .center,
+                                                        children: <Widget>[
+                                                          FlatButton(
+                                                            onPressed: () => {
+                                                              _updateCart(
+                                                                  index, "add")
+                                                            },
+                                                            child: Icon(
+                                                              MdiIcons.plus,
+                                                              color: Color
+                                                                  .fromRGBO(
+                                                                      101,
+                                                                      255,
+                                                                      218,
+                                                                      50),
+                                                            ),
+                                                          ),
+                                                          Text(
+                                                            cartData[index]
+                                                                ['cquantity'],
+                                                            style: TextStyle(
+                                                              color:
+                                                                  Colors.white,
+                                                            ),
+                                                          ),
+                                                          FlatButton(
+                                                            onPressed: () => {
+                                                              _updateCart(index,
+                                                                  "remove")
+                                                            },
+                                                            child: Icon(
+                                                              MdiIcons.minus,
+                                                              color: Color
+                                                                  .fromRGBO(
+                                                                      101,
+                                                                      255,
+                                                                      218,
+                                                                      50),
+                                                            ),
+                                                          ),
+                                                        ],
+                                                      )),
+                                                  Row(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment
+                                                            .spaceBetween,
+                                                    children: <Widget>[
+                                                      Text(
+                                                          "Total RM " +
+                                                              cartData[index]
+                                                                  ['yourprice'],
+                                                          style: TextStyle(
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .bold,
+                                                              color: Colors
+                                                                  .white)),
+                                                      FlatButton(
+                                                        onPressed: () => {
+                                                          _deleteCart(index)
+                                                        },
+                                                        child: Icon(
+                                                          MdiIcons.delete,
+                                                          color: Color.fromRGBO(
+                                                              101,
+                                                              255,
+                                                              218,
+                                                              50),
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
                                                 ],
-                                              )),
-                                          Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.spaceBetween,
-                                            children: <Widget>[
-                                              Text(
-                                                  "Total RM " +
-                                                      cartData[index]
-                                                          ['yourprice'],
-                                                  style: TextStyle(
-                                                      fontWeight:
-                                                          FontWeight.bold,
-                                                      color: Colors.white)),
-                                              FlatButton(
-                                                onPressed: () =>
-                                                    {_deleteCart(index)},
-                                                child: Icon(
-                                                  MdiIcons.delete,
-                                                  color: Color.fromRGBO(
-                                                      101, 255, 218, 50),
-                                                ),
                                               ),
-                                            ],
-                                          ),
-                                        ],
-                                      ),
-                                    )
-                                  ],
-                                )),
-                          ])));
-                }),
-          ));
-
+                                            )
+                                          ],
+                                        )),
+                                  ])));
+                        })),
+          ],
+        )));
   }
 
   void _loadCart() {
