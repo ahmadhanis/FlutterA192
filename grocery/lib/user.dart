@@ -1,33 +1,11 @@
 class User {
-  String name,
-      phone,
-      password,
-      datereg,
-      quantity,
-      credit,
-      radius,
-      tproduk,
-      total,
-      state,
-      locality,
-      latitude,
-      longitude;
-
-  var description;
-
-  var id;
+  String name, email, phone, password, credit, datereg,quantity;
 
   User(
-      {this.password,
-      this.name,
+      {this.name,
+      this.email,
+      this.password,
       this.phone,
-      this.datereg,
       this.credit,
-      this.radius,
-      this.tproduk,
-      this.total,
-      this.state,
-      this.locality,
-      this.latitude,
-      this.longitude});
+      this.datereg,this.quantity});
 }

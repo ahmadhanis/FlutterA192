@@ -1,11 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:mypasar/loginscreen.dart';
+import 'package:grocery/loginscreen.dart';
 import 'package:http/http.dart' as http;
 import 'package:toast/toast.dart';
-import 'package:progress_dialog/progress_dialog.dart';
-import 'package:geolocator/geolocator.dart';
-import 'package:geocoder/geocoder.dart';
-import 'package:android_intent/android_intent.dart';
 
 void main() => runApp(RegisterScreen());
 
@@ -17,16 +13,9 @@ class RegisterScreen extends StatefulWidget {
 class _RegisterScreenState extends State<RegisterScreen> {
   double screenHeight;
   bool _isChecked = false;
-  Position _currentPosition;
-  double latitude, longitude;
-  String state;
-  String homeaddress, curaddress;
-  final focus = FocusNode();
-  final focus1 = FocusNode();
-  final focus2 = FocusNode();
-
-  String urlRegister = "https://slumberjer.com/mypasar/php/register_user.php";
+  String urlRegister = "https://slumberjer.com/grocery/php/register_user.php";
   TextEditingController _nameEditingController = new TextEditingController();
+  TextEditingController _emailEditingController = new TextEditingController();
   TextEditingController _phoneditingController = new TextEditingController();
   TextEditingController _passEditingController = new TextEditingController();
 
@@ -34,14 +23,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
   Widget build(BuildContext context) {
     screenHeight = MediaQuery.of(context).size.height;
     return Scaffold(
-      resizeToAvoidBottomPadding: false,
-      body: Stack(
-        children: <Widget>[
-          upperHalf(context),
-          lowerHalf(context),
-          pageTitle(),
-        ],
-      ),
+          resizeToAvoidBottomPadding: false,
+          body: Stack(
+            children: <Widget>[
+              upperHalf(context),
+              lowerHalf(context),
+              pageTitle(),
+            ],
+          ),
     );
   }
 
@@ -71,7 +60,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   Align(
                     alignment: Alignment.topLeft,
                     child: Text(
-                      "Daftar Akaun",
+                      "Register",
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: 26,
@@ -79,47 +68,38 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       ),
                     ),
                   ),
-                  TextFormField(
-                      style: TextStyle(
-                        color: Colors.white,
-                      ),
-                      textInputAction: TextInputAction.next,
-                      onFieldSubmitted: (v) {
-                        FocusScope.of(context).requestFocus(focus);
-                      },
+                  TextField(
+                    style: TextStyle(color: Colors.white,),
                       controller: _nameEditingController,
                       keyboardType: TextInputType.text,
                       decoration: InputDecoration(
-                        labelText: 'Nama Anda',
+                        labelText: 'Name',
                         icon: Icon(Icons.person),
                       )),
-                  TextFormField(
-                      style: TextStyle(
-                        color: Colors.white,
-                      ),
-                      textInputAction: TextInputAction.next,
-                      focusNode: focus,
-                      onFieldSubmitted: (v) {
-                        FocusScope.of(context).requestFocus(focus1);
-                      },
+                  TextField(
+                    style: TextStyle(color: Colors.white,),
+
+                      controller: _emailEditingController,
+                      keyboardType: TextInputType.emailAddress,
+                      decoration: InputDecoration(
+                        labelText: 'Email',
+                        icon: Icon(Icons.email),
+                      )),
+                  TextField(
+                    style: TextStyle(color: Colors.white,),
+
                       controller: _phoneditingController,
                       keyboardType: TextInputType.phone,
                       decoration: InputDecoration(
-                        labelText: 'Nombor Telefon',
+                        labelText: 'Phone',
                         icon: Icon(Icons.phone),
                       )),
-                  TextFormField(
-                    style: TextStyle(
-                      color: Colors.white,
-                    ),
-                    textInputAction: TextInputAction.done,
-                    focusNode: focus1,
-                    onFieldSubmitted: (v) {
-                      FocusScope.of(context).requestFocus(focus2);
-                    },
+                  TextField(
+                    style: TextStyle(color: Colors.white,),
+
                     controller: _passEditingController,
                     decoration: InputDecoration(
-                      labelText: 'Kata Laluan',
+                      labelText: 'Password',
                       icon: Icon(Icons.lock),
                     ),
                     obscureText: true,
@@ -136,26 +116,22 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           _onChange(value);
                         },
                       ),
-                      Flexible(
-                        child: GestureDetector(
-                          onTap: _showEULA,
-                          child: Text('Setuju dengan terma dan syarat  ',
-                              style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.white)),
-                        ),
+                      GestureDetector(
+                        onTap: _showEULA,
+                        child: Text('I Agree to Terms  ',
+                            style: TextStyle(
+                                fontSize: 16, fontWeight: FontWeight.bold,color: Colors.white)),
                       ),
                       MaterialButton(
                         shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(5.0)),
                         minWidth: 115,
                         height: 50,
-                        child: Text('Daftar'),
+                        child: Text('Register'),
                         color: Color.fromRGBO(101, 255, 218, 50),
                         textColor: Colors.black,
                         elevation: 10,
-                        onPressed: _getLocation,
+                        onPressed: _onRegister,
                       ),
                     ],
                   ),
@@ -169,16 +145,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              Text("Sudah mendaftar? ",
-                  style: TextStyle(fontSize: 16.0, color: Colors.white)),
+              Text("Already register? ", style: TextStyle(fontSize: 16.0,color: Colors.white)),
               GestureDetector(
                 onTap: _loginScreen,
                 child: Text(
-                  "Log masuk",
-                  style: TextStyle(
-                      fontSize: 16.0,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white),
+                  "Login",
+                  style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold,color: Colors.white),
                 ),
               ),
             ],
@@ -202,7 +174,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
             color: Colors.white,
           ),
           Text(
-            " MY.PASAR",
+            " MY.GROCERY",
             style: TextStyle(
                 fontSize: 36, color: Colors.white, fontWeight: FontWeight.w900),
           )
@@ -211,45 +183,41 @@ class _RegisterScreenState extends State<RegisterScreen> {
     );
   }
 
-  void _onRegister(String name, String password, String phone) {
-    ProgressDialog pr = new ProgressDialog(context,
-        type: ProgressDialogType.Normal, isDismissible: false);
-    pr.style(message: "Sedang mendaftar...");
-    pr.show();
+  void _onRegister() {
+    String name = _nameEditingController.text;
+    String email = _emailEditingController.text;
+    String phone = _phoneditingController.text;
+    String password = _passEditingController.text;
+    if (!_isChecked) {
+      Toast.show("Please Accept Term", context,
+          duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
+      return;
+    }
 
     http.post(urlRegister, body: {
       "name": name,
+      "email": email,
       "password": password,
       "phone": phone,
-      "state": state,
-      "locality": curaddress,
-      "latitude": latitude.toString(),
-      "longitude": longitude.toString(),
     }).then((res) {
-      print(res.body);
       if (res.body == "success") {
-        pr.dismiss();
-        Toast.show("Pendaftaran anda berjaya", context,
-            duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
-
-        Navigator.push(
+        Navigator.pop(
             context,
             MaterialPageRoute(
                 builder: (BuildContext context) => LoginScreen()));
-      } else {
-        Toast.show("Pendaftaran gagal", context,
+        Toast.show("Registration success", context,
             duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
-        FocusScope.of(context).requestFocus(new FocusNode());
-        pr.dismiss();
+      } else {
+        Toast.show("Registration failed", context,
+            duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
       }
     }).catchError((err) {
       print(err);
-      pr.dismiss();
     });
   }
 
   void _loginScreen() {
-    Navigator.push(context,
+    Navigator.pop(context,
         MaterialPageRoute(builder: (BuildContext context) => LoginScreen()));
   }
 
@@ -267,12 +235,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       builder: (BuildContext context) {
         // return object of type Dialog
         return AlertDialog(
-          title: new Text(
-            "EULA",
-            style: TextStyle(
-              color: Colors.white,
-            ),
-          ),
+          title: new Text("EULA"),
           content: new Container(
             height: screenHeight / 2,
             child: Column(
@@ -280,32 +243,28 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 Expanded(
                   flex: 1,
                   child: new SingleChildScrollView(
-                      child: RichText(
-                    softWrap: true,
-                    textAlign: TextAlign.justify,
-                    text: TextSpan(
-                        style: TextStyle(
-                          color: Colors.white,
-                          //fontWeight: FontWeight.w500,
-                          fontSize: 12.0,
-                        ),
-                        text:
-                            "Perjanjian Lesen Pengguna Akhir ini adalah perjanjian sah antara anda dan Slumberjer Perjanjian EULA ini mengatur perolehan dan penggunaan perisian (Perisian) MY.PASAR kami secara langsung dari Slumberjer atau secara tidak langsung melalui penjual atau pengedar sah Slumberjer (seorang Penjual Semula). Sila baca perjanjian EULA ini dengan teliti sebelum menyelesaikan proses pemasangan dan menggunakan perisian MY.PASAR. Ini memberikan lesen untuk menggunakan perisian MY.PASAR dan mengandungi maklumat jaminan dan penafian liabiliti. Sekiranya anda mendaftar untuk percubaan percuma perisian MY.PASAR, perjanjian EULA ini juga akan mengatur percubaan tersebut. Dengan mengklik terima atau memasang dan / atau menggunakan perisian MY.PASAR, anda mengesahkan penerimaan Perisian anda dan bersetuju untuk terikat dengan syarat-syarat perjanjian EULA ini. Sekiranya anda membuat perjanjian EULA ini bagi pihak syarikat atau entiti undang-undang lain, anda menyatakan bahawa anda mempunyai kuasa untuk mengikat entiti tersebut dan gabungannya dengan terma dan syarat ini. Sekiranya anda tidak mempunyai kewibawaan tersebut atau jika anda tidak bersetuju dengan terma dan syarat perjanjian EULA ini, jangan pasang atau gunakan Perisian ini, dan anda tidak harus menerima perjanjian EULA ini. Perjanjian EULA ini akan terpakai hanya untuk Perisian yang dibekalkan oleh Slumberjer dengan ini tanpa mengira sama ada perisian lain dirujuk atau dijelaskan di sini. Syarat-syarat ini juga berlaku untuk sebarang kemas kini, suplemen, perkhidmatan berasaskan Internet, dan perkhidmatan sokongan Slumberjer untuk Perisian, kecuali syarat-syarat lain menyertai barang-barang tersebut semasa penghantaran. Sekiranya demikian, syarat-syarat tersebut terpakai. EULA ini dibuat oleh EULA Template untuk MY.PASAR. Slumberjer akan sentiasa memiliki hak milik Perisian seperti yang dimuat turun oleh anda dan semua muat turun Perisian yang seterusnya oleh anda. Perisian (dan hak cipta, dan hak kekayaan intelektual lain apa pun dalam Perisian, termasuk apa-apa pengubahsuaian yang dibuat padanya) adalah dan akan tetap menjadi hak milik Slumberjer. Slumberjer berhak memberikan lesen untuk menggunakan Perisian ini kepada pihak ketiga"),
-                    //children: getSpan(),
-                  )),
-                ),
+                    child: RichText(
+                        softWrap: true,
+                        textAlign: TextAlign.justify,
+                        text: TextSpan(
+                            style: TextStyle(
+                              color: Colors.black,
+                              //fontWeight: FontWeight.w500,
+                              fontSize: 12.0,
+                            ),
+                            text:
+                                "This End-User License Agreement is a legal agreement between you and Slumberjer This EULA agreement governs your acquisition and use of our MY.GROCERY software (Software) directly from Slumberjer or indirectly through a Slumberjer authorized reseller or distributor (a Reseller).Please read this EULA agreement carefully before completing the installation process and using the MY.GROCERY software. It provides a license to use the MY.GROCERY software and contains warranty information and liability disclaimers. If you register for a free trial of the MY.GROCERY software, this EULA agreement will also govern that trial. By clicking accept or installing and/or using the MY.GROCERY software, you are confirming your acceptance of the Software and agreeing to become bound by the terms of this EULA agreement. If you are entering into this EULA agreement on behalf of a company or other legal entity, you represent that you have the authority to bind such entity and its affiliates to these terms and conditions. If you do not have such authority or if you do not agree with the terms and conditions of this EULA agreement, do not install or use the Software, and you must not accept this EULA agreement.This EULA agreement shall apply only to the Software supplied by Slumberjer herewith regardless of whether other software is referred to or described herein. The terms also apply to any Slumberjer updates, supplements, Internet-based services, and support services for the Software, unless other terms accompany those items on delivery. If so, those terms apply. This EULA was created by EULA Template for MY.GROCERY. Slumberjer shall at all times retain ownership of the Software as originally downloaded by you and all subsequent downloads of the Software by you. The Software (and the copyright, and other intellectual property rights of whatever nature in the Software, including any modifications made thereto) are and shall remain the property of Slumberjer. Slumberjer reserves the right to grant licences to use the Software to third parties"
+                            //children: getSpan(),
+                            )),
+                  ),
+                )
               ],
             ),
           ),
           actions: <Widget>[
             // usually buttons at the bottom of the dialog
             new FlatButton(
-              child: new Text(
-                "Setuju",
-                style: TextStyle(
-                  color: Color.fromRGBO(101, 255, 218, 50),
-                ),
-              ),
+              child: new Text("Close"),
               onPressed: () {
                 Navigator.of(context).pop();
               },
@@ -314,98 +273,5 @@ class _RegisterScreenState extends State<RegisterScreen> {
         );
       },
     );
-  }
-
-  _getLocation() async {
-    String name = _nameEditingController.text;
-    String phone = _phoneditingController.text;
-    String password = _passEditingController.text;
-    if (!_isChecked) {
-      Toast.show("Sila terima terma dan syarat", context,
-          duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
-      return;
-    }
-    try {
-      ProgressDialog pr = new ProgressDialog(context,
-          type: ProgressDialogType.Normal, isDismissible: false);
-      pr.style(message: "Mendapatkan lokasi...");
-      pr.show();
-
-      final Geolocator geolocator = Geolocator()..forceAndroidLocationManager;
-      _currentPosition = await geolocator
-          .getCurrentPosition(desiredAccuracy: LocationAccuracy.medium)
-          .timeout(Duration(seconds: 10), onTimeout: () {
-        print("timeout gps");
-        Toast.show("Lokaliti anda tidak dapat dikesan", context,
-            duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
-        pr.dismiss();
-        //openLocationSetting();
-        return;
-      });
-      final coordinates = new Coordinates(
-          _currentPosition.latitude, _currentPosition.longitude);
-      var addresses = await Geocoder.local
-          .findAddressesFromCoordinates(coordinates)
-          .timeout(Duration(seconds: 10), onTimeout: () {
-        Toast.show("Lokaliti anda tidak dapat dikesan", context,
-            duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
-        pr.dismiss();
-        //openLocationSetting();
-        return;
-      });
-      var first = addresses.first;
-      state = first.adminArea;
-      print(state);
-      setState(() {
-        curaddress = first.locality;
-        homeaddress = first.addressLine;
-        print("feature name:" + curaddress);
-        if (curaddress != null) {
-          latitude = _currentPosition.latitude;
-          longitude = _currentPosition.longitude;
-          pr.dismiss();
-        }
-      });
-
-      showDialog(
-        context: context,
-        builder: (context) => new AlertDialog(
-          shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.all(Radius.circular(20.0))),
-          title: new Text('Setuju untuk daftar?',
-              style: TextStyle(color: Colors.white)),
-          content: Text("Lokaliti anda di " + curaddress + ", " + state,
-              style: TextStyle(color: Colors.white)),
-          actions: <Widget>[
-            MaterialButton(
-                onPressed: () {
-                  Navigator.of(context).pop(false);
-                  //_insertOrder(index, total, delicost);
-                  _onRegister(name, password, phone);
-                }, // color: Color.fromRGBO(101, 255, 218, 50),
-                child: Text("Ya",
-                    style:
-                        TextStyle(color: Color.fromRGBO(101, 255, 218, 50)))),
-            MaterialButton(
-                onPressed: () {
-                  Navigator.of(context).pop(false);
-                },
-                child: Text("Tidak",
-                    style:
-                        TextStyle(color: Color.fromRGBO(101, 255, 218, 50)))),
-          ],
-        ),
-      );
-    } catch (exception) {
-      print(exception.message);
-      return;
-    }
-  }
-
-  void openLocationSetting() async {
-    final AndroidIntent intent = new AndroidIntent(
-      action: 'android.settings.LOCATION_SOURCE_SETTINGS',
-    );
-    await intent.launch();
   }
 }
