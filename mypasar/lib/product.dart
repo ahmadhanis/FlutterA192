@@ -1,12 +1,24 @@
 class Product {
-  String pid, name, price, quantity, weigth, type, date;
-  Product({
-    this.pid,
-    this.name,
-    this.price,
-    this.quantity,
-    this.weigth,
-    this.type,
-    this.date,
-  });
+  String id,
+      phone,
+      prname,
+      quantity,
+      price,
+      delivery,
+      imagename,
+      datereg,
+      latitude,
+      longitude;
+
+  Product(
+      this.id,
+      this.phone,
+      this.prname,
+      this.quantity,
+      this.price,
+      this.delivery,
+      this.imagename,
+      this.datereg,
+      this.latitude,
+      this.longitude);
 }

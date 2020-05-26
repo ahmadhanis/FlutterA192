@@ -1,60 +1,38 @@
-import 'dart:convert';
-import 'dart:io';
-import 'package:image_cropper/image_cropper.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:mypasar/product.dart';
+import 'package:mypasar/user.dart';
 import 'package:toast/toast.dart';
 import 'package:http/http.dart' as http;
 import 'package:progress_dialog/progress_dialog.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'product.dart';
-import 'user.dart';
 
 class EditProduct extends StatefulWidget {
   final User user;
   final Product product;
 
-  const EditProduct({Key key, this.user, this.product}) : super(key: key);
-
+  const EditProduct({Key key, this.product, this.user}) : super(key: key);
   @override
   _EditProductState createState() => _EditProductState();
 }
 
 class _EditProductState extends State<EditProduct> {
-  TextEditingController prnameEditingController = new TextEditingController();
-  TextEditingController priceEditingController = new TextEditingController();
+  TextEditingController productEditingController = new TextEditingController();
   TextEditingController qtyEditingController = new TextEditingController();
-  TextEditingController typeEditingController = new TextEditingController();
-  TextEditingController weigthEditingController = new TextEditingController();
+  TextEditingController priceEditingController = new TextEditingController();
+  TextEditingController deliEditingController = new TextEditingController();
   double screenHeight, screenWidth;
-  final focus0 = FocusNode();
+  final focus = FocusNode();
   final focus1 = FocusNode();
   final focus2 = FocusNode();
-  final focus3 = FocusNode();
-  File _image;
-  bool _takepicture = true;
-  bool _takepicturelocal = false;
-  String selectedType;
-  List<String> listType = [
-    "Drink",
-    "Canned Food",
-    "Vegetable",
-    "Meat",
-    "Bread",
-    "Other",
-  ];
-
   @override
   void initState() {
     super.initState();
     print("edit Product");
-    prnameEditingController.text = widget.product.name;
-    priceEditingController.text = widget.product.price;
     qtyEditingController.text = widget.product.quantity;
-    typeEditingController.text = widget.product.type;
-    weigthEditingController.text = widget.product.weigth;
-    selectedType = widget.product.type;
-    print(weigthEditingController.text);
+    priceEditingController.text =
+        double.parse(widget.product.price).toStringAsFixed(2);
+    deliEditingController.text = widget.product.delivery;
+    productEditingController.text = widget.product.prname;
   }
 
   @override
@@ -65,7 +43,7 @@ class _EditProductState extends State<EditProduct> {
     return Scaffold(
       resizeToAvoidBottomInset: true,
       appBar: AppBar(
-        title: Text('Update Your Product'),
+        title: Text('Kemasikini Produk Anda'),
       ),
       body: Container(
         alignment: Alignment.topCenter,
@@ -73,49 +51,21 @@ class _EditProductState extends State<EditProduct> {
             child: Column(
           children: <Widget>[
             SizedBox(height: 10),
-            GestureDetector(
-                onTap: _choose,
-                child: Column(
-                  children: [
-                    Visibility(
-                      visible: _takepicture,
-                      child: Container(
-                        height: screenHeight / 3,
-                        width: screenWidth / 1.5,
-                        child: CachedNetworkImage(
-                          fit: BoxFit.fill,
-                          imageUrl:
-                              "http://slumberjer.com/grocery/productimage/${widget.product.pid}.jpg",
-                          placeholder: (context, url) =>
-                              new CircularProgressIndicator(),
-                          errorWidget: (context, url, error) =>
-                              new Icon(Icons.error),
-                        ),
-                      ),
-                    ),
-                    Visibility(
-                        visible: _takepicturelocal,
-                        child: Container(
-                          height: screenHeight / 3,
-                          width: screenWidth / 1.5,
-                          decoration: BoxDecoration(
-                            image: new DecorationImage(
-                              colorFilter: new ColorFilter.mode(
-                                  Colors.black.withOpacity(0.6),
-                                  BlendMode.dstATop),
-                              image:  _image == null
-                              ? AssetImage('assets/images/phonecam.png')
-                              :FileImage(_image),
-                              fit: BoxFit.cover,
-                            ),
-                          ),
-                        )),
-                  ],
-                )),
+            Container(
+              height: screenHeight / 2.8,
+              width: screenWidth / 1.5,
+              child: CachedNetworkImage(
+                fit: BoxFit.cover,
+                imageUrl:
+                    "http://slumberjer.com/mypasar/productimages/${widget.product.imagename}.jpg",
+                placeholder: (context, url) => new CircularProgressIndicator(),
+                errorWidget: (context, url, error) => new Icon(Icons.error),
+              ),
+            ),
             SizedBox(height: 6),
             Container(
                 width: screenWidth / 1.2,
-                //height: screenHeight / 2,
+                height: screenHeight / 2.5,
                 child: Card(
                     elevation: 6,
                     child: Padding(
@@ -143,7 +93,7 @@ class _EditProductState extends State<EditProduct> {
                                           alignment: Alignment.centerLeft,
                                           height: 30,
                                           child: Text(
-                                            " " + widget.product.pid,
+                                            " " + widget.product.id,
                                             style: TextStyle(
                                               color: Colors.white,
                                             ),
@@ -155,7 +105,7 @@ class _EditProductState extends State<EditProduct> {
                                       child: Container(
                                           alignment: Alignment.centerLeft,
                                           height: 30,
-                                          child: Text("Product Name",
+                                          child: Text("Nama Produk",
                                               style: TextStyle(
                                                 fontWeight: FontWeight.bold,
                                                 color: Colors.white,
@@ -169,13 +119,14 @@ class _EditProductState extends State<EditProduct> {
                                             style: TextStyle(
                                               color: Colors.white,
                                             ),
-                                            controller: prnameEditingController,
+                                            controller:
+                                                productEditingController,
                                             keyboardType: TextInputType.text,
                                             textInputAction:
                                                 TextInputAction.next,
                                             onFieldSubmitted: (v) {
                                               FocusScope.of(context)
-                                                  .requestFocus(focus0);
+                                                  .requestFocus(focus);
                                             },
                                             decoration: new InputDecoration(
                                               contentPadding:
@@ -198,7 +149,7 @@ class _EditProductState extends State<EditProduct> {
                                       child: Container(
                                           alignment: Alignment.centerLeft,
                                           height: 30,
-                                          child: Text("Price (RM)",
+                                          child: Text("Harga(RM)",
                                               style: TextStyle(
                                                   fontWeight: FontWeight.bold,
                                                   color: Colors.white))),
@@ -215,7 +166,7 @@ class _EditProductState extends State<EditProduct> {
                                             keyboardType: TextInputType.number,
                                             textInputAction:
                                                 TextInputAction.next,
-                                            focusNode: focus0,
+                                            focusNode: focus,
                                             onFieldSubmitted: (v) {
                                               FocusScope.of(context)
                                                   .requestFocus(focus1);
@@ -238,7 +189,7 @@ class _EditProductState extends State<EditProduct> {
                                       child: Container(
                                           alignment: Alignment.centerLeft,
                                           height: 30,
-                                          child: Text("Quantity",
+                                          child: Text("Kuantiti",
                                               style: TextStyle(
                                                   fontWeight: FontWeight.bold,
                                                   color: Colors.white))),
@@ -278,56 +229,7 @@ class _EditProductState extends State<EditProduct> {
                                       child: Container(
                                           alignment: Alignment.centerLeft,
                                           height: 30,
-                                          child: Text("Type",
-                                              style: TextStyle(
-                                                  fontWeight: FontWeight.bold,
-                                                  color: Colors.white))),
-                                    ),
-                                    TableCell(
-                                      child: Container(
-                                        margin: EdgeInsets.fromLTRB(5, 1, 5, 1),
-                                        height: 40,
-                                        child: Container(
-                                          height: 40,
-                                          child: DropdownButton(
-                                            //sorting dropdownoption
-                                            hint: Text(
-                                              'Type',
-                                              style: TextStyle(
-                                                color: Color.fromRGBO(
-                                                    101, 255, 218, 50),
-                                              ),
-                                            ), // Not necessary for Option 1
-                                            value: selectedType,
-                                            onChanged: (newValue) {
-                                              setState(() {
-                                                selectedType = newValue;
-                                                print(selectedType);
-                                              });
-                                            },
-                                            items: listType.map((selectedType) {
-                                              return DropdownMenuItem(
-                                                child: new Text(selectedType,
-                                                    style: TextStyle(
-                                                        color: Color.fromRGBO(
-                                                            101,
-                                                            255,
-                                                            218,
-                                                            50))),
-                                                value: selectedType,
-                                              );
-                                            }).toList(),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ]),
-                                  TableRow(children: [
-                                    TableCell(
-                                      child: Container(
-                                          alignment: Alignment.centerLeft,
-                                          height: 30,
-                                          child: Text("Weigth (gram)",
+                                          child: Text("Penghantaran(RM)",
                                               style: TextStyle(
                                                   fontWeight: FontWeight.bold,
                                                   color: Colors.white))),
@@ -340,15 +242,11 @@ class _EditProductState extends State<EditProduct> {
                                             style: TextStyle(
                                               color: Colors.white,
                                             ),
-                                            controller: weigthEditingController,
+                                            controller: deliEditingController,
                                             keyboardType: TextInputType.number,
                                             textInputAction:
-                                                TextInputAction.next,
+                                                TextInputAction.done,
                                             focusNode: focus2,
-                                            onFieldSubmitted: (v) {
-                                              FocusScope.of(context)
-                                                  .requestFocus(focus3);
-                                            },
                                             decoration: new InputDecoration(
                                               fillColor: Colors.white,
                                               border: new OutlineInputBorder(
@@ -369,11 +267,12 @@ class _EditProductState extends State<EditProduct> {
                                   borderRadius: BorderRadius.circular(10.0)),
                               minWidth: screenWidth / 1.5,
                               height: 40,
-                              child: Text('Update Product'),
+                              child: Text('Kemaskini Produk'),
                               color: Color.fromRGBO(101, 255, 218, 50),
                               textColor: Colors.black,
                               elevation: 5,
-                              onPressed: () => updateProductDialog(),
+                              onPressed: () =>
+                                  updateProductDialog(widget.product.id),
                             ),
                           ],
                         )))),
@@ -383,42 +282,7 @@ class _EditProductState extends State<EditProduct> {
     );
   }
 
-  void _choose() async {
-    _image = await ImagePicker.pickImage(
-        source: ImageSource.camera, maxHeight: 800, maxWidth: 800);
-    _cropImage();
-    setState(() {});
-  }
-
-  Future<Null> _cropImage() async {
-    File croppedFile = await ImageCropper.cropImage(
-        sourcePath: _image.path,
-        aspectRatioPresets: Platform.isAndroid
-            ? [
-                CropAspectRatioPreset.square,
-              ]
-            : [
-                CropAspectRatioPreset.square,
-              ],
-        androidUiSettings: AndroidUiSettings(
-            toolbarTitle: 'Cropper',
-            toolbarColor: Colors.deepOrange,
-            toolbarWidgetColor: Colors.white,
-            initAspectRatio: CropAspectRatioPreset.original,
-            lockAspectRatio: false),
-        iosUiSettings: IOSUiSettings(
-          title: 'Cropper',
-        ));
-    if (croppedFile != null) {
-      _image = croppedFile;
-      setState(() {
-        _takepicture = false;
-        _takepicturelocal = true;
-      });
-    }
-  }
-
-  updateProductDialog() {
+  updateProductDialog(String index) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -427,30 +291,30 @@ class _EditProductState extends State<EditProduct> {
           shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.all(Radius.circular(20.0))),
           title: new Text(
-            "Update Product Id " + widget.product.pid,
+            "Kemaskini produk id " + widget.product.id,
             style: TextStyle(
               color: Colors.white,
             ),
           ),
           content:
-              new Text("Are you sure?", style: TextStyle(color: Colors.white)),
+              new Text("Anda Pasti?", style: TextStyle(color: Colors.white)),
           actions: <Widget>[
             // usually buttons at the bottom of the dialog
             new FlatButton(
               child: new Text(
-                "Yes",
+                "Ya",
                 style: TextStyle(
                   color: Color.fromRGBO(101, 255, 218, 50),
                 ),
               ),
               onPressed: () {
                 Navigator.of(context).pop();
-                updateProduct();
+                updateProduct(index);
               },
             ),
             new FlatButton(
               child: new Text(
-                "No",
+                "Tidak",
                 style: TextStyle(
                   color: Color.fromRGBO(101, 255, 218, 50),
                 ),
@@ -465,86 +329,55 @@ class _EditProductState extends State<EditProduct> {
     );
   }
 
-  updateProduct() {
-    if (prnameEditingController.text.length < 4) {
-      Toast.show("Please enter product name", context,
+  updateProduct(String index) {
+    if (productEditingController.text.length < 4) {
+      Toast.show("Sila masukkan nama produk", context,
           duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
       return;
     }
     if (qtyEditingController.text.length < 1) {
-      Toast.show("Please enter product quantity", context,
+      Toast.show("Sila masukkan jumlah produk", context,
           duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
       return;
     }
     if (priceEditingController.text.length < 1) {
-      Toast.show("Please enter product price", context,
+      Toast.show("Sila masukkan harga produk", context,
           duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
       return;
     }
-    if (weigthEditingController.text.length < 1) {
-      Toast.show("Please enter product weight", context,
+    if (deliEditingController.text.length < 1) {
+      Toast.show("Sila masukkan harga cas penghantaran", context,
           duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
       return;
     }
     double price = double.parse(priceEditingController.text);
-    double weigth = double.parse(weigthEditingController.text);
+    double delivery = double.parse(deliEditingController.text);
 
     ProgressDialog pr = new ProgressDialog(context,
         type: ProgressDialogType.Normal, isDismissible: false);
-    pr.style(message: "Updating product...");
+    pr.style(message: "Sedang kemaskini produk...");
     pr.show();
-    String base64Image; 
-    
-    if (_image!=null){
-       base64Image = base64Encode(_image.readAsBytesSync());
-      http.post("https://slumberjer.com/grocery/php/update_product.php", body: {
-      "prid": widget.product.pid,
-      "prname": prnameEditingController.text,
+
+    http.post("https://slumberjer.com/mypasar/php/update_product.php", body: {
+      "prid": widget.product.id,
+      "prname": productEditingController.text,
       "quantity": qtyEditingController.text,
       "price": price.toStringAsFixed(2),
-      "type": typeEditingController.text,
-      "weight": weigth.toStringAsFixed(2),
-      "encoded_string": base64Image,
+      "delivery": delivery.toStringAsFixed(2),
     }).then((res) {
       print(res.body);
       pr.dismiss();
       if (res.body == "success") {
-        Toast.show("Update success", context,
+        Toast.show("Kemaskini produk berjaya", context,
             duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
         Navigator.of(context).pop();
       } else {
-        Toast.show("Update failed", context,
+        Toast.show("Kemaskini produk tidak berjaya", context,
             duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
       }
     }).catchError((err) {
       print(err);
       pr.dismiss();
     });
-    }else{
-          http.post("https://slumberjer.com/grocery/php/update_product.php", body: {
-      "prid": widget.product.pid,
-      "prname": prnameEditingController.text,
-      "quantity": qtyEditingController.text,
-      "price": price.toStringAsFixed(2),
-      "type": typeEditingController.text,
-      "weight": weigth.toStringAsFixed(2),
-    }).then((res) {
-      print(res.body);
-      pr.dismiss();
-      if (res.body == "success") {
-        Toast.show("Update success", context,
-            duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
-        Navigator.of(context).pop();
-      } else {
-        Toast.show("Update failed", context,
-            duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
-      }
-    }).catchError((err) {
-      print(err);
-      pr.dismiss();
-    });
-    }
-
-
   }
 }

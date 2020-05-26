@@ -9,6 +9,7 @@ import 'package:geocoder/geocoder.dart';
 import 'package:toast/toast.dart';
 import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
+import 'package:image_cropper/image_cropper.dart';
 
 class NewProductScreen extends StatefulWidget {
   final User user;
@@ -458,8 +459,45 @@ class _NewProductScreenState extends State<NewProductScreen> {
 
   void _choose() async {
     _image = await ImagePicker.pickImage(
-        source: ImageSource.camera, maxHeight: 400, maxWidth: 300);
+        source: ImageSource.camera, maxHeight: 800, maxWidth: 800);
+        _cropImage();
     setState(() {});
+  }
+
+Future<Null> _cropImage() async {
+    File croppedFile = await ImageCropper.cropImage(
+        sourcePath: _image.path,
+        aspectRatioPresets: Platform.isAndroid
+            ? [
+                CropAspectRatioPreset.square,
+                //CropAspectRatioPreset.ratio3x2,
+                //CropAspectRatioPreset.original,
+                //CropAspectRatioPreset.ratio4x3,
+                //CropAspectRatioPreset.ratio16x9
+              ]
+            : [
+                //CropAspectRatioPreset.original,
+                CropAspectRatioPreset.square,
+                //CropAspectRatioPreset.ratio3x2,
+                //CropAspectRatioPreset.ratio4x3,
+                //CropAspectRatioPreset.ratio5x3,
+                //CropAspectRatioPreset.ratio5x4,
+                //CropAspectRatioPreset.ratio7x5,
+                //CropAspectRatioPreset.ratio16x9
+              ],
+        androidUiSettings: AndroidUiSettings(
+            toolbarTitle: 'Potong',
+            toolbarColor: Colors.deepOrange,
+            toolbarWidgetColor: Colors.white,
+            initAspectRatio: CropAspectRatioPreset.square,
+            lockAspectRatio: false),
+        iosUiSettings: IOSUiSettings(
+          title: 'Cropper',
+        ));
+    if (croppedFile != null) {
+      _image = croppedFile;
+      setState(() {});
+    }
   }
 
   _getLocation() async {
