@@ -2,9 +2,9 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:mypasar/mainscreen.dart';
-import 'package:mypasar/registerscreen.dart';
-import 'package:mypasar/user.dart';
+import 'package:grocery/mainscreen.dart';
+import 'package:grocery/registerscreen.dart';
+import 'package:grocery/user.dart';
 import 'package:http/http.dart' as http;
 import 'package:toast/toast.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -20,15 +20,16 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   double screenHeight;
-  TextEditingController _phoneEditingController = new TextEditingController();
+  TextEditingController _emailEditingController = new TextEditingController();
   TextEditingController _passEditingController = new TextEditingController();
+  String urlLogin = "https://slumberjer.com/grocery/php/login_user.php";
 
   @override
   void initState() {
     super.initState();
     print("Hello i'm in INITSTATE");
     this.loadPref();
-  }
+  } 
 
   @override
   Widget build(BuildContext context) {
@@ -49,7 +50,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   Widget upperHalf(BuildContext context) {
     return Container(
-      height: screenHeight / 1.8,
+      height: screenHeight / 2,
       child: Image.asset(
         'assets/images/login.jpg',
         fit: BoxFit.cover,
@@ -59,7 +60,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   Widget lowerHalf(BuildContext context) {
     return Container(
-      height: screenHeight / 1.8,
+      height: screenHeight / 1.5,
       margin: EdgeInsets.only(top: screenHeight / 2.5),
       padding: EdgeInsets.only(left: 10, right: 10),
       child: Column(
@@ -73,7 +74,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   Align(
                     alignment: Alignment.topLeft,
                     child: Text(
-                      "Log Masuk",
+                      "Login",
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: 26,
@@ -85,11 +86,11 @@ class _LoginScreenState extends State<LoginScreen> {
                       style: TextStyle(
                         color: Colors.white,
                       ),
-                      controller: _phoneEditingController,
-                      keyboardType: TextInputType.phone,
+                      controller: _emailEditingController,
+                      keyboardType: TextInputType.emailAddress,
                       decoration: InputDecoration(
-                        labelText: 'No Telefon',
-                        icon: Icon(Icons.phone),
+                        labelText: 'Email',
+                        icon: Icon(Icons.email),
                       )),
                   TextField(
                     style: TextStyle(
@@ -97,7 +98,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                     controller: _passEditingController,
                     decoration: InputDecoration(
-                      labelText: 'Kata Laluan',
+                      labelText: 'Password',
                       icon: Icon(Icons.lock),
                     ),
                     obscureText: true,
@@ -114,7 +115,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           _onRememberMeChanged(value);
                         },
                       ),
-                      Text('Tetapan Saya ',
+                      Text('Remember Me ',
                           style: TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.bold,
@@ -124,11 +125,12 @@ class _LoginScreenState extends State<LoginScreen> {
                             borderRadius: BorderRadius.circular(5.0)),
                         minWidth: 100,
                         height: 50,
-                        child: Text(
-                          'Log Masuk',
-                        ),
+                        child: Text('Login',
+                            style: TextStyle(
+                              color: Colors.black,
+                            )),
                         color: Color.fromRGBO(101, 255, 218, 50),
-                        textColor: Colors.black,
+                        textColor: Colors.white,
                         elevation: 10,
                         onPressed: this._userLogin,
                       ),
@@ -144,12 +146,12 @@ class _LoginScreenState extends State<LoginScreen> {
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              Text("Tiada Akaun? ",
+              Text("Don't have an account? ",
                   style: TextStyle(fontSize: 16.0, color: Colors.white)),
               GestureDetector(
                 onTap: _registerUser,
                 child: Text(
-                  "Cipta Akaun",
+                  "Create Account",
                   style: TextStyle(
                       fontSize: 16.0,
                       fontWeight: FontWeight.bold,
@@ -158,18 +160,15 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
             ],
           ),
-          SizedBox(
-            height: 3,
-          ),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              Text("Terlupa Kata Laluan? ",
+              Text("Forgot your password ",
                   style: TextStyle(fontSize: 16.0, color: Colors.white)),
               GestureDetector(
                 onTap: _forgotPassword,
                 child: Text(
-                  "Tetapkan Semula",
+                  "Reset Password",
                   style: TextStyle(
                       fontSize: 16.0,
                       fontWeight: FontWeight.bold,
@@ -197,7 +196,7 @@ class _LoginScreenState extends State<LoginScreen> {
             color: Colors.white,
           ),
           Text(
-            " MY.PASAR",
+            " MY.GROCERY",
             style: TextStyle(
                 fontSize: 36, color: Colors.white, fontWeight: FontWeight.w900),
           )
@@ -207,56 +206,47 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   void _userLogin() async {
-    String urlLogin = "https://slumberjer.com/mypasar/php/login_user.php";
     try {
       ProgressDialog pr = new ProgressDialog(context,
           type: ProgressDialogType.Normal, isDismissible: false);
-      pr.style(message: "Log Masuk...");
+      pr.style(message: "Log in...");
       pr.show();
-      String _phone = _phoneEditingController.text;
+      String _email = _emailEditingController.text;
       String _password = _passEditingController.text;
-      http
-          .post(urlLogin, body: {
-            "phone": _phone,
-            "password": _password,
-          })
-          .timeout(const Duration(seconds: 5))
+      http.post(urlLogin, body: {
+        "email": _email,
+        "password": _password,
+      })
+          //.timeout(const Duration(seconds: 4))
           .then((res) {
-            print(res.body);
-            var string = res.body;
-            List userdata = string.split(",");
-            if (userdata[0] == "success") {
-              print(userdata[4]);
-              User _user = new User(
-                  name: userdata[1],
-                  phone: _phone,
-                  password: _password,
-                  datereg: userdata[2],
-                  credit: userdata[3],
-                  radius: userdata[4],
-                  state : userdata[5],
-                  locality: userdata[6],
-                  latitude: userdata[7],
-                  longitude: userdata[8]);
-              pr.dismiss();
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (BuildContext context) => MainScreen(
-                            user: _user,
-                          )));
-              Toast.show("Log masuk berjaya", context,
-                  duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
-            } else {
-              pr.dismiss();
-              Toast.show("Log masuk gagal", context,
-                  duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
-            }
-          })
-          .catchError((err) {
-            print(err);
-            pr.dismiss();
-          });
+        print(res.body);
+        var string = res.body;
+        List userdata = string.split(",");
+        if (userdata[0] == "success") {
+          User _user = new User(
+              name: userdata[1],
+              email: _email,
+              password: _password,
+              phone: userdata[3],
+              credit: userdata[4],
+              datereg: userdata[5],
+              quantity: userdata[6]);
+          pr.dismiss();
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (BuildContext context) => MainScreen(
+                        user: _user,
+                      )));
+        } else {
+          pr.dismiss();
+          Toast.show("Login failed", context,
+              duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
+        }
+      }).catchError((err) {
+        print(err);
+        pr.dismiss();
+      });
     } on Exception catch (_) {
       Toast.show("Error", context,
           duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
@@ -276,40 +266,35 @@ class _LoginScreenState extends State<LoginScreen> {
       builder: (BuildContext context) {
         // return object of type Dialog
         return AlertDialog(
-          shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.all(Radius.circular(20.0))),
-          content: new Container(
-            height: screenHeight / 5.5,
-            child: Expanded(child:Column(
-              children: <Widget>[
-                Text(
-            "Terlupa katalaluan?",
+          title: new Text(
+            "Forgot Password?",
             style: TextStyle(
               color: Colors.white,
             ),
           ),
+          content: new Container(
+            height: 100,
+            child: Column(
+              children: <Widget>[
                 Text(
-                  "Masukkan no telefon anda",
+                  "Enter your recovery email",
                   style: TextStyle(
                     color: Colors.white,
                   ),
                 ),
                 TextField(
-                    style: TextStyle(
-                      color: Colors.white,
-                    ),
                     decoration: InputDecoration(
-                      labelText: 'No Telefon',
-                      icon: Icon(Icons.phone),
-                    ))
+                  labelText: 'Email',
+                  icon: Icon(Icons.email),
+                ))
               ],
-            )),
+            ),
           ),
           actions: <Widget>[
             // usually buttons at the bottom of the dialog
             new FlatButton(
               child: new Text(
-                "Hantar",
+                "Yes",
                 style: TextStyle(
                   color: Color.fromRGBO(101, 255, 218, 50),
                 ),
@@ -323,7 +308,7 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
             new FlatButton(
               child: new Text(
-                "Batal",
+                "No",
                 style: TextStyle(
                   color: Color.fromRGBO(101, 255, 218, 50),
                 ),
@@ -355,13 +340,13 @@ class _LoginScreenState extends State<LoginScreen> {
             shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.all(Radius.circular(20.0))),
             title: new Text(
-              'Keluar dari aplikasi',
+              'Are you sure?',
               style: TextStyle(
                 color: Colors.white,
               ),
             ),
             content: new Text(
-              'Anda pasti?',
+              'Do you want to exit an App',
               style: TextStyle(
                 color: Colors.white,
               ),
@@ -372,7 +357,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     SystemChannels.platform.invokeMethod('SystemNavigator.pop');
                   },
                   child: Text(
-                    "Keluar",
+                    "Exit",
                     style: TextStyle(
                       color: Color.fromRGBO(101, 255, 218, 50),
                     ),
@@ -380,10 +365,9 @@ class _LoginScreenState extends State<LoginScreen> {
               MaterialButton(
                   onPressed: () {
                     Navigator.of(context).pop(false);
-                    FocusScope.of(context).requestFocus(new FocusNode());
                   },
                   child: Text(
-                    "Batal",
+                    "Cancel",
                     style: TextStyle(
                       color: Color.fromRGBO(101, 255, 218, 50),
                     ),
@@ -396,11 +380,11 @@ class _LoginScreenState extends State<LoginScreen> {
 
   Future<void> loadPref() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    String phone = (prefs.getString('phone')) ?? '';
+    String email = (prefs.getString('email')) ?? '';
     String password = (prefs.getString('pass')) ?? '';
-    if (phone.length > 1) {
+    if (email.length > 1) {
       setState(() {
-        _phoneEditingController.text = phone;
+        _emailEditingController.text = email;
         _passEditingController.text = password;
         rememberMe = true;
       });
@@ -408,25 +392,25 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   void savepref(bool value) async {
-    String phone = _phoneEditingController.text;
+    String email = _emailEditingController.text;
     String password = _passEditingController.text;
     SharedPreferences prefs = await SharedPreferences.getInstance();
     if (value) {
       //save preference
-      await prefs.setString('phone', phone);
+      await prefs.setString('email', email);
       await prefs.setString('pass', password);
-      Toast.show("Tetapan ditetapkan", context,
+      Toast.show("Preferences have been saved", context,
           duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
     } else {
       //delete preference
-      await prefs.setString('phone', '');
+      await prefs.setString('email', '');
       await prefs.setString('pass', '');
       setState(() {
-        _phoneEditingController.text = '';
+        _emailEditingController.text = '';
         _passEditingController.text = '';
         rememberMe = false;
       });
-      Toast.show("Tetapan dibuang", context,
+      Toast.show("Preferences have removed", context,
           duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
     }
   }

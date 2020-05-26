@@ -1,13 +1,11 @@
-import 'dart:async';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:mypasar/user.dart';
-import 'package:toast/toast.dart';
-import 'package:http/http.dart' as http;
+import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
+import 'package:http/http.dart' as http;
 import 'mainscreen.dart';
+import 'user.dart';
+import 'package:toast/toast.dart';
 
 void main() => runApp(MyApp());
 
@@ -18,12 +16,6 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   double screenHeight;
-  @override
-  void initState() {
-    super.initState();
-    print("in splash screen");
-  }
-
   @override
   Widget build(BuildContext context) {
     SystemChrome.setPreferredOrientations([
@@ -38,7 +30,7 @@ class _MyAppState extends State<MyApp> {
           Theme.of(context).textTheme,
         ),
       ),
-      title: 'My.Pasar',
+      title: 'My.Grocery',
       home: Scaffold(
           body: Container(
         child: Stack(
@@ -65,12 +57,11 @@ class _ProgressIndicatorState extends State<ProgressIndicator>
     with SingleTickerProviderStateMixin {
   AnimationController controller;
   Animation<double> animation;
-  String thisversion = "1";
-  User user;
+
   @override
   void initState() {
     super.initState();
-    loadpref(this.context);
+    
     controller = AnimationController(
         duration: const Duration(milliseconds: 2000), vsync: this);
     animation = Tween(begin: 0.0, end: 1.0).animate(controller)
@@ -78,7 +69,9 @@ class _ProgressIndicatorState extends State<ProgressIndicator>
         setState(() {
           //updating states
           if (animation.value > 0.99) {
-            //loadpref(this.context);
+            controller.stop();
+            loadpref(this.context);
+            
             // Navigator.push(
             //     context,
             //     MaterialPageRoute(
@@ -108,108 +101,56 @@ class _ProgressIndicatorState extends State<ProgressIndicator>
     ));
   }
 
-  void checkVersion(phone, pass, ctx) {
-    print('Inside checkversion()');
-    String urlLoadProd = "https://slumberjer.com/mypasar/php/check_version.php";
-    try{
-    http.post(urlLoadProd, body: {}).then((res) {
-      print(res.body);
-      if (res.body != thisversion) {
-        Toast.show("Terdapat versi baru sila kemaskini aplikasi", context,
-            duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
-        //Navigator.of(context).pop(false);
-        Timer(Duration(seconds: 3), () {
-          SystemChannels.platform.invokeMethod('SystemNavigator.pop');
-        });
-      } else {
-        _onLogin(phone, pass, ctx);
-      }
-    }).catchError((err) {
-      print(err);
-    }).timeout(const Duration(seconds: 10), onTimeout: () {
-      print("Timeout check version");
-      Toast.show(
-          "Internet tidak dapat dicapai. Pastikan Internet telah ditetapkan.",
-          ctx,
-          duration: Toast.LENGTH_LONG,
-          gravity: Toast.BOTTOM);
-      SystemChannels.platform.invokeMethod('SystemNavigator.pop');
-    });
-    }catch(e){
-      print("ERROR:"+e.toString());
-    }
-  }
-
   void loadpref(BuildContext ctx) async {
     print('Inside loadpref()');
 
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    String phone = (prefs.getString('phone') ?? '');
+    String email = (prefs.getString('email') ?? '');
     String pass = (prefs.getString('pass') ?? '');
-    print("Splash:Preference" + phone + "/" + pass);
-
-    if (phone.length > 5) {
-      //try to login if got email pref;
-      checkVersion(phone, pass, ctx);
-    }else{
-      checkVersion("123456789", "123456", ctx);
+    print("Splash:Preference" + email + "/" + pass);
+    if (email.length > 5) {
+      //login with email and password
+      loginUser(email, pass, ctx);
+    } else {
+      loginUser("unregistered","123456789",ctx);
     }
   }
 
-  void _onLogin(String phone, String pass, BuildContext ctx) {
-    print("inside onLogin");
-    http.post("https://slumberjer.com/mypasar/php/login_user.php", body: {
-      "phone": phone,
+  void loginUser(String email, String pass, BuildContext ctx) {
+   
+    http.post("https://slumberjer.com/grocery/php/login_user.php", body: {
+      "email": email,
       "password": pass,
-    }).then((res) {
-      print(res.statusCode);
+    })
+        //.timeout(const Duration(seconds: 4))
+        .then((res) {
+      print(res.body);
       var string = res.body;
       List userdata = string.split(",");
-      print("SPLASH:loading");
-      print(userdata);
       if (userdata[0] == "success") {
         User _user = new User(
             name: userdata[1],
-            phone: phone,
+            email: email,
             password: pass,
-            datereg: userdata[2],
-            credit: userdata[3],
-            radius: userdata[4],
-            state: userdata[5],
-            locality: userdata[6],
-            latitude: userdata[7],
-            longitude: userdata[8]);
-        Navigator.push(ctx,
-            MaterialPageRoute(builder: (context) => MainScreen(user: _user)));
+            phone: userdata[3],
+            credit: userdata[4],
+            datereg: userdata[5],
+            quantity: userdata[6]);
+   
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (BuildContext context) => MainScreen(
+                      user: _user,
+                    )));
       } else {
-        //allow login as unregistered user
-        user = new User(
-            name: "Tidak Berdaftar",
-            phone: "123456789",
-            password: "123456",
-            datereg: "2020-04-14 22:00:39.205144",
-            credit: "0",
-            radius: "5",
-            state: "Kedah",
-            locality: "Changlun",
-            latitude: "6.437766",
-            longitude: "100.434019");
-        Toast.show("Anda masuk sebagai pengguna tidak berdaftar.", context,
-            duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
-        Timer(Duration(seconds: 3), () {
-          Navigator.push(ctx,
-              MaterialPageRoute(builder: (context) => MainScreen(user: user)));
-        });
-      }
+        Toast.show("Fail to login with stored credential. Login as unregistered account.", context,
+          duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
+        loginUser("unregistered@grocery.com","123456789",ctx);
+       }
     }).catchError((err) {
       print(err);
-    }).timeout(const Duration(seconds: 15), onTimeout: () {
-      Toast.show(
-          "Internet tidak dapat dicapai. Pastikan Internet telah ditetapkan.",
-          context,
-          duration: Toast.LENGTH_LONG,
-          gravity: Toast.BOTTOM);
-      SystemChannels.platform.invokeMethod('SystemNavigator.pop');
+   
     });
   }
 }
