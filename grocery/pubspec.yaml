@@ -45,6 +45,7 @@ dev_dependencies:
   recase: ^3.0.0
   flutter_speed_dial: ^1.2.5
   flutter_barcode_scanner: ^1.0.0
+  image_cropper: ^1.2.2
     
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

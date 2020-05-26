@@ -50,7 +50,8 @@ dev_dependencies:
   google_fonts: ^0.2.0
   data_connection_checker: ^0.3.4
   connectivity:
-
+  image_cropper: ^1.2.2
+  
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 
