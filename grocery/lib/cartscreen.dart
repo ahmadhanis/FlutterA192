@@ -10,6 +10,9 @@ import 'package:geolocator/geolocator.dart';
 import 'package:geocoder/geocoder.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:random_string/random_string.dart';
+import 'payment.dart';
+import 'package:intl/intl.dart';
 
 class CartScreen extends StatefulWidget {
   final User user;
@@ -60,7 +63,13 @@ class _CartScreenState extends State<CartScreen> {
         body: Container(
             child: Column(
           children: <Widget>[
-            Text("Content of your Cart",style: TextStyle(color: Colors.white, fontSize: 18,fontWeight: FontWeight.bold),),
+            Text(
+              "Content of your Cart",
+              style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold),
+            ),
             cartData == null
                 ? Flexible(
                     child: Container(
@@ -73,7 +82,6 @@ class _CartScreenState extends State<CartScreen> {
                         fontWeight: FontWeight.bold),
                   ))))
                 : Expanded(
-                  
                     child: ListView.builder(
                         itemCount: cartData == null ? 1 : cartData.length + 2,
                         itemBuilder: (context, index) {
@@ -915,7 +923,7 @@ class _CartScreenState extends State<CartScreen> {
       } else {
         amountpayable = deliverycharge + _totalprice;
       }
-
+      print("Dev Charge:" + deliverycharge.toStringAsFixed(3));
       print(_weight);
       print(_totalprice);
     });
@@ -934,5 +942,20 @@ class _CartScreenState extends State<CartScreen> {
       Toast.show("Please select delivery option", context,
           duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
     }
+    var now = new DateTime.now();
+    var formatter = new DateFormat('ddMMyyyyhhmmss-');
+    String orderid = widget.user.email +
+        "-" +
+        formatter.format(now) +
+        randomAlphaNumeric(10);
+    print(orderid);
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (BuildContext context) => PaymentScreen(
+                  user: widget.user,
+                  val: _totalprice.toStringAsFixed(2),
+                  orderid: orderid,
+                )));
   }
 }
