@@ -2,9 +2,10 @@
 error_reporting(0);
 include_once ("dbconnect.php");
 $email = $_POST['email'];
+$status = "notpaid";
 
 if (isset($email)){
-   $sql = "SELECT PRODUCT.ID, PRODUCT.NAME, PRODUCT.PRICE, PRODUCT.QUANTITY, PRODUCT.WEIGHT, CART.CQUANTITY FROM PRODUCT INNER JOIN CART ON CART.PRODID = PRODUCT.ID WHERE CART.EMAIL = '$email'";
+   $sql = "SELECT PRODUCT.ID, PRODUCT.NAME, PRODUCT.PRICE, PRODUCT.QUANTITY, PRODUCT.WEIGHT, CART.CQUANTITY FROM PRODUCT INNER JOIN CART ON CART.PRODID = PRODUCT.ID WHERE CART.EMAIL = '$email' AND CART.STATUS = '$status'";
 }
 
 $result = $conn->query($sql);
