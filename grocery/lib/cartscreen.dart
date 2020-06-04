@@ -11,6 +11,7 @@ import 'package:geocoder/geocoder.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:random_string/random_string.dart';
+import 'mainscreen.dart';
 import 'payment.dart';
 import 'package:intl/intl.dart';
 
@@ -57,9 +58,14 @@ class _CartScreenState extends State<CartScreen> {
     screenWidth = MediaQuery.of(context).size.width;
 
     return Scaffold(
-        appBar: AppBar(
-          title: Text('My Cart'),
-        ),
+        appBar: AppBar(title: Text('My Cart'), actions: <Widget>[
+          IconButton(
+            icon: Icon(MdiIcons.deleteEmpty),
+            onPressed: () {
+              deleteAll();
+            },
+          ),
+        ]),
         body: Container(
             child: Column(
           children: <Widget>[
@@ -573,6 +579,17 @@ class _CartScreenState extends State<CartScreen> {
     }).then((res) {
       print(res.body);
       pr.dismiss();
+      if (res.body == "Cart Empty") {
+        //Navigator.of(context).pop(false);
+        widget.user.quantity = "0";
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (BuildContext context) => MainScreen(
+                      user: widget.user,
+                    )));
+      }
+
       setState(() {
         var extractdata = json.decode(res.body);
         cartData = extractdata["cart"];
@@ -655,6 +672,7 @@ class _CartScreenState extends State<CartScreen> {
                       "prodid": cartData[index]['id'],
                     }).then((res) {
                   print(res.body);
+
                   if (res.body == "success") {
                     _loadCart();
                   } else {
@@ -929,7 +947,7 @@ class _CartScreenState extends State<CartScreen> {
     });
   }
 
-  void makePayment() {
+  Future<void> makePayment() async {
     if (_selfPickup) {
       print("PICKUP");
       Toast.show("Self Pickup", context,
@@ -949,7 +967,7 @@ class _CartScreenState extends State<CartScreen> {
         formatter.format(now) +
         randomAlphaNumeric(10);
     print(orderid);
-    Navigator.push(
+    await Navigator.push(
         context,
         MaterialPageRoute(
             builder: (BuildContext context) => PaymentScreen(
@@ -957,5 +975,60 @@ class _CartScreenState extends State<CartScreen> {
                   val: _totalprice.toStringAsFixed(2),
                   orderid: orderid,
                 )));
+    _loadCart();
+  }
+
+  void deleteAll() {
+     showDialog(
+      context: context,
+      builder: (context) => new AlertDialog(
+        shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.all(Radius.circular(20.0))),
+        title: new Text(
+          'Delete all item?',
+          style: TextStyle(
+            color: Colors.white,
+          ),
+        ),
+        actions: <Widget>[
+          MaterialButton(
+              onPressed: () {
+                Navigator.of(context).pop(false);
+                http.post("https://slumberjer.com/grocery/php/delete_cart.php",
+                    body: {
+                      "email": widget.user.email,
+                    }).then((res) {
+                  print(res.body);
+
+                  if (res.body == "success") {
+                    _loadCart();
+                  } else {
+                    Toast.show("Failed", context,
+                        duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
+                  }
+                }).catchError((err) {
+                  print(err);
+                });
+              },
+              child: Text(
+                "Yes",
+                style: TextStyle(
+                  color: Color.fromRGBO(101, 255, 218, 50),
+                ),
+              )),
+          MaterialButton(
+              onPressed: () {
+                Navigator.of(context).pop(false);
+              },
+              child: Text(
+                "Cancel",
+                style: TextStyle(
+                  color: Color.fromRGBO(101, 255, 218, 50),
+                ),
+              )),
+        ],
+      ),
+    );
+
   }
 }

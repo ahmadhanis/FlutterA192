@@ -414,7 +414,7 @@ class _MainScreenState extends State<MainScreen> {
             ),
           ),
           floatingActionButton: FloatingActionButton.extended(
-            onPressed: () {
+            onPressed: () async {
               if (widget.user.email == "unregistered") {
                 Toast.show("Please register to use this function", context,
                     duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
@@ -428,12 +428,14 @@ class _MainScreenState extends State<MainScreen> {
                     duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
                 return;
               } else {
-                Navigator.push(
+
+                await Navigator.push(
                     context,
                     MaterialPageRoute(
                         builder: (BuildContext context) => CartScreen(
                               user: widget.user,
                             )));
+                            _loadData();
               }
             },
             icon: Icon(Icons.add_shopping_cart),
@@ -688,7 +690,7 @@ class _MainScreenState extends State<MainScreen> {
                               newSetState(() {
                                 if (quantity <
                                     (int.parse(productdata[index]['quantity']) -
-                                        10)) {
+                                        2)) {
                                   quantity++;
                                 } else {
                                   Toast.show("Quantity not available", context,
@@ -764,6 +766,7 @@ class _MainScreenState extends State<MainScreen> {
             List respond = res.body.split(",");
             setState(() {
               cartquantity = respond[1];
+              widget.user.quantity = cartquantity;
             });
             Toast.show("Success add to cart", context,
                 duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
@@ -859,7 +862,7 @@ class _MainScreenState extends State<MainScreen> {
     }
   }
 
-  gotoCart() {
+  gotoCart() async {
     if (widget.user.email == "unregistered") {
       Toast.show("Please register to use this function", context,
           duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
@@ -873,12 +876,14 @@ class _MainScreenState extends State<MainScreen> {
           duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
       return;
     } else {
-      Navigator.push(
+      
+     await Navigator.push(
           context,
           MaterialPageRoute(
               builder: (BuildContext context) => CartScreen(
                     user: widget.user,
                   )));
+                  _loadData();
     }
   }
 
