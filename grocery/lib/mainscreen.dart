@@ -37,6 +37,7 @@ class _MainScreenState extends State<MainScreen> {
   void initState() {
     super.initState();
     _loadData();
+    _loadCartQuantity();
     if (widget.user.email == "admin@grocery.com") {
       _isadmin = true;
     }
@@ -436,6 +437,7 @@ class _MainScreenState extends State<MainScreen> {
                               user: widget.user,
                             )));
                             _loadData();
+                            _loadCartQuantity();
               }
             },
             icon: Icon(Icons.add_shopping_cart),
@@ -489,6 +491,20 @@ class _MainScreenState extends State<MainScreen> {
           cartquantity = widget.user.quantity;
         });
       }
+    }).catchError((err) {
+      print(err);
+    });
+  }
+   void _loadCartQuantity() async {
+    String urlLoadJobs = "https://slumberjer.com/grocery/php/load_cartquantity.php";
+    await http.post(urlLoadJobs, body: {
+      "email": widget.user.email,
+    }).then((res) {
+      if (res.body=="nodata"){
+      }else{
+        widget.user.quantity = res.body;
+      }
+
     }).catchError((err) {
       print(err);
     });
@@ -884,6 +900,7 @@ class _MainScreenState extends State<MainScreen> {
                     user: widget.user,
                   )));
                   _loadData();
+                  _loadCartQuantity();
     }
   }
 

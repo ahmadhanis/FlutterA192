@@ -985,7 +985,7 @@ class _CartScreenState extends State<CartScreen> {
         shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.all(Radius.circular(20.0))),
         title: new Text(
-          'Delete all item?',
+          'Delete all items?',
           style: TextStyle(
             color: Colors.white,
           ),
