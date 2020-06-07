@@ -429,15 +429,14 @@ class _MainScreenState extends State<MainScreen> {
                     duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
                 return;
               } else {
-
                 await Navigator.push(
                     context,
                     MaterialPageRoute(
                         builder: (BuildContext context) => CartScreen(
                               user: widget.user,
                             )));
-                            _loadData();
-                            _loadCartQuantity();
+                _loadData();
+                _loadCartQuantity();
               }
             },
             icon: Icon(Icons.add_shopping_cart),
@@ -484,6 +483,9 @@ class _MainScreenState extends State<MainScreen> {
       if (res.body == "nodata") {
         cartquantity = "0";
         titlecenter = "No product found";
+        setState(() {
+          productdata = null;
+        });
       } else {
         setState(() {
           var extractdata = json.decode(res.body);
@@ -495,16 +497,17 @@ class _MainScreenState extends State<MainScreen> {
       print(err);
     });
   }
-   void _loadCartQuantity() async {
-    String urlLoadJobs = "https://slumberjer.com/grocery/php/load_cartquantity.php";
+
+  void _loadCartQuantity() async {
+    String urlLoadJobs =
+        "https://slumberjer.com/grocery/php/load_cartquantity.php";
     await http.post(urlLoadJobs, body: {
       "email": widget.user.email,
     }).then((res) {
-      if (res.body=="nodata"){
-      }else{
+      if (res.body == "nodata") {
+      } else {
         widget.user.quantity = res.body;
       }
-
     }).catchError((err) {
       print(err);
     });
@@ -643,7 +646,7 @@ class _MainScreenState extends State<MainScreen> {
   }
 
   _addtocartdialog(int index) {
-    if (widget.user.email == "unregistered") {
+    if (widget.user.email == "unregistered@grocery.com") {
       Toast.show("Please register to use this function", context,
           duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
       return;
@@ -755,6 +758,16 @@ class _MainScreenState extends State<MainScreen> {
   }
 
   void _addtoCart(int index) {
+    if (widget.user.email == "unregistered@grocery.com") {
+      Toast.show("Please register first", context,
+          duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
+      return;
+    }
+    if (widget.user.email == "admin@grocery.com") {
+      Toast.show("Admin mode", context,
+          duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
+      return;
+    }
     try {
       int cquantity = int.parse(productdata[index]["quantity"]);
       print(cquantity);
@@ -814,13 +827,21 @@ class _MainScreenState extends State<MainScreen> {
       http.post(urlLoadJobs, body: {
         "type": type,
       }).then((res) {
-        setState(() {
-          curtype = type;
-          var extractdata = json.decode(res.body);
-          productdata = extractdata["products"];
-          FocusScope.of(context).requestFocus(new FocusNode());
+        if (res.body == "nodata") {
+          setState(() {
+            productdata = null;
+            curtype = type;
+          });
           pr.dismiss();
-        });
+        } else {
+          setState(() {
+            curtype = type;
+            var extractdata = json.decode(res.body);
+            productdata = extractdata["products"];
+            FocusScope.of(context).requestFocus(new FocusNode());
+            pr.dismiss();
+          });
+        }
       }).catchError((err) {
         print(err);
         pr.dismiss();
@@ -851,16 +872,24 @@ class _MainScreenState extends State<MainScreen> {
               Toast.show("Product not found", context,
                   duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
               pr.dismiss();
+              setState(() {
+                titlecenter = "No product found";
+                curtype = "search for " + "'" + prname + "'";
+                productdata = null;
+              });
               FocusScope.of(context).requestFocus(new FocusNode());
+
               return;
+            } else {
+              setState(() {
+                var extractdata = json.decode(res.body);
+                productdata = extractdata["products"];
+                FocusScope.of(context).requestFocus(new FocusNode());
+                //curtype = prname;
+                curtype = "search for " + "'" + prname + "'";
+                pr.dismiss();
+              });
             }
-            setState(() {
-              var extractdata = json.decode(res.body);
-              productdata = extractdata["products"];
-              FocusScope.of(context).requestFocus(new FocusNode());
-              curtype = prname;
-              pr.dismiss();
-            });
           })
           .catchError((err) {
             pr.dismiss();
@@ -892,15 +921,14 @@ class _MainScreenState extends State<MainScreen> {
           duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
       return;
     } else {
-      
-     await Navigator.push(
+      await Navigator.push(
           context,
           MaterialPageRoute(
               builder: (BuildContext context) => CartScreen(
                     user: widget.user,
                   )));
-                  _loadData();
-                  _loadCartQuantity();
+      _loadData();
+      _loadCartQuantity();
     }
   }
 

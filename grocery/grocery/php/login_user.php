@@ -3,8 +3,8 @@ error_reporting(0);
 include_once("dbconnect.php");
 $email = $_POST['email'];
 $password = sha1($_POST['password']);
-$status = "notpaid";
-$sqlquantity = "SELECT * FROM CART WHERE EMAIL = '$email' AND STATUS = '$status'";
+
+$sqlquantity = "SELECT * FROM CART WHERE EMAIL = '$email'";
 
 $resultq = $conn->query($sqlquantity);
 $quantity = 0;
