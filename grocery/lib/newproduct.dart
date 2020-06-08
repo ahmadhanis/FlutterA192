@@ -15,6 +15,7 @@ class NewProduct extends StatefulWidget {
 }
 
 class _NewProductState extends State<NewProduct> {
+  String server = "https://slumberjer.com/grocery";
   double screenHeight, screenWidth;
   File _image;
   var _tapPosition;
@@ -560,7 +561,7 @@ class _NewProductState extends State<NewProduct> {
     pr.show();
     String base64Image = base64Encode(_image.readAsBytesSync());
 
-    http.post("https://slumberjer.com/grocery/php/insert_product.php", body: {
+    http.post(server+"/php/insert_product.php", body: {
       "prid": _scanBarcode,
       "prname": prnameEditingController.text,
       "quantity": qtyEditingController.text,
@@ -571,6 +572,11 @@ class _NewProductState extends State<NewProduct> {
     }).then((res) {
       print(res.body);
       pr.dismiss();
+      if (res.body =="found"){
+        Toast.show("Product id already in database", context,
+            duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
+        return;
+      }
       if (res.body == "success") {
         Toast.show("Insert success", context,
             duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
@@ -634,7 +640,7 @@ class _NewProductState extends State<NewProduct> {
   }
 
   _manCode() {
-    TextEditingController pridedtctrl = new TextEditingController(); 
+    TextEditingController pridedtctrl = new TextEditingController();
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -658,7 +664,7 @@ class _NewProductState extends State<NewProduct> {
                 controller: pridedtctrl,
                 keyboardType: TextInputType.number,
                 textInputAction: TextInputAction.next,
-               decoration: new InputDecoration(
+                decoration: new InputDecoration(
                   fillColor: Colors.white,
                   border: new OutlineInputBorder(
                     borderRadius: new BorderRadius.circular(5.0),
@@ -679,12 +685,9 @@ class _NewProductState extends State<NewProduct> {
               onPressed: () {
                 Navigator.of(context).pop();
                 setState(() {
-                  if (pridedtctrl.text.length>5){
-                      _scanBarcode = pridedtctrl.text;
-                  }else{
-                    
-                  }
-                  
+                  if (pridedtctrl.text.length > 5) {
+                    _scanBarcode = pridedtctrl.text;
+                  } else {}
                 });
               },
             ),

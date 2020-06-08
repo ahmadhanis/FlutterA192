@@ -23,6 +23,7 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
+  String server = "https://slumberjer.com/grocery";
   double screenHeight, screenWidth;
   final f = new DateFormat('dd-MM-yyyy hh:mm a');
   var parsedDate;
@@ -72,7 +73,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             child: CachedNetworkImage(
                               fit: BoxFit.cover,
                               imageUrl:
-                                  "http://slumberjer.com/grocery/profileimages/${widget.user.email}.jpg?",
+                                  server+ "/profileimages/${widget.user.email}.jpg?",
                               placeholder: (context, url) => new SizedBox(
                                   height: 10.0,
                                   width: 10.0,
@@ -281,7 +282,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     } else {
       String base64Image = base64Encode(_image.readAsBytesSync());
       print(base64Image);
-      http.post("https://slumberjer.com/grocery/php/upload_image.php", body: {
+      http.post(server+"/php/upload_image.php", body: {
         "encoded_string": base64Image,
         "email": widget.user.email,
       }).then((res) {
@@ -373,7 +374,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
     ReCase rc = new ReCase(name);
     print(rc.titleCase.toString());
-    http.post("https://slumberjer.com/grocery/php/update_profile.php", body: {
+    http.post(server+"/php/update_profile.php", body: {
       "email": widget.user.email,
       "name": rc.titleCase.toString(),
     }).then((res) {
@@ -474,7 +475,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       return;
     }
 
-    http.post("https://slumberjer.com/grocery/php/update_profile.php", body: {
+    http.post(server+"/php/update_profile.php", body: {
       "email": widget.user.email,
       "oldpassword": pass1,
       "newpassword": pass2,
@@ -554,7 +555,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
       return;
     }
-    http.post("https://slumberjer.com/grocery/php/update_profile.php", body: {
+    http.post(server+"/php/update_profile.php", body: {
       "email": widget.user.email,
       "phone": phone,
     }).then((res) {

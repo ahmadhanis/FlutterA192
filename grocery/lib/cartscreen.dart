@@ -25,6 +25,7 @@ class CartScreen extends StatefulWidget {
 }
 
 class _CartScreenState extends State<CartScreen> {
+  String server = "https://slumberjer.com/grocery";
   List cartData;
   double screenHeight, screenWidth;
   bool _selfPickup = true;
@@ -415,7 +416,7 @@ class _CartScreenState extends State<CartScreen> {
                                               child: CachedNetworkImage(
                                             fit: BoxFit.scaleDown,
                                             imageUrl:
-                                                "http://slumberjer.com/grocery/productimage/${cartData[index]['id']}.jpg",
+                                                server+"/productimage/${cartData[index]['id']}.jpg",
                                             placeholder: (context, url) =>
                                                 new CircularProgressIndicator(),
                                             errorWidget:
@@ -573,7 +574,7 @@ class _CartScreenState extends State<CartScreen> {
         type: ProgressDialogType.Normal, isDismissible: false);
     pr.style(message: "Updating cart...");
     pr.show();
-    String urlLoadJobs = "https://slumberjer.com/grocery/php/load_cart.php";
+    String urlLoadJobs = server+"/php/load_cart.php";
     http.post(urlLoadJobs, body: {
       "email": widget.user.email,
     }).then((res) {
@@ -630,7 +631,7 @@ class _CartScreenState extends State<CartScreen> {
         return;
       }
     }
-    String urlLoadJobs = "https://slumberjer.com/grocery/php/update_cart.php";
+    String urlLoadJobs = server+"/php/update_cart.php";
     http.post(urlLoadJobs, body: {
       "email": widget.user.email,
       "prodid": cartData[index]['id'],
@@ -666,7 +667,7 @@ class _CartScreenState extends State<CartScreen> {
           MaterialButton(
               onPressed: () {
                 Navigator.of(context).pop(false);
-                http.post("https://slumberjer.com/grocery/php/delete_cart.php",
+                http.post(server+"/php/delete_cart.php",
                     body: {
                       "email": widget.user.email,
                       "prodid": cartData[index]['id'],
@@ -994,7 +995,7 @@ class _CartScreenState extends State<CartScreen> {
           MaterialButton(
               onPressed: () {
                 Navigator.of(context).pop(false);
-                http.post("https://slumberjer.com/grocery/php/delete_cart.php",
+                http.post(server+"/php/delete_cart.php",
                     body: {
                       "email": widget.user.email,
                     }).then((res) {

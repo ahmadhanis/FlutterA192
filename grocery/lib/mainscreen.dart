@@ -32,6 +32,7 @@ class _MainScreenState extends State<MainScreen> {
   int quantity = 1;
   bool _isadmin = false;
   String titlecenter = "Loading products...";
+  String server = "https://slumberjer.com/grocery";
 
   @override
   void initState() {
@@ -353,7 +354,7 @@ class _MainScreenState extends State<MainScreen> {
                                                     child: CachedNetworkImage(
                                                   fit: BoxFit.fill,
                                                   imageUrl:
-                                                      "http://slumberjer.com/grocery/productimage/${productdata[index]['id']}.jpg",
+                                                      server+"/productimage/${productdata[index]['id']}.jpg",
                                                   placeholder: (context, url) =>
                                                       new CircularProgressIndicator(),
                                                   errorWidget:
@@ -469,7 +470,7 @@ class _MainScreenState extends State<MainScreen> {
                           image: DecorationImage(
                               fit: BoxFit.scaleDown,
                               image: NetworkImage(
-                                  "http://slumberjer.com/grocery/productimage/${productdata[index]['id']}.jpg")))),
+                                  server+"/productimage/${productdata[index]['id']}.jpg")))),
                 ],
               ),
             ));
@@ -478,7 +479,7 @@ class _MainScreenState extends State<MainScreen> {
   }
 
   void _loadData() async {
-    String urlLoadJobs = "https://slumberjer.com/grocery/php/load_products.php";
+    String urlLoadJobs = server+"/php/load_products.php";
     await http.post(urlLoadJobs, body: {}).then((res) {
       if (res.body == "nodata") {
         cartquantity = "0";
@@ -500,7 +501,7 @@ class _MainScreenState extends State<MainScreen> {
 
   void _loadCartQuantity() async {
     String urlLoadJobs =
-        "https://slumberjer.com/grocery/php/load_cartquantity.php";
+        server+"/php/load_cartquantity.php";
     await http.post(urlLoadJobs, body: {
       "email": widget.user.email,
     }).then((res) {
@@ -534,7 +535,7 @@ class _MainScreenState extends State<MainScreen> {
                 style: TextStyle(fontSize: 40.0),
               ),
               backgroundImage: NetworkImage(
-                  "http://slumberjer.com/grocery/profileimages/${widget.user.email}.jpg?"),
+                  server+"/profileimages/${widget.user.email}.jpg?"),
             ),
             onDetailsPressed: () => {
               Navigator.pop(context),
@@ -779,7 +780,7 @@ class _MainScreenState extends State<MainScreen> {
         pr.style(message: "Add to cart...");
         pr.show();
         String urlLoadJobs =
-            "https://slumberjer.com/grocery/php/insert_cart.php";
+            server+"/php/insert_cart.php";
         http.post(urlLoadJobs, body: {
           "email": widget.user.email,
           "proid": productdata[index]["id"],
@@ -823,7 +824,7 @@ class _MainScreenState extends State<MainScreen> {
       pr.style(message: "Searching...");
       pr.show();
       String urlLoadJobs =
-          "https://slumberjer.com/grocery/php/load_products.php";
+          server+"/php/load_products.php";
       http.post(urlLoadJobs, body: {
         "type": type,
       }).then((res) {
@@ -861,7 +862,7 @@ class _MainScreenState extends State<MainScreen> {
       pr.style(message: "Searching...");
       pr.show();
       String urlLoadJobs =
-          "https://slumberjer.com/grocery/php/load_products.php";
+          server+"/php/load_products.php";
       http
           .post(urlLoadJobs, body: {
             "name": prname.toString(),

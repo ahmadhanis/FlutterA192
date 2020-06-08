@@ -21,6 +21,7 @@ class EditProduct extends StatefulWidget {
 }
 
 class _EditProductState extends State<EditProduct> {
+  String server = "https://slumberjer.com/grocery";
   TextEditingController prnameEditingController = new TextEditingController();
   TextEditingController priceEditingController = new TextEditingController();
   TextEditingController qtyEditingController = new TextEditingController();
@@ -85,7 +86,7 @@ class _EditProductState extends State<EditProduct> {
                         child: CachedNetworkImage(
                           fit: BoxFit.fill,
                           imageUrl:
-                              "http://slumberjer.com/grocery/productimage/${widget.product.pid}.jpg",
+                              server+"/productimage/${widget.product.pid}.jpg",
                           placeholder: (context, url) =>
                               new CircularProgressIndicator(),
                           errorWidget: (context, url, error) =>
@@ -497,7 +498,7 @@ class _EditProductState extends State<EditProduct> {
     
     if (_image!=null){
        base64Image = base64Encode(_image.readAsBytesSync());
-      http.post("https://slumberjer.com/grocery/php/update_product.php", body: {
+      http.post(server+"/php/update_product.php", body: {
       "prid": widget.product.pid,
       "prname": prnameEditingController.text,
       "quantity": qtyEditingController.text,
@@ -521,7 +522,7 @@ class _EditProductState extends State<EditProduct> {
       pr.dismiss();
     });
     }else{
-          http.post("https://slumberjer.com/grocery/php/update_product.php", body: {
+          http.post(server+"/php/update_product.php", body: {
       "prid": widget.product.pid,
       "prname": prnameEditingController.text,
       "quantity": qtyEditingController.text,

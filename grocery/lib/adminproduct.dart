@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:grocery/editproduct.dart';
 import 'package:grocery/newproduct.dart';
 import 'package:grocery/product.dart';
@@ -13,6 +14,7 @@ import 'package:material_design_icons_flutter/material_design_icons_flutter.dart
 import 'package:cached_network_image/cached_network_image.dart';
 import 'cartscreen.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
+import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 
 class AdminProduct extends StatefulWidget {
   final User user;
@@ -33,6 +35,9 @@ class _AdminProductState extends State<AdminProduct> {
   int quantity = 1;
   String titlecenter = "Loading product...";
   var _tapPosition;
+  String server = "https://slumberjer.com/grocery";
+  String scanPrId;
+
   @override
   void initState() {
     super.initState();
@@ -329,8 +334,8 @@ class _AdminProductState extends State<AdminProduct> {
                                               child: ClipOval(
                                                 child: CachedNetworkImage(
                                                   fit: BoxFit.fill,
-                                                  imageUrl:
-                                                      "http://slumberjer.com/grocery/productimage/${productdata[index]['id']}.jpg",
+                                                  imageUrl: server +
+                                                      "/productimage/${productdata[index]['id']}.jpg",
                                                   placeholder: (context, url) =>
                                                       new CircularProgressIndicator(),
                                                   errorWidget:
@@ -352,9 +357,11 @@ class _AdminProductState extends State<AdminProduct> {
                                                   color: Colors.white),
                                             ),
                                             Text(
-                                              "Quantity available:" +
+                                              "Avail/Sold:" +
                                                   productdata[index]
-                                                      ['quantity'],
+                                                      ['quantity'] +
+                                                  "/" +
+                                                  productdata[index]['sold'],
                                               style: TextStyle(
                                                 color: Colors.white,
                                               ),
@@ -383,6 +390,11 @@ class _AdminProductState extends State<AdminProduct> {
               labelBackgroundColor: Colors.white,
               onTap: createNewProduct),
           SpeedDialChild(
+              child: Icon(MdiIcons.barcodeScan),
+              label: "Scan Product",
+              labelBackgroundColor: Colors.white, //_changeLocality()
+              onTap: () => scanProductDialog()),
+          SpeedDialChild(
               child: Icon(Icons.report),
               label: "Product Report",
               labelBackgroundColor: Colors.white, //_changeLocality()
@@ -392,8 +404,123 @@ class _AdminProductState extends State<AdminProduct> {
     );
   }
 
+  void scanProductDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        // return object of type Dialog
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.all(Radius.circular(20.0))),
+          title: new Text(
+            "Select scan options:",
+            style: TextStyle(
+              color: Colors.white,
+            ),
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              MaterialButton(
+                  color: Color.fromRGBO(101, 255, 218, 50),
+                  onPressed: scanBarcodeNormal,
+                  elevation: 5,
+                  child: Text(
+                    "Bar Code",
+                    style: TextStyle(color: Colors.black),
+                  )),
+              MaterialButton(
+                  color: Color.fromRGBO(101, 255, 218, 50),
+                  onPressed: scanQR,
+                  elevation: 5,
+                  child: Text(
+                    "QR Code",
+                    style: TextStyle(color: Colors.black),
+                  )),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Future<void> scanBarcodeNormal() async {
+    String barcodeScanRes;
+    // Platform messages may fail, so we use a try/catch PlatformException.
+    try {
+      barcodeScanRes = await FlutterBarcodeScanner.scanBarcode(
+          "#ff6666", "Cancel", true, ScanMode.BARCODE);
+      print(barcodeScanRes);
+    } on PlatformException {
+      barcodeScanRes = 'Failed to get platform version.';
+    }
+
+    // If the widget was removed from the tree while the asynchronous platform
+    // message was in flight, we want to discard the reply rather than calling
+    // setState to update our non-existent appearance.
+    if (!mounted) return;
+
+    setState(() {
+      if (barcodeScanRes == "-1") {
+        scanPrId = "";
+      } else {
+        scanPrId = barcodeScanRes;
+        Navigator.of(context).pop();
+        _loadSingleProduct(scanPrId);
+      }
+    });
+  }
+
+  void _loadSingleProduct(String prid) {
+    String urlLoadJobs = server + "/php/load_products.php";
+    http.post(urlLoadJobs, body: {
+      "prid":prid,
+    }).then((res) {
+      print(res.body);
+      if (res.body=="nodata"){
+        Toast.show("Not found", context,
+          duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
+      }else{
+        setState(() {
+        var extractdata = json.decode(res.body);
+        productdata = extractdata["products"];
+        print(productdata);
+      });
+      }
+    }).catchError((err) {
+      print(err);
+    });
+  }
+
+  Future<void> scanQR() async {
+    String barcodeScanRes;
+    // Platform messages may fail, so we use a try/catch PlatformException.
+    try {
+      barcodeScanRes = await FlutterBarcodeScanner.scanBarcode(
+          "#ff6666", "Cancel", true, ScanMode.QR);
+      print(barcodeScanRes);
+    } on PlatformException {
+      barcodeScanRes = 'Failed to get platform version.';
+    }
+
+    // If the widget was removed from the tree while the asynchronous platform
+    // message was in flight, we want to discard the reply rather than calling
+    // setState to update our non-existent appearance.
+    if (!mounted) return;
+
+     setState(() {
+      if (barcodeScanRes == "-1") {
+        scanPrId = "";
+      } else {
+        scanPrId = barcodeScanRes;
+        Navigator.of(context).pop();
+        _loadSingleProduct(scanPrId);
+      }
+    });
+  }
+
   void _loadData() {
-    String urlLoadJobs = "https://slumberjer.com/grocery/php/load_products.php";
+    String urlLoadJobs = server + "/php/load_products.php";
     http.post(urlLoadJobs, body: {}).then((res) {
       print(res.body);
       setState(() {
@@ -412,12 +539,12 @@ class _AdminProductState extends State<AdminProduct> {
           type: ProgressDialogType.Normal, isDismissible: true);
       pr.style(message: "Searching...");
       pr.show();
-      String urlLoadJobs =
-          "https://slumberjer.com/grocery/php/load_products.php";
+      String urlLoadJobs = server + "/php/load_products.php";
       http.post(urlLoadJobs, body: {
         "type": type,
       }).then((res) {
         if (res.body == "nodata") {
+          curtype = type;
           titlecenter = "No product found";
         } else {
           setState(() {
@@ -446,8 +573,7 @@ class _AdminProductState extends State<AdminProduct> {
           type: ProgressDialogType.Normal, isDismissible: true);
       pr.style(message: "Searching...");
       pr.show();
-      String urlLoadJobs =
-          "https://slumberjer.com/grocery/php/load_products.php";
+      String urlLoadJobs = server + "/php/load_products.php";
       http
           .post(urlLoadJobs, body: {
             "name": prname.toString(),
@@ -614,7 +740,7 @@ class _AdminProductState extends State<AdminProduct> {
         type: ProgressDialogType.Normal, isDismissible: false);
     pr.style(message: "Deleting product...");
     pr.show();
-    http.post("https://slumberjer.com/grocery/php/delete_product.php", body: {
+    http.post(server + "/php/delete_product.php", body: {
       "proid": productdata[index]['id'],
     }).then((res) {
       print(res.body);
