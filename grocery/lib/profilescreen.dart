@@ -52,7 +52,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           children: <Widget>[
             SizedBox(height: 5),
             Card(
-              color: Colors.red,
+              //color: Colors.red,
               elevation: 5,
               child: Padding(
                 padding: EdgeInsets.all(5),

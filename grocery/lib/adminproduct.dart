@@ -33,7 +33,7 @@ class _AdminProductState extends State<AdminProduct> {
   String curtype = "Recent";
   String cartquantity = "0";
   int quantity = 1;
-  String titlecenter = "Loading product...";
+  String titlecenter = "Loading products...";
   var _tapPosition;
   String server = "https://slumberjer.com/grocery";
   String scanPrId;
@@ -113,6 +113,7 @@ class _AdminProductState extends State<AdminProduct> {
                             SizedBox(
                               width: 3,
                             ),
+                            
                             Column(
                               children: <Widget>[
                                 FlatButton(
@@ -128,6 +129,31 @@ class _AdminProductState extends State<AdminProduct> {
                                         ),
                                         Text(
                                           "Drink",
+                                          style: TextStyle(color: Colors.black),
+                                        )
+                                      ],
+                                    )),
+                              ],
+                            ),
+                             SizedBox(
+                              width: 3,
+                            ),
+                            
+                            Column(
+                              children: <Widget>[
+                                FlatButton(
+                                    onPressed: () => _sortItem("Grocery"),
+                                    color: Color.fromRGBO(101, 255, 218, 50),
+                                    padding: EdgeInsets.all(10.0),
+                                    child: Column(
+                                      // Replace with a Row for horizontal icon + text
+                                      children: <Widget>[
+                                        Icon(
+                                          MdiIcons.rice,
+                                          color: Colors.black,
+                                        ),
+                                        Text(
+                                          "Grocery",
                                           style: TextStyle(color: Colors.black),
                                         )
                                       ],
@@ -152,6 +178,55 @@ class _AdminProductState extends State<AdminProduct> {
                                         ),
                                         Text(
                                           "Canned",
+                                          style: TextStyle(color: Colors.black),
+                                        )
+                                      ],
+                                    )),
+                              ],
+                            ),
+                            SizedBox(
+                              width: 3,
+                            ),
+                            Column(
+                              children: <Widget>[
+                                FlatButton(
+                                    onPressed: () => _sortItem("Baby"),
+                                    color: Color.fromRGBO(101, 255, 218, 50),
+                                    padding: EdgeInsets.all(10.0),
+                                    child: Column(
+                                      // Replace with a Row for horizontal icon + text
+                                      children: <Widget>[
+                                        Icon(
+                                          MdiIcons.babyBottle,
+                                          color: Colors.black,
+                                        ),
+                                        Text(
+                                          "Baby",
+                                          style: TextStyle(color: Colors.black),
+                                        )
+                                      ],
+                                    )),
+                              ],
+                            ),
+                            
+                            SizedBox(
+                              width: 3,
+                            ),
+                            Column(
+                              children: <Widget>[
+                                FlatButton(
+                                    onPressed: () => _sortItem("Household"),
+                                    color: Color.fromRGBO(101, 255, 218, 50),
+                                    padding: EdgeInsets.all(10.0),
+                                    child: Column(
+                                      // Replace with a Row for horizontal icon + text
+                                      children: <Widget>[
+                                        Icon(
+                                          MdiIcons.homeAutomation,
+                                          color: Colors.black,
+                                        ),
+                                        Text(
+                                          "Household",
                                           style: TextStyle(color: Colors.black),
                                         )
                                       ],
@@ -206,6 +281,31 @@ class _AdminProductState extends State<AdminProduct> {
                                     )),
                               ],
                             ),
+                             SizedBox(
+                              width: 3,
+                            ),
+                            Column(
+                              children: <Widget>[
+                                FlatButton(
+                                    onPressed: () => _sortItem("Pet"),
+                                    color: Color.fromRGBO(101, 255, 218, 50),
+                                    padding: EdgeInsets.all(10.0),
+                                    child: Column(
+                                      // Replace with a Row for horizontal icon + text
+                                      children: <Widget>[
+                                        Icon(
+                                          Icons.pets,
+                                          color: Colors.black,
+                                        ),
+                                        Text(
+                                          "Pet",
+                                          style: TextStyle(color: Colors.black),
+                                        )
+                                      ],
+                                    )),
+                              ],
+                            ),
+                            
                             SizedBox(
                               width: 3,
                             ),
@@ -474,18 +574,18 @@ class _AdminProductState extends State<AdminProduct> {
   void _loadSingleProduct(String prid) {
     String urlLoadJobs = server + "/php/load_products.php";
     http.post(urlLoadJobs, body: {
-      "prid":prid,
+      "prid": prid,
     }).then((res) {
       print(res.body);
-      if (res.body=="nodata"){
+      if (res.body == "nodata") {
         Toast.show("Not found", context,
-          duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
-      }else{
+            duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
+      } else {
         setState(() {
-        var extractdata = json.decode(res.body);
-        productdata = extractdata["products"];
-        print(productdata);
-      });
+          var extractdata = json.decode(res.body);
+          productdata = extractdata["products"];
+          print(productdata);
+        });
       }
     }).catchError((err) {
       print(err);
@@ -508,7 +608,7 @@ class _AdminProductState extends State<AdminProduct> {
     // setState to update our non-existent appearance.
     if (!mounted) return;
 
-     setState(() {
+    setState(() {
       if (barcodeScanRes == "-1") {
         scanPrId = "";
       } else {
@@ -544,8 +644,13 @@ class _AdminProductState extends State<AdminProduct> {
         "type": type,
       }).then((res) {
         if (res.body == "nodata") {
-          curtype = type;
-          titlecenter = "No product found";
+          setState(() {
+            curtype = type;
+            titlecenter = "No product found";
+            productdata = null;
+          });
+          pr.dismiss();
+          return;
         } else {
           setState(() {
             curtype = type;

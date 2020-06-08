@@ -146,6 +146,32 @@ class _MainScreenState extends State<MainScreen> {
                                 Column(
                                   children: <Widget>[
                                     FlatButton(
+                                        onPressed: () => _sortItem("Grocery"),
+                                        color:
+                                            Color.fromRGBO(101, 255, 218, 50),
+                                        padding: EdgeInsets.all(10.0),
+                                        child: Column(
+                                          // Replace with a Row for horizontal icon + text
+                                          children: <Widget>[
+                                            Icon(
+                                              MdiIcons.rice,
+                                              color: Colors.black,
+                                            ),
+                                            Text(
+                                              "Grocery",
+                                              style: TextStyle(
+                                                  color: Colors.black),
+                                            )
+                                          ],
+                                        )),
+                                  ],
+                                ),
+                                SizedBox(
+                                  width: 3,
+                                ),
+                                Column(
+                                  children: <Widget>[
+                                    FlatButton(
                                         onPressed: () =>
                                             _sortItem("Canned Food"),
                                         color:
@@ -160,6 +186,58 @@ class _MainScreenState extends State<MainScreen> {
                                             ),
                                             Text(
                                               "Canned",
+                                              style: TextStyle(
+                                                  color: Colors.black),
+                                            )
+                                          ],
+                                        )),
+                                  ],
+                                ),
+                                SizedBox(
+                                  width: 3,
+                                ),
+                                Column(
+                                  children: <Widget>[
+                                    FlatButton(
+                                        onPressed: () => _sortItem("Baby"),
+                                        color:
+                                            Color.fromRGBO(101, 255, 218, 50),
+                                        padding: EdgeInsets.all(10.0),
+                                        child: Column(
+                                          // Replace with a Row for horizontal icon + text
+                                          children: <Widget>[
+                                            Icon(
+                                              MdiIcons.babyBottle,
+                                              color: Colors.black,
+                                            ),
+                                            Text(
+                                              "Baby",
+                                              style: TextStyle(
+                                                  color: Colors.black),
+                                            )
+                                          ],
+                                        )),
+                                  ],
+                                ),
+                                SizedBox(
+                                  width: 3,
+                                ),
+                                Column(
+                                  children: <Widget>[
+                                    FlatButton(
+                                        onPressed: () => _sortItem("Household"),
+                                        color:
+                                            Color.fromRGBO(101, 255, 218, 50),
+                                        padding: EdgeInsets.all(10.0),
+                                        child: Column(
+                                          // Replace with a Row for horizontal icon + text
+                                          children: <Widget>[
+                                            Icon(
+                                              MdiIcons.homeAutomation,
+                                              color: Colors.black,
+                                            ),
+                                            Text(
+                                              "Household",
                                               style: TextStyle(
                                                   color: Colors.black),
                                             )
@@ -212,6 +290,32 @@ class _MainScreenState extends State<MainScreen> {
                                             ),
                                             Text(
                                               "Fish&Meat",
+                                              style: TextStyle(
+                                                  color: Colors.black),
+                                            )
+                                          ],
+                                        )),
+                                  ],
+                                ),
+                                SizedBox(
+                                  width: 3,
+                                ),
+                                Column(
+                                  children: <Widget>[
+                                    FlatButton(
+                                        onPressed: () => _sortItem("Pet"),
+                                        color:
+                                            Color.fromRGBO(101, 255, 218, 50),
+                                        padding: EdgeInsets.all(10.0),
+                                        child: Column(
+                                          // Replace with a Row for horizontal icon + text
+                                          children: <Widget>[
+                                            Icon(
+                                              Icons.pets,
+                                              color: Colors.black,
+                                            ),
+                                            Text(
+                                              "Pet",
                                               style: TextStyle(
                                                   color: Colors.black),
                                             )
@@ -353,8 +457,8 @@ class _MainScreenState extends State<MainScreen> {
                                                 child: ClipOval(
                                                     child: CachedNetworkImage(
                                                   fit: BoxFit.fill,
-                                                  imageUrl:
-                                                      server+"/productimage/${productdata[index]['id']}.jpg",
+                                                  imageUrl: server +
+                                                      "/productimage/${productdata[index]['id']}.jpg",
                                                   placeholder: (context, url) =>
                                                       new CircularProgressIndicator(),
                                                   errorWidget:
@@ -469,8 +573,8 @@ class _MainScreenState extends State<MainScreen> {
                           //border: Border.all(color: Colors.black),
                           image: DecorationImage(
                               fit: BoxFit.scaleDown,
-                              image: NetworkImage(
-                                  server+"/productimage/${productdata[index]['id']}.jpg")))),
+                              image: NetworkImage(server +
+                                  "/productimage/${productdata[index]['id']}.jpg")))),
                 ],
               ),
             ));
@@ -479,7 +583,7 @@ class _MainScreenState extends State<MainScreen> {
   }
 
   void _loadData() async {
-    String urlLoadJobs = server+"/php/load_products.php";
+    String urlLoadJobs = server + "/php/load_products.php";
     await http.post(urlLoadJobs, body: {}).then((res) {
       if (res.body == "nodata") {
         cartquantity = "0";
@@ -500,8 +604,7 @@ class _MainScreenState extends State<MainScreen> {
   }
 
   void _loadCartQuantity() async {
-    String urlLoadJobs =
-        server+"/php/load_cartquantity.php";
+    String urlLoadJobs = server + "/php/load_cartquantity.php";
     await http.post(urlLoadJobs, body: {
       "email": widget.user.email,
     }).then((res) {
@@ -535,7 +638,7 @@ class _MainScreenState extends State<MainScreen> {
                 style: TextStyle(fontSize: 40.0),
               ),
               backgroundImage: NetworkImage(
-                  server+"/profileimages/${widget.user.email}.jpg?"),
+                  server + "/profileimages/${widget.user.email}.jpg?"),
             ),
             onDetailsPressed: () => {
               Navigator.pop(context),
@@ -632,6 +735,15 @@ class _MainScreenState extends State<MainScreen> {
                 ListTile(
                   title: Text(
                     "Customer Orders",
+                    style: TextStyle(
+                      color: Colors.white,
+                    ),
+                  ),
+                  trailing: Icon(Icons.arrow_forward),
+                ),
+                ListTile(
+                  title: Text(
+                    "Report",
                     style: TextStyle(
                       color: Colors.white,
                     ),
@@ -779,8 +891,7 @@ class _MainScreenState extends State<MainScreen> {
             type: ProgressDialogType.Normal, isDismissible: true);
         pr.style(message: "Add to cart...");
         pr.show();
-        String urlLoadJobs =
-            server+"/php/insert_cart.php";
+        String urlLoadJobs = server + "/php/insert_cart.php";
         http.post(urlLoadJobs, body: {
           "email": widget.user.email,
           "proid": productdata[index]["id"],
@@ -823,8 +934,7 @@ class _MainScreenState extends State<MainScreen> {
           type: ProgressDialogType.Normal, isDismissible: true);
       pr.style(message: "Searching...");
       pr.show();
-      String urlLoadJobs =
-          server+"/php/load_products.php";
+      String urlLoadJobs = server + "/php/load_products.php";
       http.post(urlLoadJobs, body: {
         "type": type,
       }).then((res) {
@@ -832,6 +942,7 @@ class _MainScreenState extends State<MainScreen> {
           setState(() {
             productdata = null;
             curtype = type;
+            titlecenter = "No product found";
           });
           pr.dismiss();
         } else {
@@ -861,8 +972,7 @@ class _MainScreenState extends State<MainScreen> {
           type: ProgressDialogType.Normal, isDismissible: true);
       pr.style(message: "Searching...");
       pr.show();
-      String urlLoadJobs =
-          server+"/php/load_products.php";
+      String urlLoadJobs = server + "/php/load_products.php";
       http
           .post(urlLoadJobs, body: {
             "name": prname.toString(),

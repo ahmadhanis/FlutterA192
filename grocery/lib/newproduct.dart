@@ -34,6 +34,10 @@ class _NewProductState extends State<NewProduct> {
   List<String> listType = [
     "Drink",
     "Canned Food",
+    "Grocery",
+    "Baby",
+    "Household",
+    "Pet",
     "Vegetable",
     "Meat",
     "Bread",

@@ -963,10 +963,10 @@ class _CartScreenState extends State<CartScreen> {
     }
     var now = new DateTime.now();
     var formatter = new DateFormat('ddMMyyyyhhmmss-');
-    String orderid = widget.user.email +
+    String orderid = widget.user.email.substring(4) +
         "-" +
         formatter.format(now) +
-        randomAlphaNumeric(10);
+        randomAlphaNumeric(6);
     print(orderid);
     await Navigator.push(
         context,

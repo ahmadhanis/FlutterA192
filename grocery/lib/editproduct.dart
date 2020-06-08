@@ -39,6 +39,10 @@ class _EditProductState extends State<EditProduct> {
   List<String> listType = [
     "Drink",
     "Canned Food",
+    "Grocery",
+    "Baby",
+    "Household",
+    "Pet",
     "Vegetable",
     "Meat",
     "Bread",
