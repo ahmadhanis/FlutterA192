@@ -20,7 +20,7 @@ class _PipeDetailsScreenState extends State<PipeDetailsScreen> {
   //List<charts.Series> myData;
   bool animate = false;
 
-  final f = new DateFormat('dd-MM-yyyy hh:mm');
+  final f = new DateFormat('dd-MM-yyyy hh:mm a');
   final f2 = new DateFormat('hh:mm');
 
   @override
@@ -55,7 +55,7 @@ class _PipeDetailsScreenState extends State<PipeDetailsScreen> {
                         : createChart())),
           ),
           Padding(
-              padding: EdgeInsets.fromLTRB(10, 1, 10, 1),
+              padding: EdgeInsets.fromLTRB(20, 1, 20, 1),
               child: Row(
                 children: <Widget>[
                   Expanded(
@@ -64,12 +64,13 @@ class _PipeDetailsScreenState extends State<PipeDetailsScreen> {
                   ),
                   Expanded(
                     flex: 4, // 60%
-                    child:
-                        Text("Pressure (psi)", style: TextStyle(color: Colors.white)),
+                    child: Text("Pressure (psi)",
+                        style: TextStyle(color: Colors.white)),
                   ),
                   Expanded(
                     flex: 4, // 20%
-                    child: Text("Date/Time", style: TextStyle(color: Colors.white)),
+                    child: Text("Date/Time",
+                        style: TextStyle(color: Colors.white)),
                   )
                 ],
               )),
@@ -89,7 +90,7 @@ class _PipeDetailsScreenState extends State<PipeDetailsScreen> {
                   itemCount: pipedata == null ? 0 : pipedata.length,
                   itemBuilder: (context, index) {
                     return Padding(
-                        padding: EdgeInsets.fromLTRB(10, 1, 10, 1),
+                        padding: EdgeInsets.fromLTRB(20, 1, 20, 1),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: <Widget>[
@@ -101,9 +102,15 @@ class _PipeDetailsScreenState extends State<PipeDetailsScreen> {
                                 flex: 4,
                                 child: Text(
                                     (double.parse(pipedata[index]['pressure']) *
-                                            0.04)
+                                            0.06)
                                         .toStringAsFixed(2),
-                                    style: TextStyle(color: Colors.white))),
+                                    style: TextStyle(
+                                      color: (int.parse(
+                                                  pipedata[index]['pressure']) <
+                                              300)
+                                          ? Colors.red
+                                          : Colors.white,
+                                    ))),
                             Expanded(
                                 flex: 4,
                                 child: Text(
@@ -219,7 +226,7 @@ class _PipeDetailsScreenState extends State<PipeDetailsScreen> {
       colorFn: (_, __) => charts.MaterialPalette.blue.shadeDefault,
       data: [
         Pipe(f2.format(DateTime.parse(pipedata[i]['date'])).toString(),
-            double.parse(pipedata[i]['pressure']) * 0.04),
+            double.parse(pipedata[i]['pressure']) * 0.06),
       ],
     );
   }
