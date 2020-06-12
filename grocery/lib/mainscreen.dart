@@ -11,6 +11,7 @@ import 'package:toast/toast.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'cartscreen.dart';
+import 'paymenthistoryscreen.dart';
 import 'profilescreen.dart';
 
 class MainScreen extends StatefulWidget {
@@ -675,14 +676,23 @@ class _MainScreenState extends State<MainScreen> {
                     gotoCart(),
                   }),
           ListTile(
-            title: Text(
-              "Purchased History",
-              style: TextStyle(
-                color: Colors.white,
+              title: Text(
+                "Payment History",
+                style: TextStyle(
+                  color: Colors.white,
+                ),
               ),
-            ),
-            trailing: Icon(Icons.arrow_forward),
-          ),
+              trailing: Icon(Icons.arrow_forward),
+              onTap: () => {
+                    Navigator.pop(context),
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (BuildContext context) =>
+                                PaymentHistoryScreen(
+                                  user: widget.user,
+                                ))),
+                  }),
           ListTile(
               title: Text(
                 "User Profile",

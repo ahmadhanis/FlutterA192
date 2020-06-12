@@ -45,6 +45,7 @@ class _CartScreenState extends State<CartScreen> {
   double deliverycharge;
   double amountpayable;
   String titlecenter = "Loading your cart";
+
   @override
   void initState() {
     super.initState();
@@ -962,8 +963,8 @@ class _CartScreenState extends State<CartScreen> {
           duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
     }
     var now = new DateTime.now();
-    var formatter = new DateFormat('ddMMyyyyhhmmss-');
-    String orderid = widget.user.email.substring(4) +
+    var formatter = new DateFormat('ddMMyyyy-');
+    String orderid = widget.user.email.substring(1,4) +
         "-" +
         formatter.format(now) +
         randomAlphaNumeric(6);
