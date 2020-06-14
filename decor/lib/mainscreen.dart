@@ -25,6 +25,8 @@ class _MainScreenState extends State<MainScreen> {
   double screenHeight, screenWidth;
   final f = new DateFormat('dd-MM-yyyy hh:mm a');
   bool status;
+  final List<int> _mindiff = <int>[];
+
   @override
   void initState() {
     super.initState();
@@ -66,7 +68,7 @@ class _MainScreenState extends State<MainScreen> {
                             child: GridView.count(
                                 crossAxisCount: 2,
                                 childAspectRatio:
-                                    (screenHeight / screenWidth) * 0.6,
+                                    (screenHeight / screenWidth) * 0.58,
                                 children:
                                     List.generate(pipedata.length, (index) {
                                   return Container(
@@ -78,8 +80,8 @@ class _MainScreenState extends State<MainScreen> {
                                     },
                                     child: Card(
                                         color: (int.parse(
-                                                    pipedata[index]['latest']) <
-                                                300)
+                                                    pipedata[index]['latest']) * 0.06 <
+                                                5)
                                             ? Colors.red
                                             : Colors.blueGrey,
                                         elevation: 10,
@@ -100,6 +102,7 @@ class _MainScreenState extends State<MainScreen> {
                                                           fontWeight:
                                                               FontWeight.bold,
                                                           color: Colors.white)),
+                                                  
                                                   Container(
                                                       height: 105,
                                                       //color: Colors.black38,
@@ -115,18 +118,16 @@ class _MainScreenState extends State<MainScreen> {
                                                                 pipedata[index][
                                                                     'latest']) *
                                                             0.06),
-                                                        fontFamily: "Iran",
+                                                        //fontFamily: "Iran",
                                                         end: 120,
                                                         number:
                                                             Number.endAndStart,
                                                         textStyle: TextStyle(
                                                             color:
                                                                 Colors.white),
-                                                        secondsMarker:
-                                                            SecondsMarker
-                                                                .minutes,
+                                                        
                                                         isCircle: false,
-                                                        hand: Hand.none,
+                                                        hand: Hand.short,
                                                         counterAlign:
                                                             CounterAlign.center,
                                                         counterStyle: TextStyle(
@@ -142,6 +143,9 @@ class _MainScreenState extends State<MainScreen> {
                                                               ['date'])),
                                                       style: TextStyle(
                                                           color: Colors.white)),
+                                                  (_mindiff[index] < 10)
+                                                      ? Text("Sensor:Ok",style: TextStyle(color: Colors.green))
+                                                      : Text("Sensor:Timeout",style: TextStyle(color: Colors.red)),
                                                 ]))),
                                   ));
                                 })))
@@ -237,15 +241,28 @@ class _MainScreenState extends State<MainScreen> {
           pipedata = null;
         });
       } else {
+        _mindiff.clear();
         setState(() {
           var extractdata = json.decode(res.body);
           pipedata = extractdata["pipes"];
-          print(pipedata);
+          final date2 = DateTime.now();
+          for (int i = 0; i < pipedata.length; i++) {
+            final date1 = DateTime.parse(pipedata[i]["date"]);
+            final difference = date2.difference(date1).inMinutes;
+            _mindiff.insert(i, difference);
+          }
+          print(_mindiff);
         });
       }
     }).catchError((err) {
       print(err);
     });
+    //final date1 = DateTime.parse("2020-06-13 17:30:49.180538");
+
+    // final difference = date2.difference(date1).inMinutes;
+
+    //print("date:");
+    // print(difference);
   }
 
   void newPipeDialog() {

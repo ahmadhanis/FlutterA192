@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:charts_flutter/flutter.dart' as charts;
+import 'package:toast/toast.dart';
 
 class PipeDetailsScreen extends StatefulWidget {
   final String pipeid, date;
@@ -14,6 +15,8 @@ class PipeDetailsScreen extends StatefulWidget {
 }
 
 class _PipeDetailsScreenState extends State<PipeDetailsScreen> {
+  GlobalKey<RefreshIndicatorState> refreshKey;
+
   List pipedata;
   String titlecenter = "Loading Pipe Data...";
   double screenHeight, screenWidth;
@@ -27,6 +30,7 @@ class _PipeDetailsScreenState extends State<PipeDetailsScreen> {
   void initState() {
     super.initState();
     _loadPipeDetails();
+    refreshKey = GlobalKey<RefreshIndicatorState>();
   }
 
   @override
@@ -86,41 +90,51 @@ class _PipeDetailsScreenState extends State<PipeDetailsScreen> {
                       fontWeight: FontWeight.bold),
                 ))))
               : Expanded(
-                  child: ListView.builder(
-                  itemCount: pipedata == null ? 0 : pipedata.length,
-                  itemBuilder: (context, index) {
-                    return Padding(
-                        padding: EdgeInsets.fromLTRB(20, 1, 20, 1),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: <Widget>[
-                            Expanded(
-                                flex: 2,
-                                child: Text((index + 1).toString(),
-                                    style: TextStyle(color: Colors.white))),
-                            Expanded(
-                                flex: 4,
-                                child: Text(
-                                    (double.parse(pipedata[index]['pressure']) *
-                                            0.06)
-                                        .toStringAsFixed(2),
-                                    style: TextStyle(
-                                      color: (int.parse(
-                                                  pipedata[index]['pressure']) <
-                                              300)
-                                          ? Colors.red
-                                          : Colors.white,
-                                    ))),
-                            Expanded(
-                                flex: 4,
-                                child: Text(
-                                    f.format(DateTime.parse(
-                                        pipedata[index]['date'])),
-                                    style: TextStyle(color: Colors.white))),
-                          ],
-                        ));
-                  },
-                ))
+                  child: RefreshIndicator(
+                      key: refreshKey,
+                      color: Color.fromRGBO(101, 255, 218, 50),
+                      onRefresh: () async {
+                        _loadPipeDetails();
+                      },
+                      child: ListView.builder(
+                        itemCount: pipedata == null ? 0 : pipedata.length,
+                        itemBuilder: (context, index) {
+                          return Padding(
+                              padding: EdgeInsets.fromLTRB(20, 1, 20, 1),
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceEvenly,
+                                children: <Widget>[
+                                  Expanded(
+                                      flex: 2,
+                                      child: Text((index + 1).toString(),
+                                          style:
+                                              TextStyle(color: Colors.white))),
+                                  Expanded(
+                                      flex: 4,
+                                      child: Text(
+                                          (double.parse(pipedata[index]
+                                                      ['pressure']) *
+                                                  0.06)
+                                              .toStringAsFixed(2),
+                                          style: TextStyle(
+                                            color: (int.parse(pipedata[index]
+                                                        ['pressure']) <
+                                                    300)
+                                                ? Colors.red
+                                                : Colors.white,
+                                          ))),
+                                  Expanded(
+                                      flex: 4,
+                                      child: Text(
+                                          f.format(DateTime.parse(
+                                              pipedata[index]['date'])),
+                                          style:
+                                              TextStyle(color: Colors.white))),
+                                ],
+                              ));
+                        },
+                      )))
         ]),
       ),
     );
@@ -141,6 +155,8 @@ class _PipeDetailsScreenState extends State<PipeDetailsScreen> {
         setState(() {
           var extractdata = json.decode(res.body);
           pipedata = extractdata["pipes"];
+           Toast.show("Success.", context,
+            duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
         });
       }
     }).catchError((err) {

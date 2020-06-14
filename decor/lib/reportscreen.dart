@@ -14,15 +14,19 @@ class ReportScreen extends StatefulWidget {
 }
 
 class _ReportScreenState extends State<ReportScreen> {
+  GlobalKey<RefreshIndicatorState> refreshKey;
+
   List pipedata;
   String titlecenter = "Loading Report";
   final f = new DateFormat('dd-MM-yyyy hh:mm a');
   final f2 = new DateFormat('hh:mm a');
+  final List<int> _mindiff = <int>[];
 
   @override
   void initState() {
     super.initState();
     _loadPipeData();
+    refreshKey = GlobalKey<RefreshIndicatorState>();
   }
 
   @override
@@ -49,7 +53,7 @@ class _ReportScreenState extends State<ReportScreen> {
           height: 5,
         ),
         Padding(
-            padding: EdgeInsets.fromLTRB(20, 10, 20, 1),
+            padding: EdgeInsets.fromLTRB(15, 10, 15, 1),
             child: Row(
               children: <Widget>[
                 Expanded(
@@ -57,19 +61,22 @@ class _ReportScreenState extends State<ReportScreen> {
                   child: Text("ID", style: TextStyle(color: Colors.white)),
                 ),
                 Expanded(
-                  flex: 4, // 20%
+                  flex: 2, // 20%
                   child:
                       Text("Location", style: TextStyle(color: Colors.white)),
                 ),
                 Expanded(
-                  flex: 3, // 60%
-                  child: Text("Pressure(psi)",
-                      style: TextStyle(color: Colors.white)),
+                  flex: 1, // 60%
+                  child: Text("Psi", style: TextStyle(color: Colors.white)),
                 ),
                 Expanded(
-                  flex: 2, // 20%
+                  flex: 3, // 20%
                   child:
                       Text("Date/Time", style: TextStyle(color: Colors.white)),
+                ),
+                Expanded(
+                  flex: 1, // 20%
+                  child: Text("Sensor", style: TextStyle(color: Colors.white)),
                 )
               ],
             )),
@@ -85,66 +92,82 @@ class _ReportScreenState extends State<ReportScreen> {
                     fontWeight: FontWeight.bold),
               ))))
             : Expanded(
-                child: ListView.builder(
-                itemCount: pipedata == null ? 0 : pipedata.length,
-                itemBuilder: (context, index) {
-                  return Padding(
-                      padding: EdgeInsets.fromLTRB(20, 1, 20, 1),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: <Widget>[
-                          Expanded(
-                              flex: 1,
-                              child: Text(pipedata[index]['pipeid'],
-                                  style: TextStyle(color: Colors.white))),
-                          Expanded(
-                              flex: 4,
-                              child: Text(pipedata[index]['location'],
-                                  style: TextStyle(color: Colors.white))),
-                          Expanded(
-                              flex: 3,
-                              child: Text(
-                                  (double.parse(pipedata[index]['latest']) *
-                                          0.06)
-                                      .toStringAsFixed(2),
-                                  style: TextStyle(
-                                    color:
-                                        (int.parse(pipedata[index]['latest']) <
-                                                300)
-                                            ? Colors.red
-                                            : Colors.white,
-                                  ))),
-                          Expanded(
-                              flex: 2,
-                              child: Text(
-                                  f2.format(
-                                      DateTime.parse(pipedata[index]['date'])),
-                                  style: TextStyle(color: Colors.white))),
-                        ],
-                      ));
-                },
-              ))
+                child: RefreshIndicator(
+                    key: refreshKey,
+                    color: Color.fromRGBO(101, 255, 218, 50),
+                    onRefresh: () async {
+                      _loadPipeData();
+                    },
+                    child: ListView.builder(
+                      itemCount: pipedata == null ? 0 : pipedata.length,
+                      itemBuilder: (context, index) {
+                        return Padding(
+                            padding: EdgeInsets.fromLTRB(15, 1, 15, 1),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: <Widget>[
+                                Expanded(
+                                    flex: 1,
+                                    child: Text(pipedata[index]['pipeid'],
+                                        style: TextStyle(color: Colors.white))),
+                                Expanded(
+                                    flex: 2,
+                                    child: Text(pipedata[index]['location'],
+                                        style: TextStyle(color: Colors.white))),
+                                Expanded(
+                                    flex: 1,
+                                    child: Text(
+                                        (double.parse(
+                                                    pipedata[index]['latest']) *
+                                                0.06)
+                                            .toStringAsFixed(2),
+                                        style: TextStyle(
+                                          color: (int.parse(pipedata[index]
+                                                      ['latest']) <
+                                                  300)
+                                              ? Colors.red
+                                              : Colors.white,
+                                        ))),
+                                Expanded(
+                                    flex: 3,
+                                    child: Text(
+                                        f.format(DateTime.parse(
+                                            pipedata[index]['date'])),
+                                        style: TextStyle(color: Colors.white))),
+                                Expanded(
+                                  flex: 1,
+                                  child: (_mindiff[index] < 10)
+                                      ? Text("OK",
+                                          style: TextStyle(color: Colors.white))
+                                      : Text("KO",
+                                          style:
+                                              TextStyle(color: Colors.white)),
+                                ),
+                              ],
+                            ));
+                      },
+                    )))
       ])),
       floatingActionButton: SpeedDial(
-            animatedIcon: AnimatedIcons.menu_close,
-            children: [
-              SpeedDialChild(
-                  child: Icon(Icons.email),
-                  label: "Email Report",
-                  labelBackgroundColor: Colors.white,
-                  onTap: null),
-              SpeedDialChild(
-                  child: Icon(MdiIcons.whatsapp),
-                  label: "Whatsup",
-                  labelBackgroundColor: Colors.white,
-                  onTap: null),
-              SpeedDialChild(
-                  child: Icon(MdiIcons.fileExcel),
-                  label: "Excell View",
-                  labelBackgroundColor: Colors.white,
-                  onTap: null),
-            ],
-          ),
+        animatedIcon: AnimatedIcons.menu_close,
+        children: [
+          SpeedDialChild(
+              child: Icon(Icons.email),
+              label: "Email Report",
+              labelBackgroundColor: Colors.white,
+              onTap: null),
+          SpeedDialChild(
+              child: Icon(MdiIcons.whatsapp),
+              label: "Whatsup",
+              labelBackgroundColor: Colors.white,
+              onTap: null),
+          SpeedDialChild(
+              child: Icon(MdiIcons.fileExcel),
+              label: "Excell View",
+              labelBackgroundColor: Colors.white,
+              onTap: null),
+        ],
+      ),
     );
   }
 
@@ -163,10 +186,20 @@ class _ReportScreenState extends State<ReportScreen> {
         });
       } else {
         setState(() {
+          _mindiff.clear();
           var extractdata = json.decode(res.body);
           pipedata = extractdata["pipes"];
           print(pipedata);
+          final date2 = DateTime.now();
+          for (int i = 0; i < pipedata.length; i++) {
+            final date1 = DateTime.parse(pipedata[i]["date"]);
+            final difference = date2.difference(date1).inMinutes;
+            _mindiff.insert(i, difference);
+          }
+          Toast.show("Success.", context,
+            duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
         });
+        
       }
     }).catchError((err) {
       print(err);

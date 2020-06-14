@@ -41,13 +41,14 @@ dev_dependencies:
   recase: ^3.0.0
   flutter_speed_dial: ^1.2.5
   image_cropper: ^1.2.2
-  flutter_gauge: ^1.0.8
+  flutter_gauge: 
   charts_flutter:
   geolocator: ^5.1.3
   geocoder: ^0.2.1
   google_maps_flutter: ^0.5.25
   fcharts: ^0.0.11
   material_design_icons_flutter: ^3.2.3895
+  
 
   
   
