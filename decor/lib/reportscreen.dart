@@ -118,13 +118,12 @@ class _ReportScreenState extends State<ReportScreen> {
                                     flex: 1,
                                     child: Text(
                                         (double.parse(
-                                                    pipedata[index]['latest']) *
-                                                0.06)
+                                                    pipedata[index]['latest']))
                                             .toStringAsFixed(2),
                                         style: TextStyle(
-                                          color: (int.parse(pipedata[index]
+                                          color: (double.parse(pipedata[index]
                                                       ['latest']) <
-                                                  300)
+                                                  5)
                                               ? Colors.red
                                               : Colors.white,
                                         ))),

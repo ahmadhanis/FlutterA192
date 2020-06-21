@@ -67,8 +67,10 @@ class _MainScreenState extends State<MainScreen> {
                         : Expanded(
                             child: GridView.count(
                                 crossAxisCount: 2,
-                                childAspectRatio:
-                                    (screenHeight / screenWidth) * 0.58,
+                                childAspectRatio: MediaQuery.of(context)
+                                        .size
+                                        .width /
+                                    (MediaQuery.of(context).size.height / 1.5),
                                 children:
                                     List.generate(pipedata.length, (index) {
                                   return Container(
@@ -79,8 +81,8 @@ class _MainScreenState extends State<MainScreen> {
                                       _loadPipeData();
                                     },
                                     child: Card(
-                                        color: (int.parse(
-                                                    pipedata[index]['latest']) * 0.06 <
+                                        color: (double.parse(
+                                                    pipedata[index]['latest']) <
                                                 5)
                                             ? Colors.red
                                             : Colors.blueGrey,
@@ -88,67 +90,69 @@ class _MainScreenState extends State<MainScreen> {
                                         child: Padding(
                                             padding: EdgeInsets.all(5),
                                             child: Column(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.center,
-                                                children: <Widget>[
-                                                  Text(
-                                                      pipedata[index]
-                                                              ['pipeid'] +
-                                                          "/" +
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                              children: <Widget>[
+                                                Text(
+                                                    pipedata[index]['pipeid'] +
+                                                        "/" +
+                                                        pipedata[index]
+                                                            ['location'],
+                                                    maxLines: 1,
+                                                    style: TextStyle(
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                        color: Colors.white)),
+                                                Container(
+                                                    height: 105,
+                                                    //color: Colors.black38,
+                                                    child: FlutterGauge(
+                                                      inactiveColor:
+                                                          Colors.white38,
+                                                      activeColor: Colors.green,
+                                                      backgroundColor:
+                                                          Colors.transparent,
+                                                      handSize: 20,
+                                                      index: double.parse(
                                                           pipedata[index]
-                                                              ['location'],
-                                                      maxLines: 1,
-                                                      style: TextStyle(
-                                                          fontWeight:
-                                                              FontWeight.bold,
-                                                          color: Colors.white)),
-                                                  
-                                                  Container(
-                                                      height: 105,
-                                                      //color: Colors.black38,
-                                                      child: FlutterGauge(
-                                                        inactiveColor:
-                                                            Colors.white38,
-                                                        activeColor:
-                                                            Colors.green,
-                                                        backgroundColor:
-                                                            Colors.transparent,
-                                                        handSize: 20,
-                                                        index: (double.parse(
-                                                                pipedata[index][
-                                                                    'latest']) *
-                                                            0.06),
-                                                        //fontFamily: "Iran",
-                                                        end: 120,
-                                                        number:
-                                                            Number.endAndStart,
-                                                        textStyle: TextStyle(
+                                                              ['latest']),
+                                                      //fontFamily: "Iran",
+                                                      end: 120,
+                                                      number:
+                                                          Number.endAndStart,
+                                                      textStyle: TextStyle(
+                                                          color: Colors.white),
+
+                                                      isCircle: false,
+                                                      hand: Hand.short,
+                                                      counterAlign:
+                                                          CounterAlign.center,
+                                                      counterStyle: TextStyle(
+                                                        color: Colors.white,
+                                                        fontSize: 16,
+                                                      ),
+                                                      isDecimal: false,
+                                                    )),
+                                                SizedBox(height: 5),
+                                                Text(
+                                                    f.format(DateTime.parse(
+                                                        pipedata[index]
+                                                            ['date'])),
+                                                    style: TextStyle(
+                                                        color: Colors.white)),
+                                                (_mindiff[index] < 10)
+                                                    ? Text("Sensor:Ok",
+                                                        style: TextStyle(
                                                             color:
-                                                                Colors.white),
-                                                        
-                                                        isCircle: false,
-                                                        hand: Hand.short,
-                                                        counterAlign:
-                                                            CounterAlign.center,
-                                                        counterStyle: TextStyle(
-                                                          color: Colors.white,
-                                                          fontSize: 16,
-                                                        ),
-                                                        isDecimal: false,
-                                                      )),
-                                                  SizedBox(height: 5),
-                                                  Text(
-                                                      f.format(DateTime.parse(
-                                                          pipedata[index]
-                                                              ['date'])),
-                                                      style: TextStyle(
-                                                          color: Colors.white)),
-                                                  (_mindiff[index] < 10)
-                                                      ? Text("Sensor:Ok",style: TextStyle(color: Colors.green))
-                                                      : Text("Sensor:Timeout",style: TextStyle(color: Colors.red)),
-                                                ]))),
+                                                                Colors.greenAccent))
+                                                    : Text("Sensor:Timeout",
+                                                        style: TextStyle(
+                                                            color: Colors.yellow)),
+                                              ],
+                                            ))),
                                   ));
-                                })))
+                                })),
+                          ),
                   ],
                 ),
               )),
@@ -250,6 +254,11 @@ class _MainScreenState extends State<MainScreen> {
             final date1 = DateTime.parse(pipedata[i]["date"]);
             final difference = date2.difference(date1).inMinutes;
             _mindiff.insert(i, difference);
+            double V = double.parse(pipedata[i]['latest']) * 3.3 / 1024;
+            double pressure = (V - 0.788) * 140;
+            double psi = pressure * 0.145038;
+            print("Pressure psi:" + psi.toString());
+            print(V);
           }
           print(_mindiff);
         });
@@ -305,7 +314,7 @@ class _MainScreenState extends State<MainScreen> {
             ),
             new FlatButton(
               child: new Text(
-                "Tidak",
+                "No",
                 style: TextStyle(
                   color: Color.fromRGBO(101, 255, 218, 50),
                 ),

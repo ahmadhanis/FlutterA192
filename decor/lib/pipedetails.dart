@@ -114,13 +114,11 @@ class _PipeDetailsScreenState extends State<PipeDetailsScreen> {
                                       flex: 4,
                                       child: Text(
                                           (double.parse(pipedata[index]
-                                                      ['pressure']) *
-                                                  0.06)
+                                                      ['pressure']))
                                               .toStringAsFixed(2),
                                           style: TextStyle(
-                                            color: (int.parse(pipedata[index]
-                                                        ['pressure']) <
-                                                    300)
+                                            color: (double.parse(pipedata[index]
+                                                        ['pressure']) < 5)
                                                 ? Colors.red
                                                 : Colors.white,
                                           ))),
@@ -242,7 +240,7 @@ class _PipeDetailsScreenState extends State<PipeDetailsScreen> {
       colorFn: (_, __) => charts.MaterialPalette.blue.shadeDefault,
       data: [
         Pipe(f2.format(DateTime.parse(pipedata[i]['date'])).toString(),
-            double.parse(pipedata[i]['pressure']) * 0.06),
+            double.parse(pipedata[i]['pressure'])),
       ],
     );
   }
