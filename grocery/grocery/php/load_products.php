@@ -3,6 +3,7 @@ error_reporting(0);
 include_once ("dbconnect.php");
 $type = $_POST['type'];
 $name = $_POST['name'];
+$prid = $_POST['prid'];
 
 if (isset($type)){
     if ($type == "Recent"){
@@ -17,6 +18,9 @@ if (isset($name)){
    $sql = "SELECT * FROM PRODUCT WHERE NAME LIKE  '%$name%'";
 }
 
+if (isset($prid)){
+   $sql = "SELECT * FROM PRODUCT WHERE ID = '$prid'";
+}
 
 $result = $conn->query($sql);
 
@@ -32,6 +36,8 @@ if ($result->num_rows > 0)
         $productlist["quantity"] = $row["QUANTITY"];
         $productlist["weigth"] = $row["WEIGHT"];
         $productlist["type"] = $row["TYPE"];
+        $productlist["date"] = $row["DATE"];
+        $productlist["sold"] = $row["SOLD"];
         array_push($response["products"], $productlist);
     }
     echo json_encode($response);

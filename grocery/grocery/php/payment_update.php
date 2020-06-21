@@ -34,7 +34,7 @@ foreach ($data as $key => $value) {
 $signed= hash_hmac('sha256', $signing, 'S-wzNn8FTL0endIB4wgi728w');
 if ($signed === $data['x_signature']) {
 
-    if ($paidstatus == "Success"){
+    if ($paidstatus == "Success"){ //payment success
         
         $sqlcart = "SELECT PRODID,CQUANTITY FROM CART WHERE EMAIL = '$userid'";
         $cartresult = $conn->query($sqlcart);
@@ -43,7 +43,7 @@ if ($signed === $data['x_signature']) {
         while ($row = $cartresult->fetch_assoc())
         {
             $prodid = $row["PRODID"];
-            $cq = $row["CQUANTITY"];
+            $cq = $row["CQUANTITY"]; //cart qty
             $sqlinsertcarthistory = "INSERT INTO CARTHISTORY(EMAIL,ORDERID,BILLID,PRODID,CQUANTITY) VALUES ('$userid','$orderid','$receiptid','$prodid','$cq')";
             $conn->query($sqlinsertcarthistory);
             
@@ -52,8 +52,10 @@ if ($signed === $data['x_signature']) {
              if ($productresult->num_rows > 0){
                   while ($rowp = $productresult->fetch_assoc()){
                     $prquantity = $rowp["QUANTITY"];
-                    $newquantity = $prquantity - $cq;
-                    $sqlupdatequantity = "UPDATE PRODUCT SET QUANTITY = '$newquantity' WHERE ID = '$prodid'";
+                    $prevsold = $rowp["SOLD"];
+                    $newquantity = $prquantity - $cq; //quantity in store - quantity ordered by user
+                    $newsold = $prevsold + $cq;
+                    $sqlupdatequantity = "UPDATE PRODUCT SET QUANTITY = '$newquantity', SOLD = '$newsold' WHERE ID = '$prodid'";
                     $conn->query($sqlupdatequantity);
                   }
              }
@@ -70,7 +72,7 @@ if ($signed === $data['x_signature']) {
     } 
         else 
     {
-    echo 'Not Match!';
+    echo 'Payment Failed!';
     }
 }
 
