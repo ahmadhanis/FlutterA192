@@ -522,7 +522,7 @@ class _MainScreenState extends State<MainScreen> {
           ),
           floatingActionButton: FloatingActionButton.extended(
             onPressed: () async {
-              if (widget.user.email == "unregistered") {
+              if (widget.user.email == "unregistered@grocery.com") {
                 Toast.show("Please register to use this function", context,
                     duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
                 return;
@@ -683,16 +683,7 @@ class _MainScreenState extends State<MainScreen> {
                 ),
               ),
               trailing: Icon(Icons.arrow_forward),
-              onTap: () => {
-                    Navigator.pop(context),
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (BuildContext context) =>
-                                PaymentHistoryScreen(
-                                  user: widget.user,
-                                ))),
-                  }),
+              onTap: _paymentScreen),
           ListTile(
               title: Text(
                 "User Profile",
@@ -1096,5 +1087,24 @@ class _MainScreenState extends State<MainScreen> {
           ),
         ) ??
         false;
+  }
+
+  void _paymentScreen() {
+    if (widget.user.email == "unregistered@grocery.com") {
+      Toast.show("Please register to use this function", context,
+          duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
+      return;
+    } else if (widget.user.email == "admin@grocery.com") {
+      Toast.show("Admin mode!!!", context,
+          duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
+      return;
+    }
+    Navigator.pop(context);
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (BuildContext context) => PaymentHistoryScreen(
+                  user: widget.user,
+                )));
   }
 }

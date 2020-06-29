@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:grocery/storecredit.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:image_picker/image_picker.dart';
 import 'loginscreen.dart';
@@ -72,8 +73,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             ),
                             child: CachedNetworkImage(
                               fit: BoxFit.cover,
-                              imageUrl:
-                                  server+ "/profileimages/${widget.user.email}.jpg?",
+                              imageUrl: server +
+                                  "/profileimages/${widget.user.email}.jpg?",
                               placeholder: (context, url) => new SizedBox(
                                   height: 10.0,
                                   width: 10.0,
@@ -255,10 +256,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     child: Text("REGISTER NEW ACCOUNT"),
                   ),
                   MaterialButton(
-                    onPressed: null,
+                    onPressed: buyStoreCredit,
                     child: Text("BUY STORE CREDIT"),
                   ),
-                  
                 ])),
           ],
         ),
@@ -282,7 +282,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     } else {
       String base64Image = base64Encode(_image.readAsBytesSync());
       print(base64Image);
-      http.post(server+"/php/upload_image.php", body: {
+      http.post(server + "/php/upload_image.php", body: {
         "encoded_string": base64Image,
         "email": widget.user.email,
       }).then((res) {
@@ -374,7 +374,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
     ReCase rc = new ReCase(name);
     print(rc.titleCase.toString());
-    http.post(server+"/php/update_profile.php", body: {
+    http.post(server + "/php/update_profile.php", body: {
       "email": widget.user.email,
       "name": rc.titleCase.toString(),
     }).then((res) {
@@ -475,7 +475,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       return;
     }
 
-    http.post(server+"/php/update_profile.php", body: {
+    http.post(server + "/php/update_profile.php", body: {
       "email": widget.user.email,
       "oldpassword": pass1,
       "newpassword": pass2,
@@ -555,7 +555,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
       return;
     }
-    http.post(server+"/php/update_profile.php", body: {
+    http.post(server + "/php/update_profile.php", body: {
       "email": widget.user.email,
       "phone": phone,
     }).then((res) {
@@ -575,8 +575,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     });
   }
 
-
-   void _gotologinPage() {
+  void _gotologinPage() {
     // flutter defined function
     print(widget.user.name);
     showDialog(
@@ -686,6 +685,120 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ],
         );
       },
+    );
+  }
+
+  void buyStoreCredit() {
+    if (widget.user.email == "unregistered") {
+      Toast.show("Please register to use this function", context,
+          duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
+      return;
+    }
+    TextEditingController creditController = TextEditingController();
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(20.0))),
+              title: new Text(
+                "Buy Store Credit?",
+                style: TextStyle(
+                  color: Colors.white,
+                ),
+              ),
+              content: new TextField(
+                  style: TextStyle(
+                    color: Colors.white,
+                  ),
+                  controller: creditController,
+                  keyboardType: TextInputType.number,
+                  decoration: InputDecoration(
+                    labelText: 'Enter RM',
+                    icon: Icon(
+                      Icons.attach_money,
+                      color: Color.fromRGBO(101, 255, 218, 50),
+                    ),
+                  )),
+              actions: <Widget>[
+                new FlatButton(
+                    child: new Text(
+                      "Yes",
+                      style: TextStyle(
+                        color: Color.fromRGBO(101, 255, 218, 50),
+                      ),
+                    ),
+                    onPressed: () =>
+                        _buyCredit(creditController.text.toString())),
+                new FlatButton(
+                  child: new Text(
+                    "No",
+                    style: TextStyle(
+                      color: Color.fromRGBO(101, 255, 218, 50),
+                    ),
+                  ),
+                  onPressed: () => {Navigator.of(context).pop()},
+                ),
+              ]);
+        });
+  }
+
+  _buyCredit(String cr) {
+    print("RM " + cr);
+    if (cr.length <= 0) {
+      Toast.show("Please enter correct amount", context,
+          duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
+      return;
+    }
+    showDialog(
+      context: context,
+      builder: (context) => new AlertDialog(
+        shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.all(Radius.circular(20.0))),
+        title: new Text(
+          'Buy store credit RM ' + cr,
+          style: TextStyle(
+            color: Colors.white,
+          ),
+        ),
+        content: new Text(
+          'Are you sure?',
+          style: TextStyle(
+            color: Colors.white,
+          ),
+        ),
+        actions: <Widget>[
+          MaterialButton(
+              onPressed: () {
+                Navigator.of(context).pop(false);
+                Navigator.of(context).pop(false);
+                Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (BuildContext context) => StoreCreditScreen(
+                  user: widget.user,
+                  val: cr,
+                )));
+              },
+              child: Text(
+                "Ok",
+                style: TextStyle(
+                  color: Color.fromRGBO(101, 255, 218, 50),
+                ),
+              )),
+          MaterialButton(
+              onPressed: () {
+                Navigator.of(context).pop(false);
+                Navigator.of(context).pop(false);
+              },
+              child: Text(
+                "Cancel",
+                style: TextStyle(
+                  color: Color.fromRGBO(101, 255, 218, 50),
+                ),
+              )),
+        ],
+      ),
     );
   }
 }

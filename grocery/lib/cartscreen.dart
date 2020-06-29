@@ -395,7 +395,7 @@ class _CartScreenState extends State<CartScreen> {
                                     color: Color.fromRGBO(101, 255, 218, 50),
                                     textColor: Colors.black,
                                     elevation: 10,
-                                    onPressed: makePayment,
+                                    onPressed: makePaymentDialog,
                                   ),
                                 ],
                               ),
@@ -416,8 +416,8 @@ class _CartScreenState extends State<CartScreen> {
                                           child: ClipOval(
                                               child: CachedNetworkImage(
                                             fit: BoxFit.scaleDown,
-                                            imageUrl:
-                                                server+"/productimage/${cartData[index]['id']}.jpg",
+                                            imageUrl: server +
+                                                "/productimage/${cartData[index]['id']}.jpg",
                                             placeholder: (context, url) =>
                                                 new CircularProgressIndicator(),
                                             errorWidget:
@@ -575,7 +575,7 @@ class _CartScreenState extends State<CartScreen> {
         type: ProgressDialogType.Normal, isDismissible: false);
     pr.style(message: "Updating cart...");
     pr.show();
-    String urlLoadJobs = server+"/php/load_cart.php";
+    String urlLoadJobs = server + "/php/load_cart.php";
     http.post(urlLoadJobs, body: {
       "email": widget.user.email,
     }).then((res) {
@@ -632,7 +632,7 @@ class _CartScreenState extends State<CartScreen> {
         return;
       }
     }
-    String urlLoadJobs = server+"/php/update_cart.php";
+    String urlLoadJobs = server + "/php/update_cart.php";
     http.post(urlLoadJobs, body: {
       "email": widget.user.email,
       "prodid": cartData[index]['id'],
@@ -668,11 +668,10 @@ class _CartScreenState extends State<CartScreen> {
           MaterialButton(
               onPressed: () {
                 Navigator.of(context).pop(false);
-                http.post(server+"/php/delete_cart.php",
-                    body: {
-                      "email": widget.user.email,
-                      "prodid": cartData[index]['id'],
-                    }).then((res) {
+                http.post(server + "/php/delete_cart.php", body: {
+                  "email": widget.user.email,
+                  "prodid": cartData[index]['id'],
+                }).then((res) {
                   print(res.body);
 
                   if (res.body == "success") {
@@ -949,7 +948,58 @@ class _CartScreenState extends State<CartScreen> {
     });
   }
 
+  void makePaymentDialog() {
+    showDialog(
+      context: context,
+      builder: (context) => new AlertDialog(
+        shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.all(Radius.circular(20.0))),
+        title: new Text(
+          'Proceed with payment?',
+          style: TextStyle(
+            color: Colors.white,
+          ),
+        ),
+        content: new Text(
+          'Are you sure?',
+          style: TextStyle(
+            color: Colors.white,
+          ),
+        ),
+        actions: <Widget>[
+          MaterialButton(
+              onPressed: () {
+                Navigator.of(context).pop(false);
+                makePayment();
+              },
+              child: Text(
+                "Ok",
+                style: TextStyle(
+                  color: Color.fromRGBO(101, 255, 218, 50),
+                ),
+              )),
+          MaterialButton(
+              onPressed: () {
+                Navigator.of(context).pop(false);
+              },
+              child: Text(
+                "Cancel",
+                style: TextStyle(
+                  color: Color.fromRGBO(101, 255, 218, 50),
+                ),
+              )),
+        ],
+      ),
+    );
+  }
+
   Future<void> makePayment() async {
+    if (amountpayable < 0) {
+      double newamount = amountpayable * -1;
+      await _payusingstorecredit(newamount);
+      _loadCart();
+      return;
+    }
     if (_selfPickup) {
       print("PICKUP");
       Toast.show("Self Pickup", context,
@@ -964,7 +1014,7 @@ class _CartScreenState extends State<CartScreen> {
     }
     var now = new DateTime.now();
     var formatter = new DateFormat('ddMMyyyy-');
-    String orderid = widget.user.email.substring(1,4) +
+    String orderid = widget.user.email.substring(1, 4) +
         "-" +
         formatter.format(now) +
         randomAlphaNumeric(6);
@@ -980,8 +1030,18 @@ class _CartScreenState extends State<CartScreen> {
     _loadCart();
   }
 
+  String generateOrderid() {
+    var now = new DateTime.now();
+    var formatter = new DateFormat('ddMMyyyy-');
+    String orderid = widget.user.email.substring(1, 4) +
+        "-" +
+        formatter.format(now) +
+        randomAlphaNumeric(6);
+    return orderid;
+  }
+
   void deleteAll() {
-     showDialog(
+    showDialog(
       context: context,
       builder: (context) => new AlertDialog(
         shape: RoundedRectangleBorder(
@@ -996,10 +1056,9 @@ class _CartScreenState extends State<CartScreen> {
           MaterialButton(
               onPressed: () {
                 Navigator.of(context).pop(false);
-                http.post(server+"/php/delete_cart.php",
-                    body: {
-                      "email": widget.user.email,
-                    }).then((res) {
+                http.post(server + "/php/delete_cart.php", body: {
+                  "email": widget.user.email,
+                }).then((res) {
                   print(res.body);
 
                   if (res.body == "success") {
@@ -1031,6 +1090,28 @@ class _CartScreenState extends State<CartScreen> {
         ],
       ),
     );
+  }
 
+  Future<void> _payusingstorecredit(double newamount) async {
+    //insert carthistory
+    //remove cart content
+    //update product quantity
+    //update credit in user
+    ProgressDialog pr = new ProgressDialog(context,
+        type: ProgressDialogType.Normal, isDismissible: true);
+    pr.style(message: "Updating cart...");
+    pr.show();
+    String urlPayment = server + "/php/paymentsc.php";
+    await http.post(urlPayment, body: {
+      "userid": widget.user.email,
+      "amount": _totalprice.toStringAsFixed(2),
+      "orderid": generateOrderid(),
+      "newcr": newamount.toStringAsFixed(2)
+    }).then((res) {
+      print(res.body);
+      pr.dismiss();
+    }).catchError((err) {
+      print(err);
+    });
   }
 }
