@@ -35,8 +35,9 @@ $signed= hash_hmac('sha256', $signing, 'S-wzNn8FTL0endIB4wgi728w');
 if ($signed === $data['x_signature']) {
 
     if ($paidstatus == "Success"){ //payment success
-        
-        $sqlcart = "SELECT PRODID,CQUANTITY FROM CART WHERE EMAIL = '$userid'";
+         //$sql = "SELECT PRODUCT.ID, PRODUCT.NAME, PRODUCT.PRICE, PRODUCT.QUANTITY, PRODUCT.WEIGHT, CART.CQUANTITY FROM PRODUCT INNER JOIN CART ON CART.PRODID = PRODUCT.ID WHERE CART.EMAIL = '$email'";
+        //$sqlcart = "SELECT PRODID,CQUANTITY,PRICE FROM CART WHERE EMAIL = '$userid'";
+        $sqlcart ="SELECT CART.PRODID, CART.CQUANTITY, PRODUCT.PRICE FROM CART INNER JOIN PRODUCT ON CART.PRODID = PRODUCT.ID WHERE CART.EMAIL = '$userid'";
         $cartresult = $conn->query($sqlcart);
         if ($cartresult->num_rows > 0)
         {
@@ -44,7 +45,8 @@ if ($signed === $data['x_signature']) {
         {
             $prodid = $row["PRODID"];
             $cq = $row["CQUANTITY"]; //cart qty
-            $sqlinsertcarthistory = "INSERT INTO CARTHISTORY(EMAIL,ORDERID,BILLID,PRODID,CQUANTITY) VALUES ('$userid','$orderid','$receiptid','$prodid','$cq')";
+            $pr = $row["PRICE"];
+            $sqlinsertcarthistory = "INSERT INTO CARTHISTORY(EMAIL,ORDERID,BILLID,PRODID,CQUANTITY,PRICE) VALUES ('$userid','$orderid','$receiptid','$prodid','$cq','$pr')";
             $conn->query($sqlinsertcarthistory);
             
             $selectproduct = "SELECT * FROM PRODUCT WHERE ID = '$prodid'";

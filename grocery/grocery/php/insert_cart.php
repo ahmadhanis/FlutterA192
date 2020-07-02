@@ -5,6 +5,7 @@ $email = $_POST['email'];
 $prodid = $_POST['proid'];
 $userquantity = $_POST['quantity'];
 
+
 $sqlsearch = "SELECT * FROM CART WHERE EMAIL = '$email' AND PRODID= '$prodid'";
 
 $result = $conn->query($sqlsearch);
