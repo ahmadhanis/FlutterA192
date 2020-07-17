@@ -24,6 +24,8 @@ class MainScreen extends StatefulWidget {
 }
 
 class _MainScreenState extends State<MainScreen> {
+  GlobalKey<RefreshIndicatorState> refreshKey;
+
   List productdata;
   int curnumber = 1;
   double screenHeight, screenWidth;
@@ -40,6 +42,7 @@ class _MainScreenState extends State<MainScreen> {
     super.initState();
     _loadData();
     _loadCartQuantity();
+    refreshKey = GlobalKey<RefreshIndicatorState>();
     if (widget.user.email == "admin@grocery.com") {
       _isadmin = true;
     }
@@ -80,7 +83,15 @@ class _MainScreenState extends State<MainScreen> {
               //
             ],
           ),
-          body: Container(
+          body: 
+          RefreshIndicator(
+            key: refreshKey,
+            color: Color.fromRGBO(101, 255, 218, 50),
+            onRefresh: () async {
+              await refreshList();
+            },
+            child:
+          Container(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: <Widget>[
@@ -519,7 +530,7 @@ class _MainScreenState extends State<MainScreen> {
                             })))
               ],
             ),
-          ),
+          )),
           floatingActionButton: FloatingActionButton.extended(
             onPressed: () async {
               if (widget.user.email == "unregistered@grocery.com") {
@@ -1106,5 +1117,12 @@ class _MainScreenState extends State<MainScreen> {
             builder: (BuildContext context) => PaymentHistoryScreen(
                   user: widget.user,
                 )));
+  }
+
+  Future<Null> refreshList() async {
+    await Future.delayed(Duration(seconds: 2));
+    //_getLocation();
+    _loadData();
+    return null;
   }
 }

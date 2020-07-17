@@ -845,8 +845,10 @@ class _AdminProductState extends State<AdminProduct> {
         type: ProgressDialogType.Normal, isDismissible: false);
     pr.style(message: "Deleting product...");
     pr.show();
+    String prid = productdata[index]['id'];
+    print("prid:"+prid);
     http.post(server + "/php/delete_product.php", body: {
-      "proid": productdata[index]['id'],
+      "prodid": prid,
     }).then((res) {
       print(res.body);
       pr.dismiss();
