@@ -47,7 +47,7 @@ class _MainScreenState extends State<MainScreen> {
               PopupMenuButton<String>(
                 onSelected: handleClick,
                 itemBuilder: (BuildContext context) {
-                  return {'Logout', 'Settings'}.map((String choice) {
+                  return {'Logout'}.map((String choice) {
                     return PopupMenuItem<String>(
                       value: choice,
                       child: Text(
@@ -471,10 +471,7 @@ class _MainScreenState extends State<MainScreen> {
   void handleClick(String value) {
     switch (value) {
       case 'Logout':
-        print("Logout");
-        break;
-      case 'Settings':
-        print("Settings");
+        _onBackPressed();
         break;
     }
   }

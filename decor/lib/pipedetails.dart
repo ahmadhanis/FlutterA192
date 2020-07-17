@@ -205,9 +205,9 @@ class _PipeDetailsScreenState extends State<PipeDetailsScreen> {
     List<charts.Series<ThisPipe, String>> seriesList = [];
     int len;
     if (pipedata.length > 15) {
-      len = 8;
+      len = 10;
     } else {
-      len = 1;
+      len = 2;
     }
     for (int i = 0; i < pipedata.length; i += len) {
       String id =

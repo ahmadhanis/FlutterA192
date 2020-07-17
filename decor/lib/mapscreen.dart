@@ -32,7 +32,8 @@ class _MapScreenState extends State<MapScreen> {
   @override
   void initState() {
     super.initState();
-    _cameraPos = CameraPosition(target: LatLng(latitude, longitude), zoom: 14);
+    _cameraPos =
+        CameraPosition(target: LatLng(latitude, longitude), zoom: 14.5);
     _loadPipes();
   }
 
@@ -41,42 +42,54 @@ class _MapScreenState extends State<MapScreen> {
     screenHeight = MediaQuery.of(context).size.height;
     screenWidth = MediaQuery.of(context).size.width;
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Pipe Location'),
-      ),
-      body: Center(
-        child: Container(
-          child: pipelist == null
-              ? Flexible(
-                  child: Container(
-                      child: Center(
-                          child: Text(
-                  "Loading map...",
-                  style: TextStyle(
-                      color: Color.fromRGBO(101, 255, 218, 50),
-                      fontSize: 22,
-                      fontWeight: FontWeight.bold),
-                ))))
-              : Flexible(
-                  child: Container(
-                  //height: screenHeight / 2,
-                  //width: screenWidth / 1.05,
-                  child: GoogleMap(
-                    mapType: MapType.normal,
-                    initialCameraPosition: _cameraPos,
-                    gestureRecognizers: <Factory<OneSequenceGestureRecognizer>>[
-                      Factory<OneSequenceGestureRecognizer>(
-                          () => ScaleGestureRecognizer())
-                    ].toSet(),
-                    markers: Set<Marker>.of(markers.values),
-                    onMapCreated: (GoogleMapController controller) {
-                      _controller.complete(controller);
-                    },
-                  ),
-                )),
+        appBar: AppBar(
+          title: Text('Pipe Location'),
         ),
-      ),
-    );
+        body: Center(
+          child: Column(children: <Widget>[
+            Text("Decor Pipe Sensors Location",
+                style: TextStyle(
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white)),
+            Container(
+              child: pipelist == null
+                  ? Flexible(
+                      child: Container(
+                          child: Center(
+                              child: Text(
+                      "Loading map...",
+                      style: TextStyle(
+                          color: Color.fromRGBO(101, 255, 218, 50),
+                          fontSize: 22,
+                          fontWeight: FontWeight.bold),
+                    ))))
+                  : Flexible(
+                      child: Container(
+                      //height: screenHeight / 2,
+                      //width: screenWidth / 1.05,
+                      child: GoogleMap(
+                        mapType: MapType.normal,
+                        initialCameraPosition: _cameraPos,
+                        gestureRecognizers:
+                            <Factory<OneSequenceGestureRecognizer>>[
+                          Factory<OneSequenceGestureRecognizer>(
+                              () => ScaleGestureRecognizer())
+                        ].toSet(),
+                        markers: Set<Marker>.of(markers.values),
+                        onMapCreated: (GoogleMapController controller) {
+                          _controller.complete(controller);
+                        },
+                      ),
+                    )),
+            ),
+            Text("Click on marker to get details of the sensor",
+                style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white)),
+          ]),
+        ));
   }
 
   _loadPipes() {
@@ -193,7 +206,18 @@ class _MapScreenState extends State<MapScreen> {
                   Text(
                       "Date: " + f.format(DateTime.parse(pipelist[i]['date']))),
                   Text("Location: " + pipelist[i]['location']),
-                  Text("Details: " + pipelist[i]['desc'])
+                  Text("Details: " + pipelist[i]['desc']),
+                  MaterialButton(
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20.0)),
+                    minWidth: 150,
+                    height: 30,
+                    child: Text('Sensor Details'),
+                    color: Color.fromRGBO(101, 255, 218, 50),
+                    textColor: Colors.black,
+                    elevation: 5,
+                    onPressed: () => handleTap(i),
+                  ),
                 ],
               ),
             ));
