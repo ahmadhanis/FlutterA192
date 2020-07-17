@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
-
 import 'mainscreen.dart';
 
 void main() => runApp(MyApp());
@@ -27,7 +26,7 @@ class _MyAppState extends State<MyApp> {
           Theme.of(context).textTheme,
         ),
       ),
-      title: 'My.Grocery',
+      title: 'DecorPipe',
       home: Scaffold(
           body: Container(
         child: Stack(

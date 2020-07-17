@@ -1,5 +1,5 @@
 import 'dart:convert';
-
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
@@ -7,6 +7,11 @@ import 'package:toast/toast.dart';
 import 'package:progress_dialog/progress_dialog.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:pdf/widgets.dart' as pw;
+import 'package:path_provider/path_provider.dart';
+import 'package:open_file/open_file.dart';
+
+import 'pipe.dart';
 
 class ReportScreen extends StatefulWidget {
   @override
@@ -118,7 +123,7 @@ class _ReportScreenState extends State<ReportScreen> {
                                     flex: 1,
                                     child: Text(
                                         (double.parse(
-                                                    pipedata[index]['latest']))
+                                                pipedata[index]['latest']))
                                             .toStringAsFixed(2),
                                         style: TextStyle(
                                           color: (double.parse(pipedata[index]
@@ -135,10 +140,12 @@ class _ReportScreenState extends State<ReportScreen> {
                                         style: TextStyle(color: Colors.white))),
                                 Expanded(
                                   flex: 1,
-                                  child: (_mindiff[index] < 10)
+                                  child: (_mindiff[index] <
+                                          int.parse(pipedata[index]['delay']) /
+                                              60)
                                       ? Text("OK",
                                           style: TextStyle(color: Colors.white))
-                                      : Text("KO",
+                                      : Text("TO",
                                           style:
                                               TextStyle(color: Colors.white)),
                                 ),
@@ -151,20 +158,15 @@ class _ReportScreenState extends State<ReportScreen> {
         animatedIcon: AnimatedIcons.menu_close,
         children: [
           SpeedDialChild(
-              child: Icon(Icons.email),
-              label: "Email Report",
+              child: Icon(MdiIcons.refreshCircle),
+              label: "Refresh Data",
               labelBackgroundColor: Colors.white,
-              onTap: null),
+              onTap: _loadPipeData),
           SpeedDialChild(
-              child: Icon(MdiIcons.whatsapp),
-              label: "Whatsup",
+              child: Icon(MdiIcons.filePdf),
+              label: "PDF View",
               labelBackgroundColor: Colors.white,
-              onTap: null),
-          SpeedDialChild(
-              child: Icon(MdiIcons.fileExcel),
-              label: "Excell View",
-              labelBackgroundColor: Colors.white,
-              onTap: null),
+              onTap: ceatePdf),
         ],
       ),
     );
@@ -188,6 +190,7 @@ class _ReportScreenState extends State<ReportScreen> {
           _mindiff.clear();
           var extractdata = json.decode(res.body);
           pipedata = extractdata["pipes"];
+          print("Pipedata:");
           print(pipedata);
           final date2 = DateTime.now();
           for (int i = 0; i < pipedata.length; i++) {
@@ -196,12 +199,100 @@ class _ReportScreenState extends State<ReportScreen> {
             _mindiff.insert(i, difference);
           }
           Toast.show("Success.", context,
-            duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
+              duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
         });
-        
       }
     }).catchError((err) {
       print(err);
     });
+  }
+
+  Future<void> ceatePdf() async {
+    const tableHeaders = [
+      'ID#',
+      'Location',
+      'Psi',
+      'Date/Time',
+      'Sensor',
+      'Description',
+    ];
+    final pipelist = <Pipe>[];
+
+    for (int i = 0; i < pipedata.length; i++) {
+      String status;
+      if (_mindiff[i] < int.parse(pipedata[i]['delay'])) {
+        status = "OK";
+      } else {
+        status = "TO";
+      }
+      pipelist.add(new Pipe(
+          pipedata[i]['pipeid'],
+          pipedata[i]['location'],
+          pipedata[i]['latest'],
+          (f.format(DateTime.parse(pipedata[i]['date'])).toString()),
+          status,
+          pipedata[i]['desc'],
+          "",
+          ""));
+    }
+    print("TEST:" + pipelist[0].description);
+
+    //print("PDF");
+    final doc = pw.Document();
+
+    doc.addPage(pw.MultiPage(build: (pw.Context context) {
+      return <pw.Widget>[
+        pw.Header(
+            level: 0,
+            child: pw.Text("UUM Pipe Management Report",
+                style: pw.TextStyle(fontSize: 16.0))),
+        pw.Table.fromTextArray(
+          border: null,
+          cellAlignment: pw.Alignment.centerLeft,
+          headerDecoration: pw.BoxDecoration(
+            borderRadius: 2,
+          ),
+          headerHeight: 25,
+          cellHeight: 30,
+          cellAlignments: {
+            0: pw.Alignment.centerLeft,
+            1: pw.Alignment.centerLeft,
+            2: pw.Alignment.centerLeft,
+            3: pw.Alignment.centerLeft,
+            4: pw.Alignment.centerLeft,
+            5: pw.Alignment.centerLeft,
+          },
+          headerStyle: pw.TextStyle(
+            fontSize: 10,
+            fontWeight: pw.FontWeight.bold,
+          ),
+          cellStyle: const pw.TextStyle(
+            fontSize: 10,
+          ),
+          rowDecoration: pw.BoxDecoration(
+            border: pw.BoxBorder(
+              bottom: true,
+              width: .5,
+            ),
+          ),
+          headers: List<String>.generate(
+            tableHeaders.length,
+            (col) => tableHeaders[col],
+          ),
+          data: List<List<String>>.generate(
+            pipelist.length,
+            (row) => List<String>.generate(
+              tableHeaders.length,
+              (col) => pipelist[row].getIndex(col),
+            ),
+          ),
+        )
+      ];
+    }));
+    final directory = await getApplicationDocumentsDirectory();
+    final file = File('${directory.path}/pipe_report.pdf');
+    file.writeAsBytesSync(doc.save());
+    print(file.toString());
+    OpenFile.open('${directory.path}/pipe_report.pdf');
   }
 }

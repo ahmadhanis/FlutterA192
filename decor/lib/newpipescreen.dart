@@ -21,11 +21,13 @@ class _NewPipeScreenState extends State<NewPipeScreen> {
   double screenHeight, screenWidth;
   File _image;
   String pathAsset = 'assets/images/phonecam.png';
-  String pipelocation;
+  String pipelocation = "Please wait...";
   String titlecenter = "Searching Current Position...";
   final f = new DateFormat('dd-MM-yyyy hh:mm');
 
   TextEditingController pipeidctrl = new TextEditingController();
+  TextEditingController pipedesc = new TextEditingController();
+  TextEditingController pipedelay = new TextEditingController();
 
   final focus = FocusNode();
   final focus1 = FocusNode();
@@ -83,138 +85,231 @@ class _NewPipeScreenState extends State<NewPipeScreen> {
                                 style: TextStyle(
                                     fontSize: 10.0, color: Colors.white)),
                             SizedBox(height: 5),
-                            pipelocation == null
-                                ? Card(
-                                    child: Container(
-                                        child: Center(
-                                            child: Text(
-                                    titlecenter,
-                                    style: TextStyle(
+                            Card(
+                                elevation: 10,
+                                child: Padding(
+                                    padding: EdgeInsets.all(10),
+                                    child: Column(children: <Widget>[
+                                      Table(
+                                          defaultColumnWidth:
+                                              FlexColumnWidth(1.0),
+                                          children: [
+                                            TableRow(children: [
+                                              TableCell(
+                                                child: Container(
+                                                    alignment:
+                                                        Alignment.centerLeft,
+                                                    height: 30,
+                                                    child: Text("Pipe ID",
+                                                        style: TextStyle(
+                                                            fontWeight:
+                                                                FontWeight.bold,
+                                                            color:
+                                                                Colors.white))),
+                                              ),
+                                              TableCell(
+                                                child: Container(
+                                                  margin: EdgeInsets.fromLTRB(
+                                                      5, 1, 5, 1),
+                                                  height: 30,
+                                                  child: TextFormField(
+                                                      style: TextStyle(
+                                                        color: Colors.white,
+                                                      ),
+                                                      controller: pipeidctrl,
+                                                      keyboardType:
+                                                          TextInputType.number,
+                                                      textInputAction:
+                                                          TextInputAction.next,
+                                                      onFieldSubmitted: (v) {
+                                                        FocusScope.of(context)
+                                                            .requestFocus(
+                                                                focus);
+                                                      },
+                                                      decoration:
+                                                          new InputDecoration(
+                                                        contentPadding:
+                                                            const EdgeInsets
+                                                                .all(5),
+
+                                                        fillColor: Colors.white,
+                                                        border:
+                                                            new OutlineInputBorder(
+                                                          borderRadius:
+                                                              new BorderRadius
+                                                                      .circular(
+                                                                  5.0),
+                                                          borderSide:
+                                                              new BorderSide(),
+                                                        ),
+
+                                                        //fillColor: Colors.green
+                                                      )),
+                                                ),
+                                              ),
+                                            ]),
+                                            TableRow(children: [
+                                              TableCell(
+                                                child: Container(
+                                                    alignment:
+                                                        Alignment.centerLeft,
+                                                    height: 30,
+                                                    child: Text(
+                                                        "Delay (in minutes)",
+                                                        style: TextStyle(
+                                                            fontWeight:
+                                                                FontWeight.bold,
+                                                            color:
+                                                                Colors.white))),
+                                              ),
+                                              TableCell(
+                                                child: Container(
+                                                  margin: EdgeInsets.fromLTRB(
+                                                      5, 1, 5, 1),
+                                                  height: 30,
+                                                  child: TextFormField(
+                                                      style: TextStyle(
+                                                        color: Colors.white,
+                                                      ),
+                                                      controller: pipedelay,
+                                                      keyboardType:
+                                                          TextInputType.number,
+                                                      textInputAction:
+                                                          TextInputAction.next,
+                                                      onFieldSubmitted: (v) {
+                                                        FocusScope.of(context)
+                                                            .requestFocus(
+                                                                focus);
+                                                      },
+                                                      decoration:
+                                                          new InputDecoration(
+                                                        contentPadding:
+                                                            const EdgeInsets
+                                                                .all(5),
+
+                                                        fillColor: Colors.white,
+                                                        border:
+                                                            new OutlineInputBorder(
+                                                          borderRadius:
+                                                              new BorderRadius
+                                                                      .circular(
+                                                                  5.0),
+                                                          borderSide:
+                                                              new BorderSide(),
+                                                        ),
+
+                                                        //fillColor: Colors.green
+                                                      )),
+                                                ),
+                                              ),
+                                            ]),
+                                            TableRow(children: [
+                                              TableCell(
+                                                child: Container(
+                                                    alignment:
+                                                        Alignment.centerLeft,
+                                                    height: 30,
+                                                    child: Text("Pipe Location",
+                                                        style: TextStyle(
+                                                            fontWeight:
+                                                                FontWeight.bold,
+                                                            color:
+                                                                Colors.white))),
+                                              ),
+                                              TableCell(
+                                                child: Container(
+                                                    alignment:
+                                                        Alignment.centerLeft,
+                                                    height: 40,
+                                                    child: Text(
+                                                        "  " + '$pipelocation',
+                                                        style: TextStyle(
+                                                            fontWeight:
+                                                                FontWeight.bold,
+                                                            color:
+                                                                Colors.white))),
+                                              ),
+                                            ]),
+                                            TableRow(children: [
+                                              TableCell(
+                                                child: Container(
+                                                    alignment:
+                                                        Alignment.centerLeft,
+                                                    height: 30,
+                                                    child: Text("Description",
+                                                        style: TextStyle(
+                                                            fontWeight:
+                                                                FontWeight.bold,
+                                                            color:
+                                                                Colors.white))),
+                                              ),
+                                              TableCell(
+                                                child: Container(
+                                                  alignment:
+                                                      Alignment.centerLeft,
+                                                  height: 50,
+                                                  child: Padding(
+                                                    padding:
+                                                        EdgeInsets.fromLTRB(
+                                                            5, 0, 0, 0),
+                                                    child: TextFormField(
+                                                        maxLines: 3,
+                                                        style: TextStyle(
+                                                          color: Colors.white,
+                                                        ),
+                                                        controller: pipedesc,
+                                                        keyboardType:
+                                                            TextInputType.text,
+                                                        textInputAction:
+                                                            TextInputAction
+                                                                .next,
+                                                        onFieldSubmitted: (v) {
+                                                          FocusScope.of(context)
+                                                              .requestFocus(
+                                                                  focus);
+                                                        },
+                                                        decoration:
+                                                            new InputDecoration(
+                                                          contentPadding:
+                                                              const EdgeInsets
+                                                                  .all(5),
+
+                                                          fillColor:
+                                                              Colors.white,
+                                                          border:
+                                                              new OutlineInputBorder(
+                                                            borderRadius:
+                                                                new BorderRadius
+                                                                        .circular(
+                                                                    5.0),
+                                                            borderSide:
+                                                                new BorderSide(),
+                                                          ),
+
+                                                          //fillColor: Colors.green
+                                                        )),
+                                                  ),
+                                                ),
+                                              )
+                                            ]),
+                                          ]),
+                                      SizedBox(
+                                        height: 5,
+                                      ),
+                                      MaterialButton(
+                                        shape: RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(20.0)),
+                                        minWidth: 200,
+                                        height: 40,
+                                        child: Text('Create'),
                                         color:
                                             Color.fromRGBO(101, 255, 218, 50),
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.bold),
-                                  ))))
-                                : Card(
-                                    elevation: 10,
-                                    child: Padding(
-                                        padding: EdgeInsets.all(10),
-                                        child: Column(children: <Widget>[
-                                          Table(
-                                              defaultColumnWidth:
-                                                  FlexColumnWidth(1.0),
-                                              children: [
-                                                TableRow(children: [
-                                                  TableCell(
-                                                    child: Container(
-                                                        alignment: Alignment
-                                                            .centerLeft,
-                                                        height: 30,
-                                                        child: Text("Pipe ID",
-                                                            style: TextStyle(
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .bold,
-                                                                color: Colors
-                                                                    .white))),
-                                                  ),
-                                                  TableCell(
-                                                    child: Container(
-                                                      margin:
-                                                          EdgeInsets.fromLTRB(
-                                                              5, 1, 5, 1),
-                                                      height: 30,
-                                                      child: TextFormField(
-                                                          style: TextStyle(
-                                                            color: Colors.white,
-                                                          ),
-                                                          controller:
-                                                              pipeidctrl,
-                                                          keyboardType:
-                                                              TextInputType
-                                                                  .text,
-                                                          textInputAction:
-                                                              TextInputAction
-                                                                  .next,
-                                                          onFieldSubmitted:
-                                                              (v) {
-                                                            FocusScope.of(
-                                                                    context)
-                                                                .requestFocus(
-                                                                    focus);
-                                                          },
-                                                          decoration:
-                                                              new InputDecoration(
-                                                            contentPadding:
-                                                                const EdgeInsets
-                                                                    .all(5),
-
-                                                            fillColor:
-                                                                Colors.white,
-                                                            border:
-                                                                new OutlineInputBorder(
-                                                              borderRadius:
-                                                                  new BorderRadius
-                                                                          .circular(
-                                                                      5.0),
-                                                              borderSide:
-                                                                  new BorderSide(),
-                                                            ),
-
-                                                            //fillColor: Colors.green
-                                                          )),
-                                                    ),
-                                                  ),
-                                                ]),
-                                                TableRow(children: [
-                                                  TableCell(
-                                                    child: Container(
-                                                        alignment: Alignment
-                                                            .centerLeft,
-                                                        height: 30,
-                                                        child: Text(
-                                                            "Pipe Location",
-                                                            style: TextStyle(
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .bold,
-                                                                color: Colors
-                                                                    .white))),
-                                                  ),
-                                                  TableCell(
-                                                    child: Container(
-                                                        alignment: Alignment
-                                                            .centerLeft,
-                                                        height: 40,
-                                                        child: Text(
-                                                            "  " + pipelocation,
-                                                            style: TextStyle(
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .bold,
-                                                                color: Colors
-                                                                    .white))),
-                                                  ),
-                                                ]),
-                                              ]),
-                                          SizedBox(
-                                            height: 5,
-                                          ),
-                                          MaterialButton(
-                                            shape: RoundedRectangleBorder(
-                                                borderRadius:
-                                                    BorderRadius.circular(
-                                                        20.0)),
-                                            minWidth: 200,
-                                            height: 40,
-                                            child: Text('Create'),
-                                            color: Color.fromRGBO(
-                                                101, 255, 218, 50),
-                                            textColor: Colors.black,
-                                            elevation: 5,
-                                            onPressed: newPipeDialog,
-                                          ),
-                                        ])))
+                                        textColor: Colors.black,
+                                        elevation: 5,
+                                        onPressed: newPipeDialog,
+                                      ),
+                                    ])))
                           ]))))
             ],
           )),
@@ -253,6 +348,7 @@ class _NewPipeScreenState extends State<NewPipeScreen> {
   }
 
   void _choose() async {
+    // ignore: deprecated_member_use
     _image = await ImagePicker.pickImage(
         source: ImageSource.camera, maxHeight: 800, maxWidth: 800);
     _cropImage();
@@ -281,7 +377,7 @@ class _NewPipeScreenState extends State<NewPipeScreen> {
                 //CropAspectRatioPreset.ratio16x9
               ],
         androidUiSettings: AndroidUiSettings(
-            toolbarTitle: 'Potong',
+            toolbarTitle: 'Resize',
             toolbarColor: Colors.deepOrange,
             toolbarWidgetColor: Colors.white,
             initAspectRatio: CropAspectRatioPreset.square,
@@ -301,12 +397,17 @@ class _NewPipeScreenState extends State<NewPipeScreen> {
           duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
       return;
     }
+    if (pipedelay.text == "") {
+      Toast.show("Please enter delay.", context,
+          duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
+      return;
+    }
     if (_image == null) {
       Toast.show("Please take pipe picture.", context,
           duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
       return;
     }
-    if (pipelocation == "") {
+    if (pipelocation == "Please wait...") {
       Toast.show("Please wait for location.", context,
           duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
       return;
@@ -362,7 +463,9 @@ class _NewPipeScreenState extends State<NewPipeScreen> {
   }
 
   void _registerNewPipe() async {
-     ProgressDialog pr = new ProgressDialog(context,
+    int delay = int.parse(pipedelay.text) * 60;
+
+    ProgressDialog pr = new ProgressDialog(context,
         type: ProgressDialogType.Normal, isDismissible: false);
     pr.style(message: "New pipe registration...");
     pr.show();
@@ -374,6 +477,8 @@ class _NewPipeScreenState extends State<NewPipeScreen> {
       "latitude": latitude.toString(),
       "longitude": longitude.toString(),
       "encoded_string": base64Image,
+      "desc": pipedesc.text,
+      "delay": delay.toString(),
     }).then((res) {
       pr.hide();
       print(res.body);

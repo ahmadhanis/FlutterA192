@@ -5,9 +5,11 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:flutter/material.dart';
-import 'package:geolocator/geolocator.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
+
+import 'pipedetails.dart';
 
 class MapScreen extends StatefulWidget {
   @override
@@ -16,7 +18,7 @@ class MapScreen extends StatefulWidget {
 
 class _MapScreenState extends State<MapScreen> {
   List pipelist;
-  double screenHeight, screenWidth, latitude=6.445298, longitude=100.4242398;
+  double screenHeight, screenWidth, latitude = 6.465176, longitude = 100.503542;
   Completer<GoogleMapController> _controller = Completer();
   GoogleMapController gmcontroller;
   CameraPosition _cameraPos;
@@ -25,13 +27,12 @@ class _MapScreenState extends State<MapScreen> {
   // A map of markers
   Map<MarkerId, Marker> markers = <MarkerId, Marker>{};
   final f = new DateFormat('dd-MM-yyyy hh:mm a');
-  Position _currentPosition;
+  //Position _currentPosition;
 
   @override
   void initState() {
     super.initState();
-     _cameraPos =
-            CameraPosition(target: LatLng(latitude, longitude), zoom: 14);
+    _cameraPos = CameraPosition(target: LatLng(latitude, longitude), zoom: 14);
     _loadPipes();
   }
 
@@ -109,14 +110,18 @@ class _MapScreenState extends State<MapScreen> {
       final MarkerId markerId = MarkerId(markerIdVal.toString());
       final Marker marker = Marker(
           markerId: markerId,
+          icon: (double.parse(pipelist[i]['latest']) > 0)
+              ? BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen)
+              : BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed),
           position: LatLng(
             double.parse(pipelist[i]["latitude"]),
             double.parse(pipelist[i]["longitude"]),
           ),
           infoWindow: InfoWindow(
-            title: pipelist[i]["pipeid"] +"/"+  pipelist[i]["latest"],
+            title: pipelist[i]["pipeid"] + "/" + pipelist[i]["latest"],
             snippet: f.format(DateTime.parse(pipelist[i]["date"])),
-          ));
+          ),
+          onTap: () => _onImageDisplay(i));
 
       // you could do setState here when adding the markers to the Map
       markers[markerId] = marker;
@@ -127,16 +132,72 @@ class _MapScreenState extends State<MapScreen> {
     final MarkerId markerId = MarkerId(markerIdVal.toString());
     final Marker marker2 = Marker(
         markerId: markerId,
-        icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue),
+        //icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue),
         position: LatLng(
           latitude,
           longitude,
         ),
         infoWindow: InfoWindow(
-          title: "Your Location",
-          snippet: "Current location",
+          title: "UUM",
+          snippet: "Pipe Management",
         ));
     print(markerlist);
-    markers[markerId] = marker2;
+    //markers[markerId] = marker2;
+  }
+
+  handleTap(int i) async {
+    Navigator.of(context).pop();
+    await Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (BuildContext context) => PipeDetailsScreen(
+            pipeid: pipelist[i]['pipeid'],
+            date: pipelist[i]['date'],
+            location: pipelist[i]['location'],
+            details: pipelist[i]['desc'],
+            latitude: pipelist[i]['latitude'],
+            longitude: pipelist[i]['longitude'],
+          ),
+        ));
+  }
+
+  _onImageDisplay(int i) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+            backgroundColor: Colors.white,
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.all(Radius.circular(20.0))),
+            title: Center(child: Text("Pipe ID:" + pipelist[i]['pipeid'])),
+            content: new Container(
+              color: Colors.white,
+              //height: screenHeight / 2,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  Container(
+                      height: screenWidth / 1.5,
+                      width: screenWidth / 1.5,
+                      child: CachedNetworkImage(
+                          fit: BoxFit.fill,
+                          imageUrl: "http://slumberjer.com/decor" +
+                              "/pipeimages/${pipelist[i]['pipeid']}.jpg")),
+                  Divider(
+                    color: Colors.grey,
+                    thickness: 2,
+                  ),
+                  Text("Pressure: " + pipelist[i]['latest'] + " Psi"),
+                  Text(
+                      "Date: " + f.format(DateTime.parse(pipelist[i]['date']))),
+                  Text("Location: " + pipelist[i]['location']),
+                  Text("Details: " + pipelist[i]['desc'])
+                ],
+              ),
+            ));
+      },
+    );
   }
 }

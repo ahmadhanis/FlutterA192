@@ -43,6 +43,22 @@ class _MainScreenState extends State<MainScreen> {
         child: Scaffold(
           appBar: AppBar(
             title: Text('List of Pipes'),
+            actions: <Widget>[
+              PopupMenuButton<String>(
+                onSelected: handleClick,
+                itemBuilder: (BuildContext context) {
+                  return {'Logout', 'Settings'}.map((String choice) {
+                    return PopupMenuItem<String>(
+                      value: choice,
+                      child: Text(
+                        choice,
+                        style: TextStyle(color: Colors.white),
+                      ),
+                    );
+                  }).toList();
+                },
+              ),
+            ],
           ),
           body: RefreshIndicator(
               key: refreshKey,
@@ -76,10 +92,7 @@ class _MainScreenState extends State<MainScreen> {
                                   return Container(
                                       child: InkWell(
                                     onTap: () => onPipeDetailDialog(index),
-                                    onLongPress: () async {
-                                      await onPipeDeleteDialog(index);
-                                      _loadPipeData();
-                                    },
+                                    onLongPress: () => _onDelete(index),
                                     child: Card(
                                         color: (double.parse(
                                                     pipedata[index]['latest']) <
@@ -140,14 +153,19 @@ class _MainScreenState extends State<MainScreen> {
                                                             ['date'])),
                                                     style: TextStyle(
                                                         color: Colors.white)),
-                                                (_mindiff[index] < 10)
+                                                (_mindiff[index] <
+                                                        int.parse(
+                                                                pipedata[index]
+                                                                    ['delay']) /
+                                                            60)
                                                     ? Text("Sensor:Ok",
                                                         style: TextStyle(
-                                                            color:
-                                                                Colors.greenAccent))
+                                                            color: Colors
+                                                                .greenAccent))
                                                     : Text("Sensor:Timeout",
                                                         style: TextStyle(
-                                                            color: Colors.yellow)),
+                                                            color:
+                                                                Colors.yellow)),
                                               ],
                                             ))),
                                   ));
@@ -207,10 +225,15 @@ class _MainScreenState extends State<MainScreen> {
                 await Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (BuildContext context) => PipeDetailsScreen(
-                              pipeid: pipedata[index]['pipeid'],
-                              date: pipedata[index]['date'],
-                            )));
+                      builder: (BuildContext context) => PipeDetailsScreen(
+                        pipeid: pipedata[index]['pipeid'],
+                        date: pipedata[index]['date'],
+                        location: pipedata[index]['location'],
+                        details: pipedata[index]['desc'],
+                        latitude: pipedata[index]['latitude'],
+                        longitude: pipedata[index]['longitude'],
+                      ),
+                    ));
                 _loadPipeData();
               },
             ),
@@ -254,24 +277,16 @@ class _MainScreenState extends State<MainScreen> {
             final date1 = DateTime.parse(pipedata[i]["date"]);
             final difference = date2.difference(date1).inMinutes;
             _mindiff.insert(i, difference);
-            double V = double.parse(pipedata[i]['latest']) * 3.3 / 1024;
-            double pressure = (V - 0.788) * 140;
-            double psi = pressure * 0.145038;
-            print("Pressure psi:" + psi.toString());
-            print(V);
+            //double V = double.parse(pipedata[i]['latest']) * 3.3 / 1024;
+            //double pressure = (V - 0.788) * 140;
+            //double psi = pressure * 0.145038;
+            //print("Pressure psi:" + psi.toString());
           }
-          print(_mindiff);
         });
       }
     }).catchError((err) {
       print(err);
     });
-    //final date1 = DateTime.parse("2020-06-13 17:30:49.180538");
-
-    // final difference = date2.difference(date1).inMinutes;
-
-    //print("date:");
-    // print(difference);
   }
 
   void newPipeDialog() {
@@ -374,7 +389,7 @@ class _MainScreenState extends State<MainScreen> {
         false;
   }
 
-  onPipeDeleteDialog(int index) {
+  onPipeDeleteDialog(int index) async {
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -427,6 +442,7 @@ class _MainScreenState extends State<MainScreen> {
       if (res.body == "success") {
         Toast.show("Success.", context,
             duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
+        _loadPipeData();
       } else {
         Toast.show("Failed.", context,
             duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
@@ -446,5 +462,20 @@ class _MainScreenState extends State<MainScreen> {
     await Navigator.push(context,
         MaterialPageRoute(builder: (BuildContext context) => ReportScreen()));
     _loadPipeData();
+  }
+
+  Future<void> _onDelete(int index) async {
+    await onPipeDeleteDialog(index);
+  }
+
+  void handleClick(String value) {
+    switch (value) {
+      case 'Logout':
+        print("Logout");
+        break;
+      case 'Settings':
+        print("Settings");
+        break;
+    }
   }
 }
