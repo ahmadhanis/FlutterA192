@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
-import 'package:charts_flutter/flutter.dart' as charts;
+//import 'package:charts_flutter/flutter.dart' as charts;
 import 'package:toast/toast.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'maputils.dart';
@@ -13,6 +13,7 @@ import 'package:open_file/open_file.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'pipe.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:flutter_sparkline/flutter_sparkline.dart';
 
 class PipeDetailsScreen extends StatefulWidget {
   final String pipeid, date, location, details, longitude, latitude;
@@ -41,7 +42,7 @@ class _PipeDetailsScreenState extends State<PipeDetailsScreen> {
   bool animate = false;
 
   final f = new DateFormat('dd-MM-yyyy hh:mm a');
-  final f2 = new DateFormat('h:mm');
+  final f2 = new DateFormat('h:mm a');
 
   @override
   void initState() {
@@ -94,7 +95,7 @@ class _PipeDetailsScreenState extends State<PipeDetailsScreen> {
                             "Loading chart..",
                             style: TextStyle(color: Colors.white),
                           ))
-                        : createChart())),
+                        : createLineChart())),
           ),
           Padding(
               padding: EdgeInsets.fromLTRB(20, 1, 20, 1),
@@ -201,103 +202,152 @@ class _PipeDetailsScreenState extends State<PipeDetailsScreen> {
     });
   }
 
-  Widget createChart() {
-    List<charts.Series<ThisPipe, String>> seriesList = [];
-    int len;
-    if (pipedata.length > 15) {
-      len = 10;
-    } else {
-      len = 2;
+  Widget createLineChart() {
+    List<double> data1 = new List();
+    double high = 0;
+    String datestart = "";
+    String dateend = "";
+    for (int i = 0; i < pipedata.length; i++) {
+      var data = double.parse(pipedata[i]['pressure']);
+      data1.add(data);
+      if (data > high) {
+        high = data;
+      }
+      if (i == 0) {
+        datestart = (f2.format(DateTime.parse(pipedata[i]['date']))).toString();
+      }
+      if (i < pipedata.length) {
+        dateend = (f2.format(DateTime.parse(pipedata[i]['date']))).toString();
+      }
     }
-    for (int i = 0; i < pipedata.length; i += len) {
-      String id =
-          f2.format(DateTime.parse(pipedata[i]['date'])); //'WZG${i + 1}';
-      seriesList.add(createSeries(id, i));
-    }
-
     return Stack(children: <Widget>[
-      AnimatedPositioned(
-        // use top,bottom,left and right property to set the location and Transform.rotate to rotate the widget if needed
-        top: 0,
-        child: Text(
-          "Pressure (Psi)",
-          style: TextStyle(color: Colors.white),
-        ),
-        duration: Duration(seconds: 3),
+      Text(high.toString() + " Psi", style: TextStyle(color: Colors.white)),
+      Padding(
+          padding: EdgeInsets.all(20.0),
+          child: new Sparkline(
+            data: data1,
+            fillMode: FillMode.below,
+            fillGradient: new LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [Colors.red[800], Colors.red[200]],
+            ),
+          )),
+      Positioned(
+        bottom: 20,
+        left: 5,
+        child: Text("0 Psi", style: TextStyle(color: Colors.white)),
       ),
-      AnimatedPositioned(
-        // use top,bottom,left and right property to set the location and Transform.rotate to rotate the widget if needed
-        bottom: 10,
-        right: 10,
-        child: Text(
-          "Time",
-          style: TextStyle(color: Colors.white),
-        ),
-        duration: Duration(seconds: 3),
+      Positioned(
+        bottom: 5,
+        left: 5,
+        child: Text(datestart, style: TextStyle(color: Colors.white)),
       ),
-      AnimatedPositioned(
-        // use top,bottom,left and right property to set the location and Transform.rotate to rotate the widget if needed
-        bottom: 10,
-        left: 10,
-        child: Text(
-          widget.pipeid + "/" + widget.location,
-          style: TextStyle(color: Colors.white),
-        ),
-        duration: Duration(seconds: 3),
-      ),
-      new charts.BarChart(
-        seriesList,
-        barGroupingType: charts.BarGroupingType.stacked,
-        animationDuration: Duration(seconds: 1),
-        behaviors: [
-          new charts.SlidingViewport(),
-          new charts.PanAndZoomBehavior(),
-          new charts.ChartTitle(
-            'Time',
-            behaviorPosition: charts.BehaviorPosition.bottom,
-          ),
-          new charts.ChartTitle('Pressure',
-              behaviorPosition: charts.BehaviorPosition.start,
-              titleOutsideJustification:
-                  charts.OutsideJustification.middleDrawArea)
-        ],
-        primaryMeasureAxis: new charts.NumericAxisSpec(
-            renderSpec: new charts.GridlineRendererSpec(
-
-                // Tick and Label styling here.
-                labelStyle: new charts.TextStyleSpec(
-                    fontSize: 12, // size in Pts.
-                    color: charts.MaterialPalette.white),
-
-                // Change the line colors to match text color.
-                lineStyle: new charts.LineStyleSpec(
-                    color: charts.MaterialPalette.white))),
-        domainAxis: new charts.OrdinalAxisSpec(
-            renderSpec: new charts.SmallTickRendererSpec(
-                // Tick and Label styling here.
-                labelStyle: new charts.TextStyleSpec(
-                    fontSize: 8, // size in Pts.
-                    color: charts.MaterialPalette.white),
-
-                // Change the line colors to match text color.
-                lineStyle: new charts.LineStyleSpec(
-                    color: charts.MaterialPalette.black))),
+      Positioned(
+        bottom: 5,
+        right: 20,
+        child: Text(dateend, style: TextStyle(color: Colors.white)),
       )
     ]);
   }
 
-  charts.Series<ThisPipe, String> createSeries(String id, int i) {
-    return charts.Series<ThisPipe, String>(
-      id: "Pressure",
-      domainFn: (ThisPipe time, _) => time.time,
-      measureFn: (ThisPipe pressure, _) => pressure.pressure,
-      colorFn: (_, __) => charts.MaterialPalette.blue.shadeDefault,
-      data: [
-        ThisPipe(f2.format(DateTime.parse(pipedata[i]['date'])).toString(),
-            double.parse(pipedata[i]['pressure'])),
-      ],
-    );
-  }
+  // Widget createChart() {
+  //   List<charts.Series<ThisPipe, String>> seriesList = [];
+  //   int len;
+  //   if (pipedata.length > 15) {
+  //     len = 10;
+  //   } else {
+  //     len = 2;
+  //   }
+  //   for (int i = 0; i < pipedata.length; i += len) {
+  //     String id =
+  //         f2.format(DateTime.parse(pipedata[i]['date'])); //'WZG${i + 1}';
+  //     seriesList.add(createSeries(id, i));
+  //   }
+
+  //   return Stack(children: <Widget>[
+  //     AnimatedPositioned(
+  //       // use top,bottom,left and right property to set the location and Transform.rotate to rotate the widget if needed
+  //       top: 0,
+  //       child: Text(
+  //         "Pressure (Psi)",
+  //         style: TextStyle(color: Colors.white),
+  //       ),
+  //       duration: Duration(seconds: 3),
+  //     ),
+  //     AnimatedPositioned(
+  //       // use top,bottom,left and right property to set the location and Transform.rotate to rotate the widget if needed
+  //       bottom: 10,
+  //       right: 10,
+  //       child: Text(
+  //         "Time",
+  //         style: TextStyle(color: Colors.white),
+  //       ),
+  //       duration: Duration(seconds: 3),
+  //     ),
+  //     AnimatedPositioned(
+  //       // use top,bottom,left and right property to set the location and Transform.rotate to rotate the widget if needed
+  //       bottom: 10,
+  //       left: 10,
+  //       child: Text(
+  //         widget.pipeid + "/" + widget.location,
+  //         style: TextStyle(color: Colors.white),
+  //       ),
+  //       duration: Duration(seconds: 3),
+  //     ),
+  //     new charts.BarChart(
+  //       seriesList,
+  //       barGroupingType: charts.BarGroupingType.stacked,
+  //       animationDuration: Duration(seconds: 1),
+  //       behaviors: [
+  //         new charts.SlidingViewport(),
+  //         new charts.PanAndZoomBehavior(),
+  //         new charts.ChartTitle(
+  //           'Time',
+  //           behaviorPosition: charts.BehaviorPosition.bottom,
+  //         ),
+  //         new charts.ChartTitle('Pressure',
+  //             behaviorPosition: charts.BehaviorPosition.start,
+  //             titleOutsideJustification:
+  //                 charts.OutsideJustification.middleDrawArea)
+  //       ],
+  //       primaryMeasureAxis: new charts.NumericAxisSpec(
+  //           renderSpec: new charts.GridlineRendererSpec(
+
+  //               // Tick and Label styling here.
+  //               labelStyle: new charts.TextStyleSpec(
+  //                   fontSize: 12, // size in Pts.
+  //                   color: charts.MaterialPalette.white),
+
+  //               // Change the line colors to match text color.
+  //               lineStyle: new charts.LineStyleSpec(
+  //                   color: charts.MaterialPalette.white))),
+  //       domainAxis: new charts.OrdinalAxisSpec(
+  //           renderSpec: new charts.SmallTickRendererSpec(
+  //               // Tick and Label styling here.
+  //               labelStyle: new charts.TextStyleSpec(
+  //                   fontSize: 8, // size in Pts.
+  //                   color: charts.MaterialPalette.white),
+
+  //               // Change the line colors to match text color.
+  //               lineStyle: new charts.LineStyleSpec(
+  //                   color: charts.MaterialPalette.black))),
+  //     )
+  //   ]);
+  // }
+
+  // charts.Series<ThisPipe, String> createSeries(String id, int i) {
+  //   return charts.Series<ThisPipe, String>(
+  //     id: "Pressure",
+  //     domainFn: (ThisPipe time, _) => time.time,
+  //     measureFn: (ThisPipe pressure, _) => pressure.pressure,
+  //     colorFn: (_, __) => charts.MaterialPalette.blue.shadeDefault,
+  //     data: [
+  //       ThisPipe(f2.format(DateTime.parse(pipedata[i]['date'])).toString(),
+  //           double.parse(pipedata[i]['pressure'])),
+  //     ],
+  //   );
+  // }
 
   _onImageDisplay() {
     showDialog(
