@@ -12,6 +12,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:open_file/open_file.dart';
 
 import 'pipe.dart';
+import 'pipedetails.dart';
 
 class ReportScreen extends StatefulWidget {
   @override
@@ -106,51 +107,60 @@ class _ReportScreenState extends State<ReportScreen> {
                     child: ListView.builder(
                       itemCount: pipedata == null ? 0 : pipedata.length,
                       itemBuilder: (context, index) {
-                        return Padding(
-                            padding: EdgeInsets.fromLTRB(15, 1, 15, 1),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                              children: <Widget>[
-                                Expanded(
-                                    flex: 1,
-                                    child: Text(pipedata[index]['pipeid'],
-                                        style: TextStyle(color: Colors.white))),
-                                Expanded(
-                                    flex: 2,
-                                    child: Text(pipedata[index]['location'],
-                                        style: TextStyle(color: Colors.white))),
-                                Expanded(
-                                    flex: 1,
-                                    child: Text(
-                                        (double.parse(
-                                                pipedata[index]['latest']))
-                                            .toStringAsFixed(2),
-                                        style: TextStyle(
-                                          color: (double.parse(pipedata[index]
-                                                      ['latest']) <
-                                                  5)
-                                              ? Colors.red
-                                              : Colors.white,
-                                        ))),
-                                Expanded(
-                                    flex: 3,
-                                    child: Text(
-                                        f.format(DateTime.parse(
-                                            pipedata[index]['date'])),
-                                        style: TextStyle(color: Colors.white))),
-                                Expanded(
-                                  flex: 1,
-                                  child: (_mindiff[index] <
-                                          int.parse(pipedata[index]['delay']) /
-                                              60)
-                                      ? Text("OK",
-                                          style: TextStyle(color: Colors.white))
-                                      : Text("TO",
-                                          style:
-                                              TextStyle(color: Colors.white)),
-                                ),
-                              ],
-                            ));
+                        return GestureDetector(
+                            onTap: () => onPipeDetailDialog(index),
+                            child: Padding(
+                                padding: EdgeInsets.fromLTRB(15, 1, 15, 1),
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceEvenly,
+                                  children: <Widget>[
+                                    Expanded(
+                                        flex: 1,
+                                        child: Text(pipedata[index]['pipeid'],
+                                            style: TextStyle(
+                                                color: Colors.white))),
+                                    Expanded(
+                                        flex: 2,
+                                        child: Text(pipedata[index]['location'],
+                                            style: TextStyle(
+                                                color: Colors.white))),
+                                    Expanded(
+                                        flex: 1,
+                                        child: Text(
+                                            (double.parse(
+                                                    pipedata[index]['latest']))
+                                                .toStringAsFixed(2),
+                                            style: TextStyle(
+                                              color: (double.parse(
+                                                          pipedata[index]
+                                                              ['latest']) <
+                                                      5)
+                                                  ? Colors.red
+                                                  : Colors.white,
+                                            ))),
+                                    Expanded(
+                                        flex: 3,
+                                        child: Text(
+                                            f.format(DateTime.parse(
+                                                pipedata[index]['date'])),
+                                            style: TextStyle(
+                                                color: Colors.white))),
+                                    Expanded(
+                                      flex: 1,
+                                      child: (_mindiff[index] <
+                                              int.parse(pipedata[index]
+                                                      ['delay']) /
+                                                  60)
+                                          ? Text("OK",
+                                              style: TextStyle(
+                                                  color: Colors.white))
+                                          : Text("TO",
+                                              style: TextStyle(
+                                                  color: Colors.white)),
+                                    ),
+                                  ],
+                                )));
                       },
                     )))
       ])),
@@ -180,7 +190,10 @@ class _ReportScreenState extends State<ReportScreen> {
     String urlLoadJobs = "https://slumberjer.com/decor/load_pipes.php";
     await http.post(urlLoadJobs, body: {}).then((res) {
       print(res.body);
-      pr.hide();
+      if (pr.isShowing()) {
+        pr.hide();
+      }
+
       if (res.body == "nodata") {
         setState(() {
           pipedata = null;
@@ -294,5 +307,62 @@ class _ReportScreenState extends State<ReportScreen> {
     file.writeAsBytesSync(doc.save());
     print(file.toString());
     OpenFile.open('${directory.path}/pipe_report.pdf');
+  }
+
+  void onPipeDetailDialog(int index) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        // return object of type Dialog
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.all(Radius.circular(20.0))),
+          title: new Text(
+            "Show Pipe " + pipedata[index]['pipeid'] + " details?",
+            style: TextStyle(
+              color: Colors.white,
+            ),
+          ),
+          actions: <Widget>[
+            // usually buttons at the bottom of the dialog
+            new FlatButton(
+              child: new Text(
+                "Yes",
+                style: TextStyle(
+                  color: Color.fromRGBO(101, 255, 218, 50),
+                ),
+              ),
+              onPressed: () async {
+                Navigator.of(context).pop();
+                await Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (BuildContext context) => PipeDetailsScreen(
+                        pipeid: pipedata[index]['pipeid'],
+                        date: pipedata[index]['date'],
+                        location: pipedata[index]['location'],
+                        details: pipedata[index]['desc'],
+                        latitude: pipedata[index]['latitude'],
+                        longitude: pipedata[index]['longitude'],
+                      ),
+                    ));
+                _loadPipeData();
+              },
+            ),
+            new FlatButton(
+              child: new Text(
+                "No",
+                style: TextStyle(
+                  color: Color.fromRGBO(101, 255, 218, 50),
+                ),
+              ),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 }

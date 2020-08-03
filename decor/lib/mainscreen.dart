@@ -262,7 +262,10 @@ class _MainScreenState extends State<MainScreen> {
     String urlLoadJobs = "https://slumberjer.com/decor/load_pipes.php";
     await http.post(urlLoadJobs, body: {}).then((res) {
       print(res.body);
-      pr.hide();
+      if (pr.isShowing()) {
+        pr.hide();
+      }
+      //pr.hide();
       if (res.body == "nodata") {
         setState(() {
           pipedata = null;

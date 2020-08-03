@@ -205,19 +205,27 @@ class _PipeDetailsScreenState extends State<PipeDetailsScreen> {
   Widget createLineChart() {
     List<double> data1 = new List();
     double high = 0;
+    double low = 0;
     String datestart = "";
     String dateend = "";
-    for (int i = 0; i < pipedata.length; i++) {
-      var data = double.parse(pipedata[i]['pressure']);
-      data1.add(data);
-      if (data > high) {
-        high = data;
-      }
-      if (i == 0) {
-        datestart = (f2.format(DateTime.parse(pipedata[i]['date']))).toString();
-      }
-      if (i < pipedata.length) {
-        dateend = (f2.format(DateTime.parse(pipedata[i]['date']))).toString();
+    if (pipedata.length > 0) {
+      low = double.parse(pipedata[0]['pressure']);
+      for (int i = 0; i < pipedata.length; i++) {
+        var data = double.parse(pipedata[i]['pressure']);
+        data1.add(data);
+        if (data > high) {
+          high = data;
+        }
+        if (data < low) {
+          low = data;
+        }
+        if (i == 0) {
+          datestart =
+              (f2.format(DateTime.parse(pipedata[i]['date']))).toString();
+        }
+        if (i < pipedata.length) {
+          dateend = (f2.format(DateTime.parse(pipedata[i]['date']))).toString();
+        }
       }
     }
     return Stack(children: <Widget>[
@@ -236,7 +244,8 @@ class _PipeDetailsScreenState extends State<PipeDetailsScreen> {
       Positioned(
         bottom: 20,
         left: 5,
-        child: Text("0 Psi", style: TextStyle(color: Colors.white)),
+        child: Text(low.toString() + " Psi",
+            style: TextStyle(color: Colors.white)),
       ),
       Positioned(
         bottom: 5,
