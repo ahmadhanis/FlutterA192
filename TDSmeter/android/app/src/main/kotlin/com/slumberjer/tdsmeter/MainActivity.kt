@@ -1,0 +1,6 @@
+package com.slumberjer.tdsmeter
+
+import io.flutter.embedding.android.FlutterActivity
+
+class MainActivity: FlutterActivity() {
+}

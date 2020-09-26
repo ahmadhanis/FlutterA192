@@ -1,16 +1,14 @@
 import 'dart:convert';
-import 'package:decor/mapscreen.dart';
-import 'package:decor/reportscreen.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_gauge/flutter_gauge.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
-import 'newpipescreen.dart';
-import 'pipedetails.dart';
 import 'package:intl/intl.dart';
 import 'package:toast/toast.dart';
 import 'package:progress_dialog/progress_dialog.dart';
+import 'newtdsscreen.dart';
+import 'tdsdetails.dart';
 
 class MainScreen extends StatefulWidget {
   @override
@@ -20,8 +18,8 @@ class MainScreen extends StatefulWidget {
 class _MainScreenState extends State<MainScreen> {
   GlobalKey<RefreshIndicatorState> refreshKey;
 
-  List pipedata;
-  String titlecenter = "Loading Pipes...";
+  List tdsdata;
+  String titlecenter = "Loading TDS Meters...";
   double screenHeight, screenWidth;
   final f = new DateFormat('dd-MM-yyyy hh:mm a');
   bool status;
@@ -30,7 +28,7 @@ class _MainScreenState extends State<MainScreen> {
   @override
   void initState() {
     super.initState();
-    _loadPipeData();
+    _loadTDSData();
     refreshKey = GlobalKey<RefreshIndicatorState>();
   }
 
@@ -42,7 +40,7 @@ class _MainScreenState extends State<MainScreen> {
         onWillPop: _onBackPressed,
         child: Scaffold(
           appBar: AppBar(
-            title: Text('List of Pipes'),
+            title: Text('List of TDS Meters'),
             actions: <Widget>[
               PopupMenuButton<String>(
                 onSelected: handleClick,
@@ -64,12 +62,12 @@ class _MainScreenState extends State<MainScreen> {
               key: refreshKey,
               color: Color.fromRGBO(101, 255, 218, 50),
               onRefresh: () async {
-                _loadPipeData();
+                _loadTDSData();
               },
               child: Container(
                 child: Column(
                   children: <Widget>[
-                    pipedata == null
+                    tdsdata == null
                         ? Flexible(
                             child: Container(
                                 child: Center(
@@ -86,16 +84,16 @@ class _MainScreenState extends State<MainScreen> {
                                 childAspectRatio: MediaQuery.of(context)
                                         .size
                                         .width /
-                                    (MediaQuery.of(context).size.height / 1.6),
+                                    (MediaQuery.of(context).size.height / 1.3),
                                 children:
-                                    List.generate(pipedata.length, (index) {
+                                    List.generate(tdsdata.length, (index) {
                                   return Container(
                                       child: InkWell(
-                                    onTap: () => onPipeDetailDialog(index),
+                                    onTap: () => onTDSDetailDialog(index),
                                     onLongPress: () => _onDelete(index),
                                     child: Card(
                                         color: (double.parse(
-                                                    pipedata[index]['latest']) <
+                                                    tdsdata[index]['latest']) <
                                                 5)
                                             ? Colors.red
                                             : Colors.blueGrey,
@@ -107,10 +105,9 @@ class _MainScreenState extends State<MainScreen> {
                                                   MainAxisAlignment.center,
                                               children: <Widget>[
                                                 Text(
-                                                    pipedata[index]['pipeid'] +
+                                                    tdsdata[index]['tdsid'] +
                                                         "/" +
-                                                        pipedata[index]
-                                                            ['location'],
+                                                        tdsdata[index]['desc'],
                                                     maxLines: 1,
                                                     style: TextStyle(
                                                         fontWeight:
@@ -127,10 +124,10 @@ class _MainScreenState extends State<MainScreen> {
                                                           Colors.transparent,
                                                       handSize: 20,
                                                       index: double.parse(
-                                                          pipedata[index]
+                                                          tdsdata[index]
                                                               ['latest']),
                                                       //fontFamily: "Iran",
-                                                      end: 120,
+                                                      end: 3500,
                                                       number:
                                                           Number.endAndStart,
                                                       textStyle: TextStyle(
@@ -149,14 +146,19 @@ class _MainScreenState extends State<MainScreen> {
                                                 SizedBox(height: 25),
                                                 Text(
                                                     f.format(DateTime.parse(
-                                                        pipedata[index]
+                                                        tdsdata[index]
                                                             ['date'])),
                                                     style: TextStyle(
                                                         color: Colors.white)),
+                                                Text(
+                                                    tdsdata[index]
+                                                            ['templatest'] +
+                                                        " °C",
+                                                    style: TextStyle(
+                                                        color: Colors.white)),
                                                 (_mindiff[index] <
-                                                        int.parse(
-                                                                pipedata[index]
-                                                                    ['delay']) /
+                                                        int.parse(tdsdata[index]
+                                                                ['delay']) /
                                                             60)
                                                     ? Text("Sensor:Ok",
                                                         style: TextStyle(
@@ -179,25 +181,15 @@ class _MainScreenState extends State<MainScreen> {
             children: [
               SpeedDialChild(
                   child: Icon(Icons.open_in_new),
-                  label: "New Pipe",
+                  label: "New TDS Meter",
                   labelBackgroundColor: Colors.white,
-                  onTap: newPipeDialog),
-              SpeedDialChild(
-                  child: Icon(Icons.map),
-                  label: "Map View",
-                  labelBackgroundColor: Colors.white,
-                  onTap: loadPipeMap),
-              SpeedDialChild(
-                  child: Icon(Icons.pageview),
-                  label: "Report View",
-                  labelBackgroundColor: Colors.white,
-                  onTap: loadReport),
+                  onTap: newTDSDialog),
             ],
           ),
         ));
   }
 
-  void onPipeDetailDialog(int index) {
+  void onTDSDetailDialog(int index) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -206,7 +198,7 @@ class _MainScreenState extends State<MainScreen> {
           shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.all(Radius.circular(20.0))),
           title: new Text(
-            "Show Pipe " + pipedata[index]['pipeid'] + " details?",
+            "Show Meter " + tdsdata[index]['tdsid'] + " details?",
             style: TextStyle(
               color: Colors.white,
             ),
@@ -225,16 +217,11 @@ class _MainScreenState extends State<MainScreen> {
                 await Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (BuildContext context) => PipeDetailsScreen(
-                        pipeid: pipedata[index]['pipeid'],
-                        date: pipedata[index]['date'],
-                        location: pipedata[index]['location'],
-                        details: pipedata[index]['desc'],
-                        latitude: pipedata[index]['latitude'],
-                        longitude: pipedata[index]['longitude'],
+                      builder: (BuildContext context) => TDSDetailsScreen(
+                        tdsid: tdsdata[index]['tdsid'],
                       ),
                     ));
-                _loadPipeData();
+                _loadTDSData();
               },
             ),
             new FlatButton(
@@ -254,12 +241,12 @@ class _MainScreenState extends State<MainScreen> {
     );
   }
 
-  void _loadPipeData() async {
+  void _loadTDSData() async {
     ProgressDialog pr = new ProgressDialog(context,
         type: ProgressDialogType.Normal, isDismissible: true);
-    pr.style(message: "Loading pipes...");
+    pr.style(message: "Loading TDSMeters...");
     pr.show();
-    String urlLoadJobs = "https://slumberjer.com/decor/load_pipes.php";
+    String urlLoadJobs = "https://slumberjer.com/tdsmeter/load_tds.php";
     await http.post(urlLoadJobs, body: {}).then((res) {
       print(res.body);
       if (pr.isShowing()) {
@@ -268,22 +255,18 @@ class _MainScreenState extends State<MainScreen> {
       //pr.hide();
       if (res.body == "nodata") {
         setState(() {
-          pipedata = null;
+          tdsdata = null;
         });
       } else {
         _mindiff.clear();
         setState(() {
           var extractdata = json.decode(res.body);
-          pipedata = extractdata["pipes"];
+          tdsdata = extractdata["tdsmeters"];
           final date2 = DateTime.now();
-          for (int i = 0; i < pipedata.length; i++) {
-            final date1 = DateTime.parse(pipedata[i]["date"]);
+          for (int i = 0; i < tdsdata.length; i++) {
+            final date1 = DateTime.parse(tdsdata[i]["date"]);
             final difference = date2.difference(date1).inMinutes;
             _mindiff.insert(i, difference);
-            //double V = double.parse(pipedata[i]['latest']) * 3.3 / 1024;
-            //double pressure = (V - 0.788) * 140;
-            //double psi = pressure * 0.145038;
-            //print("Pressure psi:" + psi.toString());
           }
         });
       }
@@ -292,14 +275,14 @@ class _MainScreenState extends State<MainScreen> {
     });
   }
 
-  void newPipeDialog() {
+  void newTDSDialog() {
     showDialog(
       context: context,
       builder: (BuildContext context) {
         // return object of type Dialog
         return AlertDialog(
           title: new Text(
-            "Register new Pipe?",
+            "Register new TDS Meter?",
             style: TextStyle(
               color: Colors.white,
             ),
@@ -326,8 +309,8 @@ class _MainScreenState extends State<MainScreen> {
                 await Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (BuildContext context) => NewPipeScreen()));
-                _loadPipeData();
+                        builder: (BuildContext context) => NewTDSScreen()));
+                _loadTDSData();
               },
             ),
             new FlatButton(
@@ -354,7 +337,7 @@ class _MainScreenState extends State<MainScreen> {
             shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.all(Radius.circular(20.0))),
             title: new Text(
-              'Do you want to exit Decor?',
+              'Do you want to exit TDS Meter?',
               style: TextStyle(
                 color: Colors.white,
               ),
@@ -392,7 +375,7 @@ class _MainScreenState extends State<MainScreen> {
         false;
   }
 
-  onPipeDeleteDialog(int index) async {
+  onTdsDeleteDialog(int index) async {
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -401,7 +384,7 @@ class _MainScreenState extends State<MainScreen> {
           shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.all(Radius.circular(20.0))),
           title: new Text(
-            "Delete Pipe " + pipedata[index]['pipeid'],
+            "Delete TDS Meter " + tdsdata[index]['tdsid'],
             style: TextStyle(
               color: Colors.white,
             ),
@@ -417,7 +400,7 @@ class _MainScreenState extends State<MainScreen> {
               ),
               onPressed: () async {
                 Navigator.of(context).pop();
-                _deletePipe(index);
+                _deleteTDSmeter(index);
               },
             ),
             new FlatButton(
@@ -437,15 +420,15 @@ class _MainScreenState extends State<MainScreen> {
     );
   }
 
-  Future<void> _deletePipe(int index) async {
-    String urlLoadJobs = "https://slumberjer.com/decor/delete_pipe.php";
-    await http.post(urlLoadJobs,
-        body: {"pipeid": pipedata[index]['pipeid']}).then((res) {
+  Future<void> _deleteTDSmeter(int index) async {
+    String urlLoadJobs = "https://slumberjer.com/tdsmeter/delete_tds.php";
+    await http.post(urlLoadJobs, body: {"tdsid": tdsdata[index]['tdsid']}).then(
+        (res) {
       print(res.body);
       if (res.body == "success") {
         Toast.show("Success.", context,
             duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
-        _loadPipeData();
+        _loadTDSData();
       } else {
         Toast.show("Failed.", context,
             duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
@@ -455,20 +438,8 @@ class _MainScreenState extends State<MainScreen> {
     });
   }
 
-  Future<void> loadPipeMap() async {
-    await Navigator.push(context,
-        MaterialPageRoute(builder: (BuildContext context) => MapScreen()));
-    _loadPipeData();
-  }
-
-  Future<void> loadReport() async {
-    await Navigator.push(context,
-        MaterialPageRoute(builder: (BuildContext context) => ReportScreen()));
-    _loadPipeData();
-  }
-
   Future<void> _onDelete(int index) async {
-    await onPipeDeleteDialog(index);
+    await onTdsDeleteDialog(index);
   }
 
   void handleClick(String value) {
