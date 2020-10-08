@@ -467,6 +467,7 @@ class _MainScreenState extends State<MainScreen> {
         .where("location", isEqualTo: loc)
         .where("status", isEqualTo: status)
         .getDocuments()
+        .timeout(Duration(seconds: 5))
         .then((data) {
       data.documents.forEach((doc) async {
         var ref = FirebaseStorage.instance
