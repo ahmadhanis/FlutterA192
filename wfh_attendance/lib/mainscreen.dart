@@ -332,18 +332,17 @@ class _MainScreenState extends State<MainScreen> {
     );
   }
 
-  _getCurrentLocation() {
+  _getCurrentLocation() async {
     ProgressDialog pr = new ProgressDialog(context,
         type: ProgressDialogType.Normal, isDismissible: false);
     pr.style(message: "Locating...");
-    pr.show();
+    await pr.show();
     try {
       final Geolocator geolocator = Geolocator()..forceAndroidLocationManager;
 
       geolocator
           .getCurrentPosition(desiredAccuracy: LocationAccuracy.medium)
-          .timeout(Duration(seconds: 5), onTimeout: () {
-        pr.dismiss();
+          .timeout(Duration(seconds: 10), onTimeout: () {
         Toast.show(
             "Getting address timeout please check/enable your location permission",
             context,
@@ -360,19 +359,17 @@ class _MainScreenState extends State<MainScreen> {
             var first = addresses.first;
             curaddress = first.addressLine;
             print(curaddress);
-            pr.dismiss();
             print("Record data");
-            _recordAtt();
+           await _recordAtt();
           }
         });
       }).catchError((e) {
-        pr.dismiss();
         print(e);
       });
     } catch (exception) {
-      pr.dismiss();
       print(exception.toString());
     }
+    await pr.hide();
   }
 
   _recordAtt() {
@@ -447,11 +444,11 @@ class _MainScreenState extends State<MainScreen> {
         });
   }
 
-  void _loadRecord(String month, String year) {
+  Future<void> _loadRecord(String month, String year) async {
     ProgressDialog pr = new ProgressDialog(context,
         type: ProgressDialogType.Normal, isDismissible: true);
     pr.style(message: "Loading...");
-    pr.show();
+    await pr.show();
     String urlLoadJobs = "https://slumberjer.com/wfh/load_att.php";
     http.post(urlLoadJobs, body: {
       "id": widget.user.id,
@@ -459,7 +456,6 @@ class _MainScreenState extends State<MainScreen> {
       "year": year,
     }).then((res) {
       print(res.body);
-      pr.dismiss();
       setState(() {
         if (res.body == "nodata") {
           userattlist = null;
@@ -473,8 +469,8 @@ class _MainScreenState extends State<MainScreen> {
       });
     }).catchError((err) {
       print(err);
-      pr.dismiss();
     });
+    await pr.hide();
   }
 
   void _deleteDetail(int index) {

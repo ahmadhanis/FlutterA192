@@ -188,11 +188,11 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  void _userLogin() {
+  Future<void> _userLogin() async {
     ProgressDialog pr = new ProgressDialog(context,
         type: ProgressDialogType.Normal, isDismissible: false);
     pr.style(message: "Login...");
-    pr.show();
+    await pr.show();
     String _id = _idEditingController.text;
     String _password = _passEditingController.text;
 
@@ -201,17 +201,18 @@ class _LoginScreenState extends State<LoginScreen> {
           "id": _id,
           "password": _password,
         })
-        .then((res) {
+        .then((res) async {
           var string = res.body;
           print(res.body);
           List userdata = string.split(",");
+          
           if (userdata[0] == "success") {
             User _user = new User(
               name: userdata[1],
               id: _id,
               password: _password,
             );
-            pr.dismiss();
+            await pr.hide();
             Navigator.push(
                 context,
                 MaterialPageRoute(
@@ -221,7 +222,6 @@ class _LoginScreenState extends State<LoginScreen> {
             Toast.show("Login success", context,
                 duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
           } else {
-            pr.dismiss();
             Toast.show("Login failed", context,
                 duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
           }
@@ -229,8 +229,8 @@ class _LoginScreenState extends State<LoginScreen> {
         .timeout(Duration(seconds: 5))
         .catchError((err) {
           print(err);
-          pr.dismiss();
         });
+        await pr.hide();
   }
 
   void _registerUser() {

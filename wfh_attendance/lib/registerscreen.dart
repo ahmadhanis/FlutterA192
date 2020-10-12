@@ -180,7 +180,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     );
   }
 
-  void _onRegister() {
+  Future<void> _onRegister() async {
     String name = _nameEditingController.text;
     String id = _idEditingController.text;
     String password = _passEditingController.text;
@@ -193,14 +193,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
  ProgressDialog pr = new ProgressDialog(context,
         type: ProgressDialogType.Normal, isDismissible: false);
     pr.style(message: "Registration...");
-    pr.show();
+    await pr.show();
     http.post(urlRegister, body: {
       "name": name.titleCase,
       "id": id,
       "password": password,
-    }).then((res) {
+    }).then((res) async {
       if (res.body == "success") {
-        pr.dismiss();
+        await pr.hide();
         Navigator.pop(
             context,
             MaterialPageRoute(
@@ -210,13 +210,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
       } else {
         Toast.show("Registration failed", context,
             duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
-            pr.dismiss();
-      }
+                  }
     }).catchError((err) {
       print(err);
-      pr.dismiss();
     });
-    pr.dismiss();
+    await pr.hide();
   }
 
   void _loginScreen() {
