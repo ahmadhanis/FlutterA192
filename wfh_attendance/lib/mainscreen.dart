@@ -230,7 +230,7 @@ class _MainScreenState extends State<MainScreen> {
                   MaterialButton(
                       color: Color.fromRGBO(101, 255, 218, 50),
                       onPressed: () => {
-                            changeAtt(selectedMonth, selectedYear),
+                            changeAtt(selectedMonth, selectedYear)
                           },
                       elevation: 5,
                       child: Text(
