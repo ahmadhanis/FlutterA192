@@ -49,7 +49,7 @@ class _TabScreen2State extends State<TabScreen2> {
     screenWidth = MediaQuery.of(context).size.width;
 
     return Scaffold(
-        resizeToAvoidBottomPadding: true,
+        resizeToAvoidBottomInset: true,
         body: Container(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
@@ -205,31 +205,31 @@ class _TabScreen2State extends State<TabScreen2> {
     pr.show();
 
     String urlLoadJobs = "https://slumberjer.com/mypasar/php/load_products.php";
-    http.post(urlLoadJobs, body: {
+    http.post(Uri.parse(urlLoadJobs), body: {
       "phone": widget.user.phone,
     }).then((res) {
       print(res.body);
-      pr.dismiss();
+      pr.hide();
       setState(() {
         if (res.body == "nodata") {
           productdata = null;
            titletop = "Carian tidak menjumpai sebarang produk";
           titlecenter = "Tiada Produk Tersenarai.";
-          pr.dismiss();
+          pr.hide();
         } else {
           var extractdata = json.decode(res.body);
           productdata = extractdata["products"];
           titletop = "Carian menjumpai "+ extractdata["products"].length.toString()+" produk";
 
-          pr.dismiss();
+          pr.hide();
         }
-        //pr.dismiss();
+        //pr.hide();
       });
     }).catchError((err) {
       print(err);
-      pr.dismiss();
+      pr.hide();
     });
-    pr.dismiss();
+    pr.hide();
   }
 
   void onDeleteProduct(int index) {
@@ -253,7 +253,7 @@ class _TabScreen2State extends State<TabScreen2> {
           ),
           actions: <Widget>[
             // usually buttons at the bottom of the dialog
-            new FlatButton(
+            new TextButton(
               child: new Text(
                 "Ya",
                 style: TextStyle(
@@ -265,7 +265,7 @@ class _TabScreen2State extends State<TabScreen2> {
                 deleteRequest(index);
               },
             ),
-            new FlatButton(
+            new TextButton(
               child: new Text(
                 "Tidak",
                 style: TextStyle(
@@ -288,23 +288,23 @@ class _TabScreen2State extends State<TabScreen2> {
         type: ProgressDialogType.Normal, isDismissible: true);
     pr.style(message: "Memadam Produk...");
     pr.show();
-    http.post(urlDelete, body: {
+    http.post(Uri.parse(urlDelete), body: {
       "prid": productdata[index]['id'],
     }).then((res) {
       print(res.body);
       if (res.body == "success") {
         Toast.show("Berjaya dibuang", context,
             duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
-        pr.dismiss();
+        pr.hide();
         _loadData();
       } else {
         Toast.show("Tidak berjaya dibuang", context,
             duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
-        pr.dismiss();
+        pr.hide();
       }
     }).catchError((err) {
       print(err);
-      pr.dismiss();
+      pr.hide();
     });
     return null;
   }

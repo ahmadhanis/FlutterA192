@@ -114,7 +114,7 @@ class _RouteScreenState extends State<RouteScreen> {
                 height: 2,
                 color: Color.fromRGBO(101, 255, 218, 50),
               ),
-              Text("List of available shuttle",
+              Text("Active shuttle/s",
                   style: TextStyle(
                       color: Colors.white,
                       fontSize: 18,
@@ -332,7 +332,8 @@ class _RouteScreenState extends State<RouteScreen> {
       markers[markerId] = marker;
     }
     var markerIdVal = generateIds();
-     markerlist.insert(markerlist.length, markerIdVal); //user current location marker
+    markerlist.insert(
+        markerlist.length, markerIdVal); //user current location marker
     final MarkerId markerId = MarkerId(markerIdVal.toString());
     final Marker marker2 = Marker(
         markerId: markerId,
@@ -343,18 +344,24 @@ class _RouteScreenState extends State<RouteScreen> {
         ),
         infoWindow: InfoWindow(
           title: "Your Location",
-          snippet:"Current location",
+          snippet: "Current location",
         ));
     print(markerlist);
     markers[markerId] = marker2;
-     
   }
 
   _loadRoute() {
+    DateTime now = DateTime.now();
+    String curday = now.day.toString();
+    String curmonth = now.month.toString();
+    String curyear = now.year.toString();
     markers.clear();
     String urlLoadRoute = "https://slumberjer.com/buslora/load_route_id.php";
     http.post(urlLoadRoute, body: {
       "routeid": widget.routeid,
+      "curday": curday,
+      "curmonth": curmonth,
+      "curyear": curyear,
     }).then((res) {
       if (res.body != 'failed') {
         var extractdata = json.decode(res.body);
@@ -376,14 +383,14 @@ class _RouteScreenState extends State<RouteScreen> {
     gmcontroller.animateCamera(CameraUpdate.newCameraPosition(_cameraPos));
     MarkerId tempmarker = MarkerId(markerlist[index].toString());
     gmcontroller.showMarkerInfoWindow(tempmarker);
-
   }
 
   selectMyMarker() async {
     _cameraPos = CameraPosition(target: LatLng(latitude, longitude), zoom: 14);
     gmcontroller = await _controller.future;
     gmcontroller.animateCamera(CameraUpdate.newCameraPosition(_cameraPos));
-    MarkerId tempmarker = MarkerId(markerlist[markerlist.length-1].toString());
+    MarkerId tempmarker =
+        MarkerId(markerlist[markerlist.length - 1].toString());
     gmcontroller.showMarkerInfoWindow(tempmarker);
   }
 

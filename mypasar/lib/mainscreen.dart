@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:mypasar/tabscreen1.dart';
@@ -41,7 +40,6 @@ class _MainScreenState extends State<MainScreen> {
                 child: Text(maintitle,
                     style: GoogleFonts.anaheim(
                         fontWeight: FontWeight.bold, fontSize: 24))),
-            
           ),
 
           body: tabchildren[_currentIndex], // new
@@ -51,17 +49,16 @@ class _MainScreenState extends State<MainScreen> {
             items: [
               new BottomNavigationBarItem(
                 icon: Icon(Icons.attach_money, color: Colors.white),
-                title: Text('Pembeli'),
+                label: 'Pembeli',
               ),
               new BottomNavigationBarItem(
                 icon: Icon(Icons.store_mall_directory, color: Colors.white),
-                title: Text('Penjual'),
+                label: 'Penjual',
               ),
               new BottomNavigationBarItem(
-                  icon: Icon(Icons.person, color: Colors.white),
-                  title: Text(
-                    'Profil',
-                  ))
+                icon: Icon(Icons.person, color: Colors.white),
+                label: 'Profil',
+              )
             ],
           ),
         ));
@@ -86,7 +83,8 @@ class _MainScreenState extends State<MainScreen> {
     return showDialog(
           context: context,
           builder: (context) => new AlertDialog(
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(20.0))),
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.all(Radius.circular(20.0))),
             title: new Text(
               'Keluar dari aplikasi',
               style: TextStyle(

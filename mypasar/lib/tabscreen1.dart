@@ -76,7 +76,7 @@ class _TabScreen1State extends State<TabScreen1> with WidgetsBindingObserver {
   void dispose() {
     print("in dispose");
     if (pr != null) {
-      pr.dismiss();
+      pr.hide();
     }
     WidgetsBinding.instance.removeObserver(this);
     super.dispose();
@@ -99,7 +99,7 @@ class _TabScreen1State extends State<TabScreen1> with WidgetsBindingObserver {
         type: ProgressDialogType.Normal, isDismissible: true);
 
     return Scaffold(
-        resizeToAvoidBottomPadding: true,
+        resizeToAvoidBottomInset: true,
         body: RefreshIndicator(
             key: refreshKey,
             color: Color.fromRGBO(101, 255, 218, 50),
@@ -331,7 +331,7 @@ class _TabScreen1State extends State<TabScreen1> with WidgetsBindingObserver {
                           ),
                         ),
                       )),
-                  
+
                   productdata == null
                       ? Flexible(
                           child: Container(
@@ -441,21 +441,41 @@ class _TabScreen1State extends State<TabScreen1> with WidgetsBindingObserver {
     return null;
   }
 
+  Future<Position> _determinePosition() async {
+    bool serviceEnabled;
+    LocationPermission permission;
+
+    serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) {
+      return Future.error('Location services are disabled.');
+    }
+
+    permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.denied) {
+        return Future.error('Location permissions are denied');
+      }
+    }
+
+    if (permission == LocationPermission.deniedForever) {
+      return Future.error(
+          'Location permissions are permanently denied, we cannot request permissions.');
+    }
+
+    return await Geolocator.getCurrentPosition();
+  }
+
   _getLocation(int index, double delicost, double total) async {
     pr.style(message: "Mendapatkan lokasi...");
     pr.show();
 
     try {
-      final Geolocator geolocator = Geolocator()..forceAndroidLocationManager;
-      _currentPosition = await geolocator
-          .getCurrentPosition(desiredAccuracy: LocationAccuracy.medium)
-          .timeout(Duration(seconds: 10), onTimeout: () {
-        print("timeout gps");
-        Toast.show("Lokaliti anda tidak dapat dikesan", context,
-            duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
-        openLocationSetting();
-        return;
-      });
+      if (_determinePosition() != null) {
+        _currentPosition = await Geolocator.getCurrentPosition(
+            desiredAccuracy: LocationAccuracy.high);
+      }
+
       final coordinates = new Coordinates(
           _currentPosition.latitude, _currentPosition.longitude);
       var addresses = await Geocoder.local
@@ -464,7 +484,7 @@ class _TabScreen1State extends State<TabScreen1> with WidgetsBindingObserver {
         Toast.show("Lokaliti anda tidak dapat dikesan", context,
             duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
         openLocationSetting();
-        pr.dismiss();
+        pr.hide();
         return;
       });
       var first = addresses.first;
@@ -479,7 +499,7 @@ class _TabScreen1State extends State<TabScreen1> with WidgetsBindingObserver {
           longitude = _currentPosition.longitude;
           //_loadData("no");
           // return;
-          pr.dismiss();
+          pr.hide();
         }
         showDialog(
           context: context,
@@ -526,26 +546,25 @@ class _TabScreen1State extends State<TabScreen1> with WidgetsBindingObserver {
   }
 
   void _loadDataLocality(String st, String lc) {
-   
-    if (locality && lc!=null) {
+    if (locality && lc != null) {
       curaddress = selectedLocation;
     }
     if (lc == null) {
       lc = "";
     }
     if (st == null) {
-       Toast.show("Sila pilih negeri", context,
-              duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
+      Toast.show("Sila pilih negeri", context,
+          duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
       return;
     }
-     pr.style(
+    pr.style(
       message: "Memuat turun...",
       backgroundColor: Colors.white,
     );
     pr.show();
     String urlLoadProd =
         "https://slumberjer.com/mypasar/php/load_product_cust.php";
-    http.post(urlLoadProd, body: {
+    http.post(Uri.parse(urlLoadProd), body: {
       "phone": widget.user.phone.toString(),
       "latitude": widget.user.latitude,
       "longitude": widget.user.longitude,
@@ -563,25 +582,27 @@ class _TabScreen1State extends State<TabScreen1> with WidgetsBindingObserver {
 
           Toast.show("Produk tiada di lokaliti dipilih", context,
               duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
-          pr.dismiss();
+          pr.hide();
         } else {
           var extractdata = json.decode(res.body);
           productdata = extractdata["products"];
-          titletop = "Carian menjumpai "+ extractdata["products"].length.toString()+" produk";
+          titletop = "Carian menjumpai " +
+              extractdata["products"].length.toString() +
+              " produk";
 
-          pr.dismiss();
+          pr.hide();
         }
-        pr.dismiss();
+        pr.hide();
       });
-      pr.dismiss();
+      pr.hide();
     }).catchError((err) {
       print(err);
-      pr.dismiss();
+      pr.hide();
     }).timeout(const Duration(seconds: 5), onTimeout: () {
       print("timeout");
-      pr.dismiss();
-    }).then((value) => {pr.dismiss()});
-    pr.dismiss();
+      pr.hide();
+    }).then((value) => {pr.hide()});
+    pr.hide();
   }
 
   void _loadData(String ignore) {
@@ -597,7 +618,7 @@ class _TabScreen1State extends State<TabScreen1> with WidgetsBindingObserver {
     }
     String urlLoadProd =
         "https://slumberjer.com/mypasar/php/load_product_cust.php";
-    http.post(urlLoadProd, body: {
+    http.post(Uri.parse(urlLoadProd), body: {
       "phone": widget.user.phone,
       "latitude": widget.user.latitude,
       "longitude": widget.user.longitude,
@@ -606,6 +627,7 @@ class _TabScreen1State extends State<TabScreen1> with WidgetsBindingObserver {
       "radius": widget.user.radius,
     }).then((res) {
       // print(res.body);
+      pr.hide();
       setState(() {
         _visiblesearch = false;
         _visiblelist = false;
@@ -616,27 +638,29 @@ class _TabScreen1State extends State<TabScreen1> with WidgetsBindingObserver {
           titletop = "Carian tidak menjumpai sebarang produk";
           Toast.show("Produk tiada di lokaliti dipilih", context,
               duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
-          pr.dismiss();
+          pr.hide();
         } else {
           var extractdata = json.decode(res.body);
           productdata = extractdata["products"];
           print(productdata);
-         titletop = "Carian menjumpai "+ extractdata["products"].length.toString()+" produk";
-          pr.dismiss();
+          titletop = "Carian menjumpai " +
+              extractdata["products"].length.toString() +
+              " produk";
+          pr.hide();
         }
-        pr.dismiss();
+        pr.hide();
       });
-      pr.dismiss();
+      pr.hide();
     }).catchError((err) {
       print(err);
-      pr.dismiss();
+      pr.hide();
     }).timeout(const Duration(seconds: 5), onTimeout: () {
       print("timeout");
       if (pr == null) {
-        pr.dismiss();
+        pr.hide();
       }
-    }).then((value) => {pr.dismiss()});
-    pr.dismiss();
+    }).then((value) => {pr.hide()});
+    pr.hide();
   }
 
   void _loadDataSort(String sortoption) {
@@ -648,7 +672,7 @@ class _TabScreen1State extends State<TabScreen1> with WidgetsBindingObserver {
     String urlLoadProd =
         "https://slumberjer.com/mypasar/php/load_product_cust.php";
     http
-        .post(urlLoadProd, body: {
+        .post(Uri.parse(urlLoadProd), body: {
           "phone": widget.user.phone.toString(),
           "latitude": widget.user.latitude,
           "longitude": widget.user.longitude,
@@ -682,21 +706,21 @@ class _TabScreen1State extends State<TabScreen1> with WidgetsBindingObserver {
               }
             }
           });
-          pr.dismiss();
+          pr.hide();
         })
         .catchError((err) {
           print(err);
-          pr.dismiss();
+          pr.hide();
         })
         .timeout(const Duration(seconds: 10))
-        .then((value) => {print("timeout"), pr.dismiss()});
-    pr.dismiss();
+        .then((value) => {print("timeout"), pr.hide()});
+    pr.hide();
   }
 
   loadProduct(int index) async {
     _orderqty = 0;
     //double dist = calculateDistance(latitude,longitude,double.parse( productdata[index]['latitude']),double.parse( productdata[index]['longitude']));
-    final double distance = await Geolocator().distanceBetween(
+    final double distance = Geolocator.distanceBetween(
         double.parse(widget.user.latitude),
         double.parse(widget.user.longitude),
         double.parse(productdata[index]['latitude']),
@@ -872,7 +896,7 @@ class _TabScreen1State extends State<TabScreen1> with WidgetsBindingObserver {
                                   child: Row(
                                     children: <Widget>[
                                       Flexible(
-                                        child: FlatButton(
+                                        child: TextButton(
                                           onPressed: () => {_gotoShop(index)},
                                           child: Icon(
                                             MdiIcons.store,
@@ -881,7 +905,7 @@ class _TabScreen1State extends State<TabScreen1> with WidgetsBindingObserver {
                                         ),
                                       ),
                                       Flexible(
-                                        child: FlatButton(
+                                        child: TextButton(
                                           onPressed: () =>
                                               {_whatsupPhone(index)},
                                           child: Icon(
@@ -891,7 +915,7 @@ class _TabScreen1State extends State<TabScreen1> with WidgetsBindingObserver {
                                         ),
                                       ),
                                       Flexible(
-                                        child: FlatButton(
+                                        child: TextButton(
                                           onPressed: () => {_sendSMS(index)},
                                           child: Icon(
                                             MdiIcons.message,
@@ -900,7 +924,7 @@ class _TabScreen1State extends State<TabScreen1> with WidgetsBindingObserver {
                                         ),
                                       ),
                                       Flexible(
-                                        child: FlatButton(
+                                        child: TextButton(
                                           onPressed: () => {_callPhone(index)},
                                           child: Icon(
                                             MdiIcons.phone,
@@ -909,7 +933,7 @@ class _TabScreen1State extends State<TabScreen1> with WidgetsBindingObserver {
                                         ),
                                       ),
                                       Flexible(
-                                        child: FlatButton(
+                                        child: TextButton(
                                           onPressed: () =>
                                               {_reportAdmin(index)},
                                           child: Icon(
@@ -926,7 +950,7 @@ class _TabScreen1State extends State<TabScreen1> with WidgetsBindingObserver {
                                   child: Row(
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: <Widget>[
-                                      FlatButton(
+                                      TextButton(
                                         onPressed: () => {
                                           _updateCart(index, "add", newSetState)
                                         },
@@ -939,7 +963,7 @@ class _TabScreen1State extends State<TabScreen1> with WidgetsBindingObserver {
                                           style: TextStyle(
                                               color: Color.fromRGBO(
                                                   101, 255, 218, 50))),
-                                      FlatButton(
+                                      TextButton(
                                         onPressed: () => {
                                           _updateCart(
                                               index, "minus", newSetState)
@@ -1016,7 +1040,7 @@ class _TabScreen1State extends State<TabScreen1> with WidgetsBindingObserver {
           ),
           actions: <Widget>[
             // usually buttons at the bottom of the dialog
-            new FlatButton(
+            new TextButton(
               child: new Text(
                 "Ya",
                 style: TextStyle(
@@ -1033,7 +1057,7 @@ class _TabScreen1State extends State<TabScreen1> with WidgetsBindingObserver {
                         " dari My.Pasar");
               },
             ),
-            new FlatButton(
+            new TextButton(
               child: new Text(
                 "Tidak",
                 style: TextStyle(
@@ -1233,7 +1257,7 @@ class _TabScreen1State extends State<TabScreen1> with WidgetsBindingObserver {
 
     String urlLoadProd = "https://slumberjer.com/mypasar/php/insert_order.php";
     http
-        .post(urlLoadProd, body: {
+        .post(Uri.parse(urlLoadProd), body: {
           "prid": prid,
           "ophone": ophone,
           "bphone": bphone,
@@ -1251,20 +1275,20 @@ class _TabScreen1State extends State<TabScreen1> with WidgetsBindingObserver {
             Toast.show("Berjaya Beli", context,
                 duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
             Navigator.of(context, rootNavigator: true).pop();
-            pr.dismiss();
+            pr.hide();
             _loadData("no");
           } else {
             Toast.show("Pembelian tidak berjaya", context,
                 duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
-            pr.dismiss();
+            pr.hide();
           }
         })
         .catchError((err) {
           print(err);
-          pr.dismiss();
+          pr.hide();
         })
         .timeout(const Duration(seconds: 10))
-        .then((value) => {print("timeout"), pr.dismiss()});
+        .then((value) => {print("timeout"), pr.hide()});
     //Navigator.of(context, rootNavigator: true).pop();
   }
 
@@ -1333,7 +1357,7 @@ class _TabScreen1State extends State<TabScreen1> with WidgetsBindingObserver {
       String urlLoadJobs =
           "https://slumberjer.com/mypasar/php/load_product_cust.php";
       http
-          .post(urlLoadJobs, body: {
+          .post(Uri.parse(urlLoadJobs), body: {
             "name": prname.toString(),
             "phone": widget.user.phone.toString(),
             "latitude": widget.user.latitude,
@@ -1346,27 +1370,33 @@ class _TabScreen1State extends State<TabScreen1> with WidgetsBindingObserver {
           .then((res) {
             setState(() {
               if (res.body == "nodata") {
-              titletop = "Carian '"+prname.toString() +"' tidak menjumpai sebarang produk ";
+                titletop = "Carian '" +
+                    prname.toString() +
+                    "' tidak menjumpai sebarang produk ";
                 Toast.show("Carian tidak dijumpai", context,
                     duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
                 //titletop = "Carian tidak dijumpai";
                 productdata = null;
-                pr.dismiss();
+                pr.hide();
                 FocusScope.of(context).requestFocus(new FocusNode());
                 return;
               }
               var extractdata = json.decode(res.body);
               productdata = extractdata["products"];
-              titletop = "Carian '"+prname.toString() +"' menjumpai "+ extractdata["products"].length.toString()+" produk";
+              titletop = "Carian '" +
+                  prname.toString() +
+                  "' menjumpai " +
+                  extractdata["products"].length.toString() +
+                  " produk";
 
               FocusScope.of(context).requestFocus(new FocusNode());
-              pr.dismiss();
+              pr.hide();
             });
           })
           .catchError((err) {
-            pr.dismiss();
+            pr.hide();
           });
-      pr.dismiss();
+      pr.hide();
     } on TimeoutException catch (_) {
       Toast.show("Time out", context,
           duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
@@ -1387,7 +1417,7 @@ class _TabScreen1State extends State<TabScreen1> with WidgetsBindingObserver {
       String urlLoadJobs =
           "https://slumberjer.com/mypasar/php/load_product_cust.php";
       http
-          .post(urlLoadJobs, body: {
+          .post(Uri.parse(urlLoadJobs), body: {
             "phone": widget.user.phone.toString(),
             "latitude": latitude.toString(),
             "longitude": longitude.toString(),
@@ -1403,7 +1433,7 @@ class _TabScreen1State extends State<TabScreen1> with WidgetsBindingObserver {
                 titlecenter = "Produk tidak dijumpai";
                 Toast.show("Carian tidak dijumpai", context,
                     duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
-                pr.dismiss();
+                pr.hide();
                 FocusScope.of(context).requestFocus(new FocusNode());
                 return;
               }
@@ -1412,13 +1442,13 @@ class _TabScreen1State extends State<TabScreen1> with WidgetsBindingObserver {
               productdata = extractdata["products"];
               titletop = "Senarai dari " + sellername;
               FocusScope.of(context).requestFocus(new FocusNode());
-              pr.dismiss();
+              pr.hide();
             });
           })
           .catchError((err) {
-            pr.dismiss();
+            pr.hide();
           });
-      pr.dismiss();
+      pr.hide();
     } on TimeoutException catch (_) {
       Toast.show("Time out", context,
           duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
@@ -1515,7 +1545,7 @@ class _TabScreen1State extends State<TabScreen1> with WidgetsBindingObserver {
     pr.show();
     String urlReport = "https://slumberjer.com/mypasar/php/insert_report.php";
     http
-        .post(urlReport, body: {
+        .post(Uri.parse(urlReport), body: {
           "prodid": productdata[index]['id'],
           "rephone": widget.user.phone,
         })
@@ -1526,19 +1556,19 @@ class _TabScreen1State extends State<TabScreen1> with WidgetsBindingObserver {
                 context,
                 Toast.show("Laporan anda berjaya", context,
                     duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM));
-            pr.dismiss();
+            pr.hide();
           } else {
             Toast.show("Laporan anda gagal", context,
                 duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
-            pr.dismiss();
+            pr.hide();
           }
         })
         .catchError((err) {
           print(err);
-          pr.dismiss();
+          pr.hide();
         })
         .timeout(const Duration(seconds: 10))
-        .then((value) => {print("timeout"), pr.dismiss()});
+        .then((value) => {print("timeout"), pr.hide()});
   }
 
   double calculateDistance(lat1, lon1, lat2, lon2) {
@@ -1551,7 +1581,6 @@ class _TabScreen1State extends State<TabScreen1> with WidgetsBindingObserver {
   }
 
   _gotoShop(int index) {
-
     showDialog(
       context: context,
       builder: (context) => new AlertDialog(

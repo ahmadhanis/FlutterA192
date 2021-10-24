@@ -356,7 +356,7 @@ class _CustBuyScreenState extends State<CustBuyScreen> {
                                       child: Column(
                                         children: <Widget>[
                                           Flexible(
-                                            child: FlatButton(
+                                            child: TextButton (
                                               onPressed: () =>
                                                   {_whatsupPhone(index)},
                                               child: Icon(
@@ -366,7 +366,7 @@ class _CustBuyScreenState extends State<CustBuyScreen> {
                                             ),
                                           ),
                                           Flexible(
-                                            child: FlatButton(
+                                            child: TextButton (
                                               onPressed: () =>
                                                   {_sendSMS(index)},
                                               child: Icon(
@@ -376,7 +376,7 @@ class _CustBuyScreenState extends State<CustBuyScreen> {
                                             ),
                                           ),
                                           Flexible(
-                                            child: FlatButton(
+                                            child: TextButton (
                                               onPressed: () =>
                                                   {_callPhone(index)},
                                               child: Icon(
@@ -561,12 +561,12 @@ class _CustBuyScreenState extends State<CustBuyScreen> {
     pr.style(message: "Memuat turun...");
     pr.show();
     String urlLoadJobs = "https://slumberjer.com/mypasar/php/load_cart.php";
-    http.post(urlLoadJobs, body: {
+    http.post(Uri.parse(urlLoadJobs), body: {
       "phone": widget.user.phone,
       "option": op,
     }).then((res) {
       print(res.body);
-      pr.dismiss();
+      pr.hide();
       setState(() {
         if (res.body == "Cart Empty") {
           productdata = null;
@@ -591,9 +591,9 @@ class _CustBuyScreenState extends State<CustBuyScreen> {
       });
     }).catchError((err) {
       print(err);
-      pr.dismiss();
+      pr.hide();
     });
-    pr.dismiss();
+    pr.hide();
   }
 
   updateStatus(int index) {
@@ -646,13 +646,13 @@ class _CustBuyScreenState extends State<CustBuyScreen> {
     pr.style(message: "Sedang kemaskini status...");
     pr.show();
 
-    http.post("https://slumberjer.com/mypasar/php/update_order_status.php",
+    http.post(Uri.parse("https://slumberjer.com/mypasar/php/update_order_status.php"),
         body: {
           "orderid": orderid,
           "status": "Selesai",
         }).then((res) {
       print(res.body);
-      pr.dismiss();
+      pr.hide();
       if (res.body == "success") {
         Toast.show("Kemaskini Penghantaran berjaya", context,
             duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
@@ -664,7 +664,7 @@ class _CustBuyScreenState extends State<CustBuyScreen> {
       }
     }).catchError((err) {
       print(err);
-      pr.dismiss();
+      pr.hide();
     });
   }
 }

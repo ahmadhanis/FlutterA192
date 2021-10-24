@@ -34,7 +34,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   Widget build(BuildContext context) {
     screenHeight = MediaQuery.of(context).size.height;
     return Scaffold(
-      resizeToAvoidBottomPadding: false,
+      resizeToAvoidBottomInset: false,
       body: Stack(
         children: <Widget>[
           upperHalf(context),
@@ -217,7 +217,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     pr.style(message: "Sedang mendaftar...");
     pr.show();
 
-    http.post(urlRegister, body: {
+    http.post(Uri.parse(urlRegister), body: {
       "name": name,
       "password": password,
       "phone": phone,
@@ -228,7 +228,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     }).then((res) {
       print(res.body);
       if (res.body == "success") {
-        pr.dismiss();
+        pr.hide();
         Toast.show("Pendaftaran anda berjaya", context,
             duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
 
@@ -240,11 +240,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
         Toast.show("Pendaftaran gagal", context,
             duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
         FocusScope.of(context).requestFocus(new FocusNode());
-        pr.dismiss();
+        pr.hide();
       }
     }).catchError((err) {
       print(err);
-      pr.dismiss();
+      pr.hide();
     });
   }
 
@@ -299,7 +299,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
           ),
           actions: <Widget>[
             // usually buttons at the bottom of the dialog
-            new FlatButton(
+            new TextButton(
               child: new Text(
                 "Setuju",
                 style: TextStyle(
@@ -316,7 +316,34 @@ class _RegisterScreenState extends State<RegisterScreen> {
     );
   }
 
+  Future<Position> _determinePosition() async {
+    bool serviceEnabled;
+    LocationPermission permission;
+
+    serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) {
+      return Future.error('Location services are disabled.');
+    }
+
+    permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.denied) {
+        return Future.error('Location permissions are denied');
+      }
+    }
+
+    if (permission == LocationPermission.deniedForever) {
+      return Future.error(
+          'Location permissions are permanently denied, we cannot request permissions.');
+    }
+
+    return await Geolocator.getCurrentPosition();
+  }
+
   _getLocation() async {
+   
+
     String name = _nameEditingController.text;
     String phone = _phoneditingController.text;
     String password = _passEditingController.text;
@@ -330,18 +357,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
           type: ProgressDialogType.Normal, isDismissible: false);
       pr.style(message: "Mendapatkan lokasi...");
       pr.show();
+    if (_determinePosition() != null) {
 
-      final Geolocator geolocator = Geolocator()..forceAndroidLocationManager;
-      _currentPosition = await geolocator
-          .getCurrentPosition(desiredAccuracy: LocationAccuracy.medium)
-          .timeout(Duration(seconds: 10), onTimeout: () {
-        print("timeout gps");
-        Toast.show("Lokaliti anda tidak dapat dikesan", context,
-            duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
-        pr.dismiss();
-        //openLocationSetting();
-        return;
-      });
+    }
+      _currentPosition = await Geolocator.getCurrentPosition(
+          desiredAccuracy: LocationAccuracy.high);
       final coordinates = new Coordinates(
           _currentPosition.latitude, _currentPosition.longitude);
       var addresses = await Geocoder.local
@@ -349,7 +369,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
           .timeout(Duration(seconds: 10), onTimeout: () {
         Toast.show("Lokaliti anda tidak dapat dikesan", context,
             duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
-        pr.dismiss();
+        pr.hide();
         //openLocationSetting();
         return;
       });
@@ -363,7 +383,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
         if (curaddress != null) {
           latitude = _currentPosition.latitude;
           longitude = _currentPosition.longitude;
-          pr.dismiss();
+          pr.hide();
         }
       });
 

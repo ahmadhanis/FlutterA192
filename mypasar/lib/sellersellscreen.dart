@@ -345,7 +345,7 @@ class _SellerSellScreenState extends State<SellerSellScreen> {
                                                         child: Tooltip(
                                                       message:
                                                           "Whatsupp pembeli",
-                                                      child: FlatButton(
+                                                      child: TextButton(
                                                         onPressed: () => {
                                                           _whatsupPhone(index)
                                                         },
@@ -359,7 +359,7 @@ class _SellerSellScreenState extends State<SellerSellScreen> {
                                                       child: Tooltip(
                                                           message:
                                                               "SMS pembeli",
-                                                          child: FlatButton(
+                                                          child: TextButton(
                                                             onPressed: () => {
                                                               _sendSMS(index)
                                                             },
@@ -374,7 +374,7 @@ class _SellerSellScreenState extends State<SellerSellScreen> {
                                                       child: Tooltip(
                                                         message:
                                                             "Telefon pembeli",
-                                                        child: FlatButton(
+                                                        child: TextButton(
                                                             onPressed: () => {
                                                                   _callPhone(
                                                                       index)
@@ -390,7 +390,7 @@ class _SellerSellScreenState extends State<SellerSellScreen> {
                                                       child: Tooltip(
                                                           message:
                                                               "Buka Googlemap",
-                                                          child: FlatButton(
+                                                          child: TextButton(
                                                             onPressed: () => {
                                                               _openGooglemap(
                                                                   index)
@@ -404,7 +404,7 @@ class _SellerSellScreenState extends State<SellerSellScreen> {
                                                           )),
                                                     ),
                                                     Flexible(
-                                                      child: FlatButton(
+                                                      child: TextButton(
                                                         onPressed: () => {
                                                           _sendtoDelivery(index)
                                                         },
@@ -612,12 +612,12 @@ class _SellerSellScreenState extends State<SellerSellScreen> {
     pr.show();
     String urlLoadJobs =
         "https://slumberjer.com/mypasar/php/load_cart_seller.php";
-    http.post(urlLoadJobs, body: {
+    http.post(Uri.parse(urlLoadJobs), body: {
       "phone": widget.user.phone,
       "option": op,
     }).then((res) {
       print(res.body);
-      pr.dismiss();
+      pr.hide();
       setState(() {
         if (res.body == "Cart Empty") {
           productdata = null;
@@ -643,9 +643,9 @@ class _SellerSellScreenState extends State<SellerSellScreen> {
       });
     }).catchError((err) {
       print(err);
-      pr.dismiss();
+      pr.hide();
     });
-    pr.dismiss();
+    pr.hide();
   }
 
   updateStatus(int index) {
@@ -728,13 +728,13 @@ class _SellerSellScreenState extends State<SellerSellScreen> {
     pr.style(message: "Sedang kemaskini status...");
     pr.show();
 
-    http.post("https://slumberjer.com/mypasar/php/update_order_status.php",
+    http.post(Uri.parse("https://slumberjer.com/mypasar/php/update_order_status.php"),
         body: {
           "orderid": orderid,
           "status": selectedStatus,
         }).then((res) {
       print(res.body);
-      pr.dismiss();
+      pr.hide();
       if (res.body == "success") {
         Toast.show("Kemaskini status berjaya", context,
             duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
@@ -746,7 +746,7 @@ class _SellerSellScreenState extends State<SellerSellScreen> {
       }
     }).catchError((err) {
       print(err);
-      pr.dismiss();
+      pr.hide();
     });
   }
 
@@ -861,7 +861,7 @@ class _SellerSellScreenState extends State<SellerSellScreen> {
                                                           ),
                                                         )),
                                                     Flexible(
-                                                      child: FlatButton(
+                                                      child: TextButton(
                                                         onPressed: () => {
                                                           _sendDelivery(index,
                                                               indexproduct)
@@ -891,7 +891,7 @@ class _SellerSellScreenState extends State<SellerSellScreen> {
 
   loadDelivery() async {
     String urlLoadDeli = "https://slumberjer.com/mypasar/php/load_delivery.php";
-    http.post(urlLoadDeli, body: {
+    http.post(Uri.parse(urlLoadDeli), body: {
       "phone": widget.user.phone,
     }).then((res) {
       if (res.body == "nodata") {
@@ -910,7 +910,7 @@ class _SellerSellScreenState extends State<SellerSellScreen> {
 
   loadDeliveryupd(newSetState) async {
     String urlLoadDeli = "https://slumberjer.com/mypasar/php/load_delivery.php";
-    http.post(urlLoadDeli, body: {
+    http.post(Uri.parse(urlLoadDeli), body: {
       "phone": widget.user.phone,
     }).then((res) {
       if (res.body == "nodata") {
@@ -1065,7 +1065,7 @@ class _SellerSellScreenState extends State<SellerSellScreen> {
                                                               ),
                                                             )),
                                                         Flexible(
-                                                          child: FlatButton(
+                                                          child: TextButton(
                                                             onPressed: () => {
                                                               _deleteDialog(
                                                                   index,
@@ -1107,7 +1107,7 @@ class _SellerSellScreenState extends State<SellerSellScreen> {
     pr.show();
     String urlLoadJobs =
         "https://slumberjer.com/mypasar/php/insert_delivery.php";
-    http.post(urlLoadJobs, body: {
+    http.post(Uri.parse(urlLoadJobs), body: {
       "ophone": widget.user.phone,
       "dphone": phone,
       "dname": name,
@@ -1117,12 +1117,12 @@ class _SellerSellScreenState extends State<SellerSellScreen> {
         Toast.show("Berjaya", context,
             duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
         //Navigator.of(context).pop(false);
-        pr.dismiss();
+        pr.hide();
         newSetState(() {
           loadDeliveryupd(newSetState);
         });
       } else {
-        pr.dismiss();
+        pr.hide();
         FocusScope.of(context).requestFocus(FocusNode());
         Toast.show("Gagal", context,
             duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
@@ -1176,7 +1176,7 @@ class _SellerSellScreenState extends State<SellerSellScreen> {
   void deleteDelivery(String phone, newSetState) {
     String urlLoadJobs =
         "https://slumberjer.com/mypasar/php/delete_delivery.php";
-    http.post(urlLoadJobs, body: {
+    http.post(Uri.parse(urlLoadJobs), body: {
       "ophone": widget.user.phone,
       "dphone": phone,
     }).then((res) {

@@ -219,7 +219,9 @@ class _TabScreen3State extends State<TabScreen3> {
                                 ))
                               ],
                             ),
-                            SizedBox(height: 2,),
+                            SizedBox(
+                              height: 2,
+                            ),
                             Divider(
                               height: 2,
                               color: Color.fromRGBO(101, 255, 218, 50),
@@ -382,7 +384,7 @@ class _TabScreen3State extends State<TabScreen3> {
           ),
           actions: <Widget>[
             // usually buttons at the bottom of the dialog
-            new FlatButton(
+            new TextButton(
               child: new Text(
                 "Ya",
                 style: TextStyle(
@@ -397,7 +399,7 @@ class _TabScreen3State extends State<TabScreen3> {
                         builder: (BuildContext context) => LoginScreen()));
               },
             ),
-            new FlatButton(
+            new TextButton(
               child: new Text(
                 "Tidak",
                 style: TextStyle(
@@ -452,7 +454,7 @@ class _TabScreen3State extends State<TabScreen3> {
           ),
           actions: <Widget>[
             // usually buttons at the bottom of the dialog
-            new FlatButton(
+            new TextButton(
               child: new Text(
                 "Ya",
                 style: TextStyle(
@@ -465,7 +467,7 @@ class _TabScreen3State extends State<TabScreen3> {
                       duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
                   return;
                 }
-                http.post(urlupdate, body: {
+                http.post(Uri.parse(urlupdate), body: {
                   "phone": user.phone,
                   "password": passController.text,
                 }).then((res) {
@@ -483,7 +485,7 @@ class _TabScreen3State extends State<TabScreen3> {
                 });
               },
             ),
-            new FlatButton(
+            new TextButton(
               child: new Text(
                 "Tidak",
                 style: TextStyle(
@@ -537,7 +539,7 @@ class _TabScreen3State extends State<TabScreen3> {
               )),
           actions: <Widget>[
             // usually buttons at the bottom of the dialog
-            new FlatButton(
+            new TextButton(
               child: new Text(
                 "Ya",
                 style: TextStyle(
@@ -550,7 +552,7 @@ class _TabScreen3State extends State<TabScreen3> {
                       duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
                   return;
                 }
-                http.post(urlupdate, body: {
+                http.post(Uri.parse(urlupdate), body: {
                   "phone": user.phone,
                   "name": nameController.text,
                 }).then((res) {
@@ -572,7 +574,7 @@ class _TabScreen3State extends State<TabScreen3> {
                     duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
               },
             ),
-            new FlatButton(
+            new TextButton(
               child: new Text(
                 "Tidak",
                 style: TextStyle(
@@ -613,7 +615,7 @@ class _TabScreen3State extends State<TabScreen3> {
           ),
           actions: <Widget>[
             // usually buttons at the bottom of the dialog
-            new FlatButton(
+            new TextButton(
               child: new Text(
                 "Ya",
                 style: TextStyle(
@@ -629,7 +631,7 @@ class _TabScreen3State extends State<TabScreen3> {
                         builder: (BuildContext context) => RegisterScreen()));
               },
             ),
-            new FlatButton(
+            new TextButton(
               child: new Text(
                 "Tidak",
                 style: TextStyle(
@@ -673,7 +675,7 @@ class _TabScreen3State extends State<TabScreen3> {
           ),
           actions: <Widget>[
             // usually buttons at the bottom of the dialog
-            new FlatButton(
+            new TextButton(
               child: new Text(
                 "Ya",
                 style: TextStyle(
@@ -682,13 +684,25 @@ class _TabScreen3State extends State<TabScreen3> {
               ),
               onPressed: () async {
                 Navigator.of(context).pop();
-                File _image = await ImagePicker.pickImage(
-                    source: ImageSource.camera, maxHeight: 400, maxWidth: 300);
+                File _image;
+                final picker = ImagePicker();
+                final pickedFile = await picker.pickImage (
+                  source: ImageSource.camera,
+                  maxHeight: 800,
+                  maxWidth: 800,
+                );
+
+                if (pickedFile != null) {
+                  _image = File(pickedFile.path);
+                } else {
+                  print('No image selected.');
+                }
+
                 print(_image.lengthSync());
                 String base64Image = base64Encode(_image.readAsBytesSync());
 
                 http.post(
-                    "https://slumberjer.com/mypasar/php/update_profile.php",
+                    Uri.parse("https://slumberjer.com/mypasar/php/update_profile.php"),
                     body: {
                       "encoded_string": base64Image,
                       "phone": user.phone,
@@ -708,7 +722,7 @@ class _TabScreen3State extends State<TabScreen3> {
                 });
               },
             ),
-            new FlatButton(
+            new TextButton(
               child: new Text(
                 "Tidak",
                 style: TextStyle(
@@ -737,7 +751,7 @@ class _TabScreen3State extends State<TabScreen3> {
     pr.style(message: "Memuat turun...");
     pr.show();
     String urlLoadJobs = "https://slumberjer.com/mypasar/php/load_profile.php";
-    http.post(urlLoadJobs, body: {
+    http.post(Uri.parse(urlLoadJobs), body: {
       "phone": widget.user.phone,
     }).then((res) {
       print(res.body);
@@ -762,15 +776,15 @@ class _TabScreen3State extends State<TabScreen3> {
         total: dres[10],
       );
 
-      pr.dismiss();
+      pr.hide();
       setState(() {
-        pr.dismiss();
+        pr.hide();
       });
     }).catchError((err) {
       print(err);
-      pr.dismiss();
+      pr.hide();
     });
-    pr.dismiss();
+    pr.hide();
   }
 
   _callHelp() {
@@ -800,7 +814,7 @@ class _TabScreen3State extends State<TabScreen3> {
           ),
           actions: <Widget>[
             // usually buttons at the bottom of the dialog
-            new FlatButton(
+            new TextButton(
               child: new Text(
                 "Ya",
                 style: TextStyle(
@@ -814,7 +828,7 @@ class _TabScreen3State extends State<TabScreen3> {
                     "Bantuan berkenaan dengan My.Pasar dari " + user.name);
               },
             ),
-            new FlatButton(
+            new TextButton(
               child: new Text(
                 "Tidak",
                 style: TextStyle(
@@ -868,7 +882,7 @@ class _TabScreen3State extends State<TabScreen3> {
               )),
           actions: <Widget>[
             // usually buttons at the bottom of the dialog
-            new FlatButton(
+            new TextButton(
               child: new Text(
                 "Ya",
                 style: TextStyle(
@@ -886,7 +900,7 @@ class _TabScreen3State extends State<TabScreen3> {
                       duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
                   return;
                 }
-                http.post(urlupdate, body: {
+                http.post(Uri.parse(urlupdate), body: {
                   "phone": user.phone,
                   "radius": radiusController.text,
                 }).then((res) {
@@ -907,7 +921,7 @@ class _TabScreen3State extends State<TabScreen3> {
                     duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
               },
             ),
-            new FlatButton(
+            new TextButton(
               child: new Text(
                 "Tidak",
                 style: TextStyle(

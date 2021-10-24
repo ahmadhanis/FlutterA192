@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:mypasar/mainscreen.dart';
@@ -36,7 +35,7 @@ class _LoginScreenState extends State<LoginScreen> {
     return WillPopScope(
       onWillPop: _onBackPressed,
       child: Scaffold(
-          resizeToAvoidBottomPadding: false,
+          resizeToAvoidBottomInset: false,
           body: Stack(
             children: <Widget>[
               upperHalf(context),
@@ -216,7 +215,7 @@ class _LoginScreenState extends State<LoginScreen> {
       String _phone = _phoneEditingController.text;
       String _password = _passEditingController.text;
       http
-          .post(urlLogin, body: {
+          .post(Uri.parse(urlLogin), body: {
             "phone": _phone,
             "password": _password,
           })
@@ -238,7 +237,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   locality: userdata[6],
                   latitude: userdata[7],
                   longitude: userdata[8]);
-              pr.dismiss();
+              pr.hide();
               Navigator.push(
                   context,
                   MaterialPageRoute(
@@ -248,14 +247,14 @@ class _LoginScreenState extends State<LoginScreen> {
               Toast.show("Log masuk berjaya", context,
                   duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
             } else {
-              pr.dismiss();
+              pr.hide();
               Toast.show("Log masuk gagal", context,
                   duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
             }
           })
           .catchError((err) {
             print(err);
-            pr.dismiss();
+            pr.hide();
           });
     } on Exception catch (_) {
       Toast.show("Error", context,
@@ -307,7 +306,7 @@ class _LoginScreenState extends State<LoginScreen> {
           ),
           actions: <Widget>[
             // usually buttons at the bottom of the dialog
-            new FlatButton(
+            new TextButton(
               child: new Text(
                 "Hantar",
                 style: TextStyle(
@@ -321,7 +320,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 );
               },
             ),
-            new FlatButton(
+            new TextButton(
               child: new Text(
                 "Batal",
                 style: TextStyle(

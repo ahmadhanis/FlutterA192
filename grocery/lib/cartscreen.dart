@@ -739,6 +739,17 @@ class _CartScreenState extends State<CartScreen> {
     });
   }
 
+  Future<double> _getDistance(
+      double lat1, double lon1, double lat2, double lon2) async {
+    var _distanceInMeters = await Geolocator().distanceBetween(
+      lat1,
+      lon1,
+      lat2,
+      lon2,
+    );
+    return _distanceInMeters;
+  }
+
   _getLocation() async {
     final Geolocator geolocator = Geolocator()..forceAndroidLocationManager;
     _currentPosition = await geolocator.getCurrentPosition(

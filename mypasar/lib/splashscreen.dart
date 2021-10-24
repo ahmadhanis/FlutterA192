@@ -112,7 +112,7 @@ class _ProgressIndicatorState extends State<ProgressIndicator>
     print('Inside checkversion()');
     String urlLoadProd = "https://slumberjer.com/mypasar/php/check_version.php";
     try{
-    http.post(urlLoadProd, body: {}).then((res) {
+    http.post(Uri.parse(urlLoadProd), body: {}).then((res) {
       print(res.body);
       if (res.body != thisversion) {
         Toast.show("Terdapat versi baru sila kemaskini aplikasi", context,
@@ -158,7 +158,7 @@ class _ProgressIndicatorState extends State<ProgressIndicator>
 
   void _onLogin(String phone, String pass, BuildContext ctx) {
     print("inside onLogin");
-    http.post("https://slumberjer.com/mypasar/php/login_user.php", body: {
+    http.post(Uri.parse("https://slumberjer.com/mypasar/php/login_user.php"), body: {
       "phone": phone,
       "password": pass,
     }).then((res) {

@@ -300,7 +300,7 @@ class _EditProductState extends State<EditProduct> {
               new Text("Anda Pasti?", style: TextStyle(color: Colors.white)),
           actions: <Widget>[
             // usually buttons at the bottom of the dialog
-            new FlatButton(
+            new TextButton (
               child: new Text(
                 "Ya",
                 style: TextStyle(
@@ -312,7 +312,7 @@ class _EditProductState extends State<EditProduct> {
                 updateProduct(index);
               },
             ),
-            new FlatButton(
+            new TextButton (
               child: new Text(
                 "Tidak",
                 style: TextStyle(
@@ -358,7 +358,7 @@ class _EditProductState extends State<EditProduct> {
     pr.style(message: "Sedang kemaskini produk...");
     pr.show();
 
-    http.post("https://slumberjer.com/mypasar/php/update_product.php", body: {
+    http.post(Uri.parse("https://slumberjer.com/mypasar/php/update_product.php"), body: {
       "prid": widget.product.id,
       "prname": productEditingController.text,
       "quantity": qtyEditingController.text,
@@ -366,7 +366,7 @@ class _EditProductState extends State<EditProduct> {
       "delivery": delivery.toStringAsFixed(2),
     }).then((res) {
       print(res.body);
-      pr.dismiss();
+      pr.hide();
       if (res.body == "success") {
         Toast.show("Kemaskini produk berjaya", context,
             duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
@@ -377,7 +377,7 @@ class _EditProductState extends State<EditProduct> {
       }
     }).catchError((err) {
       print(err);
-      pr.dismiss();
+      pr.hide();
     });
   }
 }
